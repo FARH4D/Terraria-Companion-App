@@ -1,7 +1,5 @@
 package com.example.terrariacompanion;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,19 +11,37 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView textView = findViewById(R.id.textView1);
+        TextView textView = findViewById(R.id.textView1); // Replace with your TextView ID
 
-        ServerConnection serverConnection = new ServerConnection();
+        // Run socket logic in a separate thread
+        new Thread(() -> {
+            SocketManager socketManager = new SocketManager();
 
-        // Replace with the actual IP address of the Terraria server
-        String serverIp = "192.168.1.179"; // Example IP address
-        int serverPort = 12345;
+            try {
+                if (socketManager.connect("192.168.1.179", 12345)) {
+                    runOnUiThread(() -> textView.setText("Connected to Terraria server!"));
 
-        serverConnection.connectToServer(serverIp, serverPort, result -> {
-            // Update the TextView with the received result
-            textView.setText("Player Stats: " + result);
-        });
+                    // Example: Send a greeting
+                    socketManager.sendMessage("Hello Terraria!");
 
+                    // Example: Continuously read updates
+                    while (true) {
+                        String serverMessage = socketManager.receiveMessage();
+                        if (serverMessage != null) {
+                            runOnUiThread(() -> textView.setText("Received: " + serverMessage));
+                        } else {
+                            runOnUiThread(() -> textView.setText("Disconnected or no more messages."));
+                            break;
+                        }
+                    }
 
+                    socketManager.disconnect();
+                } else {
+                    runOnUiThread(() -> textView.setText("Failed to connect to server."));
+                }
+            } catch (Exception e) {
+                runOnUiThread(() -> textView.setText("Error: " + e.toString()));
+            }
+        }).start();
     }
 }

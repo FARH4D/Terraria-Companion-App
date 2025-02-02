@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Terraria Companion</string>
+    <string name="intro_text">Unofficial <b>Terraria</b> Companion App\nfor <b>tModLoader</b>.</string>
+    <string name="ip_example"><b>Example: 192.168.0.43:12345</b></string>
 </resources>

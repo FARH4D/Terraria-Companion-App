@@ -39,6 +39,10 @@ public class SocketManager {
         return null;
     }
 
+    public boolean isConnected() {
+        return socket != null && socket.isConnected() && !socket.isClosed() && output != null && input != null;
+    }
+
     public void disconnect() {
         try {
             if (socket != null) {

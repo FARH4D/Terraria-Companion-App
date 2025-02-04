@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -33,12 +37,28 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
+        ProgressBar health_bar = findViewById(R.id.health_bar);
+        ProgressBar mana_bar = findViewById(R.id.mana_bar);
+        TextView health_status = findViewById(R.id.health_status);
+        TextView mana_status = findViewById(R.id.mana_status);
+
+
         new Thread(() -> {
             try {
                 while (true) {
                     String message = socketManager.receiveMessage();
                     if (message != null) {
-                        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
+                        String[] parts = message.split(":");
+
+                        runOnUiThread(() -> {
+                            health_bar.setProgress(Integer.parseInt(parts[0]), true);
+                            health_bar.setMax(Integer.parseInt(parts[1]));
+                            mana_bar.setProgress(Integer.parseInt(parts[2]), true);
+                            mana_bar.setMax(Integer.parseInt(parts[3]));
+                            health_status.setText(String.format(Locale.UK, "%d/%d", Integer.parseInt(parts[0]), Integer.parseInt(parts[1])));
+                            mana_status.setText(String.format(Locale.UK, "%d/%d", Integer.parseInt(parts[2]), Integer.parseInt(parts[3])));
+
+                        });
                     } else {
                         runOnUiThread(() -> Toast.makeText(this, "Disconnected.", Toast.LENGTH_SHORT).show());
                         break;

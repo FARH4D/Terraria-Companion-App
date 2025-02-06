@@ -2,6 +2,11 @@ package com.example.terrariacompanion;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class SocketManager {
     private Socket socket;
@@ -28,10 +33,16 @@ public class SocketManager {
         }
     }
 
-    public String receiveMessage() {
+    public DataManager1 receiveMessage() {
         if (socket != null && !socket.isClosed() && input != null) {
             try {
-                return input.readLine(); // Waits for a response from the server
+                String jsonData = input.readLine();
+                if (jsonData != null) {
+                    System.out.println("Received: " + jsonData);
+                    return this.processServerData(input.readLine());
+                } else {
+                    System.err.println("json data is null");
+                }
             } catch (IOException e) {
                 System.err.println("Error reading from server: " + e.getMessage());
             }
@@ -58,4 +69,41 @@ public class SocketManager {
             System.err.println("Error closing socket: " + e.getMessage());
         }
     }
+
+    private DataManager1 processServerData(String jsonData) {
+        try {
+            JSONObject playerData = new JSONObject(jsonData);
+
+            JSONObject health = playerData.getJSONObject("health");
+            int currentHealth = health.getInt("current");
+            int maxHealth = health.getInt("max");
+
+            JSONObject mana = playerData.getJSONObject("mana");
+            int currentMana = mana.getInt("current");
+            int maxMana = mana.getInt("max");
+
+            // Extract other values
+            JSONArray player_array = playerData.getJSONArray("player_list");
+            List<String> player_names = new ArrayList<>();
+
+//            JSONArray boss_names_array = playerData.getJSONArray("boss_names");
+//            List<String> boss_names = new ArrayList<>();
+
+            for (int i = 0; i < player_array.length(); i++) {
+                player_names.add(player_array.getString(i));
+            }
+
+            return new DataManager1(currentHealth, maxHealth, currentMana, maxMana, player_names);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+
+
+
 }

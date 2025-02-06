@@ -1,17 +1,24 @@
 package com.example.terrariacompanion;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
+import java.util.List;
 import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
@@ -41,25 +48,57 @@ public class HomeActivity extends AppCompatActivity {
         ProgressBar mana_bar = findViewById(R.id.mana_bar);
         TextView health_status = findViewById(R.id.health_status);
         TextView mana_status = findViewById(R.id.mana_status);
+        TextView bufftitle = findViewById(R.id.buffTitle);
+        LinearLayout player_names_view = findViewById(R.id.player_names_view);
 
 
         new Thread(() -> {
             try {
                 while (true) {
-                    String message = socketManager.receiveMessage();
-                    if (message != null) {
-                        String[] parts = message.split(":");
-
+                    DataManager1 data = socketManager.receiveMessage();
+                    if (data != null) {
+                        final DataManager1 finalData = data;
                         runOnUiThread(() -> {
-                            health_bar.setProgress(Integer.parseInt(parts[0]), true);
-                            health_bar.setMax(Integer.parseInt(parts[1]));
-                            mana_bar.setProgress(Integer.parseInt(parts[2]), true);
-                            mana_bar.setMax(Integer.parseInt(parts[3]));
-                            health_status.setText(String.format(Locale.UK, "%d/%d", Integer.parseInt(parts[0]), Integer.parseInt(parts[1])));
-                            mana_status.setText(String.format(Locale.UK, "%d/%d", Integer.parseInt(parts[2]), Integer.parseInt(parts[3])));
+
+                            player_names_view.removeAllViews();
+                            health_bar.setProgress(finalData.currentHealth, true);
+                            health_bar.setMax(finalData.maxHealth);
+                            mana_bar.setProgress(finalData.currentMana, true);
+                            mana_bar.setMax(finalData.maxMana);
+                            health_status.setText(String.format(Locale.UK, "%d/%d", finalData.currentHealth, finalData.maxHealth));
+                            mana_status.setText(String.format(Locale.UK, "%d/%d", finalData.currentMana, finalData.maxMana));
+                            bufftitle.setText(TextUtils.join(", ", finalData.playerNames));
+
+                            List<String> player_names = finalData.playerNames;
+
+                            for (String name : player_names) {
+
+                                TextView tv = new TextView(this);
+
+                                tv.setText(name);
+                                tv.setTextSize(20);
+                                Typeface custom = ResourcesCompat.getFont(this, R.font.andy_bold);
+                                tv.setTypeface(custom);
+
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                );
+
+                                params.gravity = Gravity.CENTER_HORIZONTAL;
+
+                                int marginInPixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, this.getResources().getDisplayMetrics());
+                                params.setMargins(0, marginInPixels, 0, marginInPixels);
+                                tv.setLayoutParams(params);
+
+                                player_names_view.addView(tv);
+
+                            }
+
 
                         });
                     } else {
+                        mana_status.setText("not work");
                         runOnUiThread(() -> Toast.makeText(this, "Disconnected.", Toast.LENGTH_SHORT).show());
                         break;
                     }

@@ -3,6 +3,7 @@ package com.example.terrariacompanion;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -12,6 +13,7 @@ public class SocketManager {
     private Socket socket;
     private PrintWriter output;
     private BufferedReader input;
+    private String current_page = "HOME";
 
     public boolean connect(String ipAddress, int port) {
         try {
@@ -33,13 +35,18 @@ public class SocketManager {
         }
     }
 
-    public DataManager1 receiveMessage() {
+    public ServerResponse receiveMessage() {
         if (socket != null && !socket.isClosed() && input != null) {
             try {
                 String jsonData = input.readLine();
                 if (jsonData != null) {
                     System.out.println("Received: " + jsonData);
-                    return this.processServerData(input.readLine());
+                    if ("HOME".equals(getCurrent_page())) {
+                        return new ServerResponse(processServerData(jsonData));
+                    } else if ("RECIPES".equals(getCurrent_page())) {
+                        return new ServerResponse(processItemsData(jsonData));
+                    }
+
                 } else {
                     System.err.println("json data is null");
                 }
@@ -53,6 +60,10 @@ public class SocketManager {
     public boolean isConnected() {
         return socket != null && socket.isConnected() && !socket.isClosed() && output != null && input != null;
     }
+
+    public void setCurrent_page(String current_page){ this.current_page = current_page;}
+
+    public String getCurrent_page(){ return this.current_page; }
 
     public void disconnect() {
         try {
@@ -101,6 +112,27 @@ public class SocketManager {
 
         return null;
 
+    }
+
+    private HashMap<String, List<Integer>> processItemsData(String jsonData) {
+        HashMap<String, List<Integer>> itemMap = new HashMap<>();
+
+        try {
+            JSONArray jsonArray = new JSONArray(jsonData);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String name = jsonObject.getString("name");
+                int id = jsonObject.getInt("id");
+
+                itemMap.computeIfAbsent(name, k -> new ArrayList<>()).add(id);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return itemMap;
     }
 
 

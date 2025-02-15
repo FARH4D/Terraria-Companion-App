@@ -1,5 +1,6 @@
 package com.example.terrariacompanion;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -36,13 +37,19 @@ public class HomeActivity extends AppCompatActivity {
 
         SocketManager socketManager = SocketManagerSingleton.getInstance();
 
-
         if (socketManager == null || !socketManager.isConnected()) {
             Toast.makeText(this, "No active connection!", Toast.LENGTH_SHORT).show();
             finish(); // Close this activity if no connection
             return;
         }
 
+        findViewById(R.id.nav_recipe).setOnClickListener(view -> {
+            new Thread(() -> {
+                socketManager.setCurrent_page("RECIPES");
+                socketManager.sendMessage("RECIPES");
+            }).start();
+            startActivity(new Intent(this, RecipeActivity.class));
+        });
 
         ProgressBar health_bar = findViewById(R.id.health_bar);
         ProgressBar mana_bar = findViewById(R.id.mana_bar);
@@ -55,11 +62,17 @@ public class HomeActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 while (true) {
-                    DataManager1 data = socketManager.receiveMessage();
+                    ServerResponse server_data = socketManager.receiveMessage();
+                    try {
+                        DataManager1 data = server_data.getHomeData();
+                    } catch (Exception e){
+                        System.out.println("Error: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                    DataManager1 data = server_data.getHomeData();
                     if (data != null) {
                         final DataManager1 finalData = data;
                         runOnUiThread(() -> {
-
                             player_names_view.removeAllViews();
                             health_bar.setProgress(finalData.currentHealth, true);
                             health_bar.setMax(finalData.maxHealth);
@@ -94,11 +107,8 @@ public class HomeActivity extends AppCompatActivity {
                                 player_names_view.addView(tv);
 
                             }
-
-
                         });
                     } else {
-                        mana_status.setText("not work");
                         runOnUiThread(() -> Toast.makeText(this, "Disconnected.", Toast.LENGTH_SHORT).show());
                         break;
                     }
@@ -114,6 +124,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onDestroy();
         if (socketManager != null) {
             socketManager.disconnect();
+            finish();
+
         }
     }
 

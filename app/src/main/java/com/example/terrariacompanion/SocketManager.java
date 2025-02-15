@@ -4,10 +4,13 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import kotlin.Pair;
 
 public class SocketManager {
     private Socket socket;
@@ -46,7 +49,6 @@ public class SocketManager {
                     } else if ("RECIPES".equals(getCurrent_page())) {
                         return new ServerResponse(processItemsData(jsonData));
                     }
-
                 } else {
                     System.err.println("json data is null");
                 }
@@ -114,8 +116,9 @@ public class SocketManager {
 
     }
 
-    private HashMap<String, List<Integer>> processItemsData(String jsonData) {
-        HashMap<String, List<Integer>> itemMap = new HashMap<>();
+
+    private List<Pair<String, Integer>> processItemsData(String jsonData) {
+        List<Pair<String, Integer>> itemList = new ArrayList<>();
 
         try {
             JSONArray jsonArray = new JSONArray(jsonData);
@@ -125,14 +128,14 @@ public class SocketManager {
                 String name = jsonObject.getString("name");
                 int id = jsonObject.getInt("id");
 
-                itemMap.computeIfAbsent(name, k -> new ArrayList<>()).add(id);
+                itemList.add(new Pair<>(name, id)); // Add each (name, id) separately
             }
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
-        return itemMap;
+        return itemList;
     }
 
 

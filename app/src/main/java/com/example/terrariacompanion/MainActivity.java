@@ -1,23 +1,16 @@
 package com.example.terrariacompanion;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
-
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,9 +51,8 @@ public class MainActivity extends AppCompatActivity {
                                     runOnUiThread(() -> {
                                         Toast.makeText(MainActivity.this, "Connected!", Toast.LENGTH_SHORT).show();
 
-
-                                        Intent home_intent = new Intent(MainActivity.this, HomeActivity.class);
-                                        startActivity(home_intent);
+                                        getSupportFragmentManager().beginTransaction()
+                                                .replace(R.id.fragment_container, new HomeFragment()).commit();
                                     });
 
                                 } else {
@@ -84,10 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Invalid format, must use IP:Port", Toast.LENGTH_SHORT).show();
             }
         });
-
-//        TextView textView = findViewById(R.id.textView1); // Replace with your TextView ID
-//
-//
     }
 
     @NonNull

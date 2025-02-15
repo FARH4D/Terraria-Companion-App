@@ -224,7 +224,6 @@
 
     </ScrollView>
 
-
     <FrameLayout
         android:id="@+id/nav_bar"
         android:layout_width="match_parent"
@@ -241,6 +240,17 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/nav_home"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/home_navbar"
+                android:contentDescription="Home"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
 
             <ImageView
                 android:id="@+id/nav_recipe"
@@ -265,17 +275,6 @@
                 android:padding="10dp" />
 
             <ImageView
-                android:id="@+id/nav_map"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/maps_navbar"
-                android:contentDescription="Map"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="10dp" />
-
-            <ImageView
                 android:id="@+id/nav_beastiary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -289,5 +288,9 @@
 
     </FrameLayout>
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -23,10 +25,14 @@ import kotlin.Pair;
 public class RecipeFragment extends Fragment {
 
     private SocketManager socketManager;
-
+    private int currentNum = 30;
+    private GridLayout gridLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.recipe_list, container, false);
+        View view = inflater.inflate(R.layout.recipe_list, container, false);
+
+        gridLayout = view.findViewById(R.id.recipe_grid);
+        return view;
     }
 
     @Override
@@ -53,65 +59,80 @@ public class RecipeFragment extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
-        GridLayout gridLayout= requireView().findViewById(R.id.recipe_grid);
+        getData(currentNum);
+
+
+        Button nextButton = requireView().findViewById(R.id.right_button);
+        nextButton.setOnClickListener(v -> {
+            currentNum = currentNum + 30;
+            getData(currentNum);
+
+        });
+
+    }
+
+    private void getData(int currentNum) {
 
         new Thread(() -> {
             try {
-                while (isAdded()) {
-                    ServerResponse server_data = socketManager.receiveMessage();
-                    if (server_data != null) {
-                        List<ItemData> recipe_list = server_data.getRecipeData();
-                        System.out.println(recipe_list);
-                        if (recipe_list != null) {
-                            if (isAdded()) {
-                                requireActivity().runOnUiThread(() -> {
-                                    if (getActivity() != null) {
-                                        gridLayout.removeAllViews();
+                socketManager.sendMessage("RECIPES:" + currentNum);
+                ServerResponse server_data = socketManager.receiveMessage();
+                if (server_data != null) {
+                    List<ItemData> recipe_list = server_data.getRecipeData();
+                    System.out.println(recipe_list);
+                    if (recipe_list != null) {
+                        if (isAdded()) {
+                            requireActivity().runOnUiThread(() -> {
+                                if (getActivity() != null) {
+                                    gridLayout.removeAllViews();
+                                    for (ItemData entry : recipe_list) {
+                                        FrameLayout itemFrame = new FrameLayout(requireContext());
+                                        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                                        params.width = 0;
+                                        params.height = 200;
+                                        params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // Equal width
+                                        params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                                        params.setMargins(10, 10, 10, 10);
+                                        itemFrame.setLayoutParams(params);
+                                        itemFrame.setBackgroundResource(R.drawable.item_frame);
 
-                                        for (ItemData entry : recipe_list) {
-                                            FrameLayout itemFrame = new FrameLayout(requireContext());
-                                            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                                            params.width = 0;
-                                            params.height = 200;
-                                            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // Equal width
-                                            params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-                                            params.setMargins(10, 10, 10, 10);
-                                            itemFrame.setLayoutParams(params);
-                                            itemFrame.setBackgroundResource(R.drawable.item_frame);
+                                        int itemID = entry.getId();
+                                        itemFrame.setTag(itemID);
 
-                                            int itemID = entry.getId();
-                                            itemFrame.setTag(itemID);
+                                        ImageView imageView = new ImageView(requireContext());
+                                        int imageSize = (int) (200 * 0.5);
+                                        FrameLayout.LayoutParams imageParams = new FrameLayout.LayoutParams(
+                                                imageSize,
+                                                imageSize
+                                        );
 
-                                            ImageView imageView = new ImageView(requireContext());
-                                            imageView.setLayoutParams(new FrameLayout.LayoutParams(
-                                                    FrameLayout.LayoutParams.MATCH_PARENT,
-                                                    FrameLayout.LayoutParams.MATCH_PARENT
-                                            ));
-                                            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                        imageParams.gravity = Gravity.CENTER;
+                                        imageView.setLayoutParams(imageParams);
 
-                                            if (entry.getImage() != null) {
-                                                imageView.setImageBitmap(entry.getImage());
-                                            } else {
-                                                imageView.setImageResource(R.drawable.no_item);
-                                            }
+                                        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                        imageView.setAdjustViewBounds(true);
 
-                                            itemFrame.addView(imageView);
-                                            gridLayout.addView(itemFrame);
-                                            
-                                            itemFrame.setOnClickListener(v -> {
-                                                int clickedItemID = (int) v.getTag();
-                                                Toast.makeText(getActivity(), "Item ID: " + clickedItemID, Toast.LENGTH_SHORT).show();
-                                            });
+                                        if (entry.getImage() != null) {
+                                            imageView.setImageBitmap(entry.getImage());
+                                        } else {
+                                            imageView.setImageResource(R.drawable.no_item);
                                         }
+
+                                        itemFrame.addView(imageView);
+                                        gridLayout.addView(itemFrame);
+
+                                        itemFrame.setOnClickListener(v -> {
+                                            int clickedItemID = (int) v.getTag();
+                                            Toast.makeText(getActivity(), "Item ID: " + clickedItemID, Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
                                 }
-                                });
-                            }
+                            });
                         }
-                    } else {
-                        requireActivity().runOnUiThread(() ->
-                                Toast.makeText(requireActivity(), "Disconnected or no response.", Toast.LENGTH_SHORT).show());
-                        break;
                     }
+                } else {
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireActivity(), "Disconnected or no response.", Toast.LENGTH_SHORT).show());
                 }
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->
@@ -121,3 +142,5 @@ public class RecipeFragment extends Fragment {
         }).start();
     }
 }
+
+

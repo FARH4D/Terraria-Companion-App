@@ -118,6 +118,7 @@
         android:id="@+id/button_frame"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@id/nav_bar">
 
         <Button
@@ -127,7 +128,7 @@
             android:layout_gravity="start|center_vertical"
             android:layout_marginStart="16dp"
             android:textSize="30sp"
-            android:text="back"
+            android:text="&lt;"
             android:gravity="center"
             android:minHeight="0dp"
             android:minWidth="0dp"
@@ -152,7 +153,7 @@
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="16dp"
             android:textSize="30sp"
-            android:text="next"
+            android:text="&gt;"
             android:gravity="center"
             android:minHeight="0dp"
             android:minWidth="0dp"

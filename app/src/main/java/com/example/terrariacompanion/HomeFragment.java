@@ -36,6 +36,8 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+
         ProgressBar health_bar = view.findViewById(R.id.health_bar);
         ProgressBar mana_bar = view.findViewById(R.id.mana_bar);
         TextView health_status = view.findViewById(R.id.health_status);
@@ -53,7 +55,6 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.nav_recipe).setOnClickListener(v -> {
             new Thread(() -> {
                 socketManager.setCurrent_page("RECIPES");
-                socketManager.sendMessage("RECIPES");
                 if (isAdded()) {
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new RecipeFragment()).commit();

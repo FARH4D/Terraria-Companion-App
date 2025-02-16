@@ -18,7 +18,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/launch_background_1" />
 
-    <!-- Image 2 on top of the background -->
     <ImageView
         android:id="@+id/logo_1"
         android:layout_width="349dp"
@@ -31,7 +30,6 @@
         app:srcCompat="@drawable/terraria_logo_1"
         tools:layout_editor_absoluteX="28dp" />
 
-    <!-- Image 3 below Image 2 -->
     <ImageView
         android:id="@+id/sublogo_1"
         android:layout_width="304dp"

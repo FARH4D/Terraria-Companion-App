@@ -1,9 +1,15 @@
 package com.example.terrariacompanion;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,7 +40,6 @@ public class RecipeFragment extends Fragment {
             return;
         }
 
-
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
             new Thread(() -> {
@@ -48,21 +53,56 @@ public class RecipeFragment extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
+        GridLayout gridLayout= requireView().findViewById(R.id.recipe_grid);
 
         new Thread(() -> {
             try {
                 while (isAdded()) {
                     ServerResponse server_data = socketManager.receiveMessage();
                     if (server_data != null) {
-                        List<Pair<String, Integer>> recipe_list = server_data.getRecipeData();
+                        List<ItemData> recipe_list = server_data.getRecipeData();
                         System.out.println(recipe_list);
                         if (recipe_list != null) {
                             if (isAdded()) {
                                 requireActivity().runOnUiThread(() -> {
                                     if (getActivity() != null) {
-                                    for (Pair<String, Integer> entry : recipe_list) {
-                                        //System.out.println(entry.getFirst() + ": " + entry.getSecond());
-                                    }
+                                        gridLayout.removeAllViews();
+
+                                        for (ItemData entry : recipe_list) {
+                                            FrameLayout itemFrame = new FrameLayout(requireContext());
+                                            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                                            params.width = 0;
+                                            params.height = 200;
+                                            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // Equal width
+                                            params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                                            params.setMargins(10, 10, 10, 10);
+                                            itemFrame.setLayoutParams(params);
+                                            itemFrame.setBackgroundResource(R.drawable.item_frame);
+
+                                            int itemID = entry.getId();
+                                            itemFrame.setTag(itemID);
+
+                                            ImageView imageView = new ImageView(requireContext());
+                                            imageView.setLayoutParams(new FrameLayout.LayoutParams(
+                                                    FrameLayout.LayoutParams.MATCH_PARENT,
+                                                    FrameLayout.LayoutParams.MATCH_PARENT
+                                            ));
+                                            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                                            if (entry.getImage() != null) {
+                                                imageView.setImageBitmap(entry.getImage());
+                                            } else {
+                                                imageView.setImageResource(R.drawable.no_item);
+                                            }
+
+                                            itemFrame.addView(imageView);
+                                            gridLayout.addView(itemFrame);
+                                            
+                                            itemFrame.setOnClickListener(v -> {
+                                                int clickedItemID = (int) v.getTag();
+                                                Toast.makeText(getActivity(), "Item ID: " + clickedItemID, Toast.LENGTH_SHORT).show();
+                                            });
+                                        }
                                 }
                                 });
                             }
@@ -72,7 +112,6 @@ public class RecipeFragment extends Fragment {
                                 Toast.makeText(requireActivity(), "Disconnected or no response.", Toast.LENGTH_SHORT).show());
                         break;
                     }
-
                 }
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->

@@ -1,5 +1,9 @@
 package com.example.terrariacompanion;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -117,8 +121,8 @@ public class SocketManager {
     }
 
 
-    private List<Pair<String, Integer>> processItemsData(String jsonData) {
-        List<Pair<String, Integer>> itemList = new ArrayList<>();
+    private List<ItemData> processItemsData(String jsonData) {
+        List<ItemData> itemList = new ArrayList<>();
 
         try {
             JSONArray jsonArray = new JSONArray(jsonData);
@@ -127,8 +131,11 @@ public class SocketManager {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String name = jsonObject.getString("name");
                 int id = jsonObject.getInt("id");
+                String base64Image = jsonObject.getString("image");
 
-                itemList.add(new Pair<>(name, id)); // Add each (name, id) separately
+                Bitmap bitmap = decodeBase64ToBitmap(base64Image);
+
+                itemList.add(new ItemData(name, id, bitmap));
             }
         }
         catch (Exception e) {
@@ -138,7 +145,9 @@ public class SocketManager {
         return itemList;
     }
 
-
-
+    public Bitmap decodeBase64ToBitmap(String base64Image) {
+        byte[] decodedBytes = android.util.Base64.decode(base64Image, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+    }
 
 }

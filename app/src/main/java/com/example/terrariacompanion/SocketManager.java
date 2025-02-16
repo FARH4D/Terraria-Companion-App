@@ -37,14 +37,13 @@ public class SocketManager {
     public void sendMessage(String message) {
         if (socket != null && !socket.isClosed() && output != null) {
             output.println(message);
-        } else {
-            System.err.println("Socket is not connected or is closed!");
         }
     }
 
     public ServerResponse receiveMessage() {
         if (socket != null && !socket.isClosed() && input != null) {
             try {
+                socket.setSoTimeout(3000);
                 String jsonData = input.readLine();
                 if (jsonData != null) {
                     System.out.println("Received: " + jsonData);
@@ -99,12 +98,8 @@ public class SocketManager {
             int currentMana = mana.getInt("current");
             int maxMana = mana.getInt("max");
 
-            // Extract other values
             JSONArray player_array = playerData.getJSONArray("player_list");
             List<String> player_names = new ArrayList<>();
-
-//            JSONArray boss_names_array = playerData.getJSONArray("boss_names");
-//            List<String> boss_names = new ArrayList<>();
 
             for (int i = 0; i < player_array.length(); i++) {
                 player_names.add(player_array.getString(i));

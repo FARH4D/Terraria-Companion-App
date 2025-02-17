@@ -26,11 +26,13 @@ public class RecipeFragment extends Fragment {
 
     private SocketManager socketManager;
     private int currentNum = 30;
+    private String category = "all";
     private GridLayout gridLayout;
     private boolean isReceivingData = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recipe_list, container, false);
+        setupCategoryClickListeners(view);
 
         gridLayout = view.findViewById(R.id.recipe_grid);
         return view;
@@ -60,33 +62,60 @@ public class RecipeFragment extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
-        getData(currentNum);
+        getData(currentNum, category);
+
+
+
 
 
         Button nextButton = requireView().findViewById(R.id.right_button);
         nextButton.setOnClickListener(v -> {
             currentNum = currentNum + 30;
-            getData(currentNum);
+            getData(currentNum, category);
 
         });
 
         Button backButton = requireView().findViewById(R.id.left_button);
         backButton.setOnClickListener(v -> {
             currentNum = currentNum - 30;
-            getData(currentNum);
+            getData(currentNum, category);
 
         });
 
     }
 
-    private void getData(int currentNum) {
+    private void setupCategoryClickListeners(View rootView) {
+        ViewGroup parentLayout = rootView.findViewById(R.id.recipe_cats);
+        if (parentLayout.getChildCount() > 0) {
+            ViewGroup linearLayout = (ViewGroup) parentLayout.getChildAt(0); // Get the LinearLayout inside FrameLayout
+            for (int i = 0; i < linearLayout.getChildCount(); i++) {
+                View view = linearLayout.getChildAt(i);
+                if (view instanceof ImageView) {
+                    view.setOnClickListener(v -> {
+                        String resourceName = getResources().getResourceEntryName(v.getId()); // e.g., "cats_melee"
+                        String category = resourceName.replace("cats_", ""); // Extracts "melee", "ranged", etc.
+
+                        currentNum = 0;
+                        getData(currentNum, category);
+                    });
+                }
+            }
+        }
+    }
+
+
+
+    private void getData(int currentNum, String category) {
         if (!isReceivingData) {
             isReceivingData = true;
             new Thread(() -> {
                 try {
-                    socketManager.sendMessage("RECIPES:" + currentNum);
+                    socketManager.sendMessage("RECIPES:" + currentNum + ":" + category);
                     final ServerResponse server_data = socketManager.receiveMessage();
                     if (server_data != null) {
+                        if (server_data.toString().startsWith("[")){
+                            System.out.println("HELLLOOOOOOOOO");
+                        }
                         List<ItemData> recipe_list = server_data.getRecipeData();
                         if (recipe_list != null && !recipe_list.isEmpty()) {
                             if (isAdded()) {
@@ -142,7 +171,14 @@ public class RecipeFragment extends Fragment {
                                     }
                                 });
                             }
+                        } else {
+                            System.out.println("oh greaaaaaaat!!!");
                         }
+                    }
+                    else {
+                        isReceivingData = false;
+                        System.out.println("oh boy");
+                        getData(currentNum, category);
                     }
                 } catch (Exception e) {
                     isReceivingData = true;

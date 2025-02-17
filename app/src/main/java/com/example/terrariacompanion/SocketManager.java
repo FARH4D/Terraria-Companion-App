@@ -41,24 +41,23 @@ public class SocketManager {
     }
 
     public ServerResponse receiveMessage() {
-        if (socket != null && !socket.isClosed() && input != null) {
             try {
-                socket.setSoTimeout(3000);
-                String jsonData = input.readLine();
-                if (jsonData != null) {
-                    System.out.println("Received: " + jsonData);
-                    if ("HOME".equals(getCurrent_page())) {
-                        return new ServerResponse(processServerData(jsonData));
-                    } else if ("RECIPES".equals(getCurrent_page())) {
-                        return new ServerResponse(processItemsData(jsonData));
+                if (socket != null && !socket.isClosed() && input != null) {
+                    socket.setSoTimeout(3000); // Set timeout for the socket
+                    String jsonData = input.readLine(); // Attempt to read data
+                    if (jsonData != null) {
+                        System.out.println("Received: " + jsonData);
+                        if ("HOME".equals(getCurrent_page()) && jsonData.trim().startsWith("{")) {
+                            return new ServerResponse(processServerData(jsonData));
+                        } else if ("RECIPES".equals(getCurrent_page()) && jsonData.trim().startsWith("[")) {
+                            return new ServerResponse(processItemsData(jsonData));
+                        }
                     }
-                } else {
-                    System.err.println("json data is null");
                 }
             } catch (IOException e) {
                 System.err.println("Error reading from server: " + e.getMessage());
+
             }
-        }
         return null;
     }
 

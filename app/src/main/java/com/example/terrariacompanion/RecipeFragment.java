@@ -86,18 +86,32 @@ public class RecipeFragment extends Fragment {
 
     private void setupCategoryClickListeners(View rootView) {
         ViewGroup parentLayout = rootView.findViewById(R.id.recipe_cats);
-        if (parentLayout.getChildCount() > 0) {
-            ViewGroup linearLayout = (ViewGroup) parentLayout.getChildAt(0); // Get the LinearLayout inside FrameLayout
-            for (int i = 0; i < linearLayout.getChildCount(); i++) {
-                View view = linearLayout.getChildAt(i);
-                if (view instanceof ImageView) {
-                    view.setOnClickListener(v -> {
-                        String resourceName = getResources().getResourceEntryName(v.getId()); // e.g., "cats_melee"
-                        String category = resourceName.replace("cats_", ""); // Extracts "melee", "ranged", etc.
 
-                        currentNum = 0;
-                        getData(currentNum, category);
-                    });
+        if (parentLayout.getChildCount() > 0) {
+            // Get the HorizontalScrollView inside FrameLayout
+            ViewGroup scrollView = (ViewGroup) parentLayout.getChildAt(0);
+
+            // Check if HorizontalScrollView contains a LinearLayout
+            if (scrollView.getChildCount() > 0) {
+                ViewGroup linearLayout = (ViewGroup) scrollView.getChildAt(0);
+
+                for (int i = 0; i < linearLayout.getChildCount(); i++) {
+                    View view = linearLayout.getChildAt(i);
+                    if (view instanceof ImageView) {
+                        view.setOnClickListener(v -> {
+                            String resourceName = getResources().getResourceEntryName(v.getId()); // e.g., "cats_melee"
+                            String tempCategory = resourceName.replace("cats_", ""); // Extracts "melee", "ranged", etc.
+
+                            if (category.equals(tempCategory) ) {
+                                category = "all";
+                                currentNum = 30;
+                            } else {
+                                category = tempCategory;
+                                currentNum = 30;
+                            }
+                            getData(currentNum, category);
+                        });
+                    }
                 }
             }
         }
@@ -118,7 +132,7 @@ public class RecipeFragment extends Fragment {
                         }
                         List<ItemData> recipe_list = server_data.getRecipeData();
                         if (recipe_list != null && !recipe_list.isEmpty()) {
-                            if (isAdded()) {
+                            if (isAdded() && getActivity() != null) {
                                 requireActivity().runOnUiThread(() -> {
                                     if (getActivity() != null) {
                                         requireActivity().runOnUiThread(() -> {
@@ -171,14 +185,16 @@ public class RecipeFragment extends Fragment {
                                     }
                                 });
                             }
+                            else {
+                                System.out.println("yup it was thaaaaaaat, not loaded");
+                            }
                         } else {
                             System.out.println("oh greaaaaaaat!!!");
+                            isReceivingData = false;
                         }
                     }
                     else {
                         isReceivingData = false;
-                        System.out.println("oh boy");
-                        getData(currentNum, category);
                     }
                 } catch (Exception e) {
                     isReceivingData = true;

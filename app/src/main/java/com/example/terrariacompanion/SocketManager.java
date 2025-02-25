@@ -64,6 +64,13 @@ public class SocketManager {
                             return receiveMessage();
                         }
                     }
+                    else if ("BEASTIARY".equals(currentPage)) {
+                        if (jsonData.trim().startsWith("[")) {
+                            return new ServerResponse(processItemsData(jsonData));
+                        } else {
+                            return receiveMessage();
+                        }
+                    }
 
                     else {
                         return null;

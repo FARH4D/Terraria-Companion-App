@@ -88,10 +88,8 @@ public class RecipeFragment extends Fragment {
         ViewGroup parentLayout = rootView.findViewById(R.id.recipe_cats);
 
         if (parentLayout.getChildCount() > 0) {
-            // Get the HorizontalScrollView inside FrameLayout
             ViewGroup scrollView = (ViewGroup) parentLayout.getChildAt(0);
 
-            // Check if HorizontalScrollView contains a LinearLayout
             if (scrollView.getChildCount() > 0) {
                 ViewGroup linearLayout = (ViewGroup) scrollView.getChildAt(0);
 
@@ -99,8 +97,8 @@ public class RecipeFragment extends Fragment {
                     View view = linearLayout.getChildAt(i);
                     if (view instanceof ImageView) {
                         view.setOnClickListener(v -> {
-                            String resourceName = getResources().getResourceEntryName(v.getId()); // e.g., "cats_melee"
-                            String tempCategory = resourceName.replace("cats_", ""); // Extracts "melee", "ranged", etc.
+                            String resourceName = getResources().getResourceEntryName(v.getId());
+                            String tempCategory = resourceName.replace("cats_", "");
 
                             if (category.equals(tempCategory) ) {
                                 category = "all";
@@ -133,7 +131,7 @@ public class RecipeFragment extends Fragment {
                                         requireActivity().runOnUiThread(() -> {
                                             gridLayout.removeAllViews();
                                             gridLayout.invalidate();
-                                            gridLayout.requestLayout();  // Ensures the layout is re-measured and redrawn
+                                            gridLayout.requestLayout();
                                         });
                                         for (ItemData entry : recipe_list) {
                                             FrameLayout itemFrame = new FrameLayout(requireContext());

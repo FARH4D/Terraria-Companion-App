@@ -1,6 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1C0340"
+    tools:context=".RecipeFragment">
+
+
+    <TextView
+        android:id="@+id/beastiary_intro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="44dp"
+        android:text="Beastiary"
+        android:textColor="#37BB07"
+        android:fontFamily="@font/andy_bold"
+        android:textSize="40sp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/beastiary_intro"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/button_frame"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingTop="50dp"
+        android:paddingBottom="25dp"
+        android:layout_marginBottom="20dp">
+
+        <GridLayout
+            android:id="@+id/beastiary_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="5"
+            android:rowCount="6"
+            android:padding="10dp"
+            android:layout_gravity="center"
+            android:orientation="horizontal"/>
+
+    </ScrollView>
+
+
+
+    <FrameLayout
+        android:id="@+id/button_frame"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@id/nav_bar">
+
+        <Button
+            android:id="@+id/left_button"
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="16dp"
+            android:textSize="30sp"
+            android:text="&lt;"
+            android:gravity="center"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:includeFontPadding="false"
+            android:backgroundTint="#185502"
+            />
+
+        <Button
+            android:id="@+id/center_button"
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:text="Item"
+            android:textSize="20sp"
+            android:backgroundTint="#185502"
+            />
+
+        <Button
+            android:id="@+id/right_button"
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="16dp"
+            android:textSize="30sp"
+            android:text="&gt;"
+            android:gravity="center"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:includeFontPadding="false"
+            android:backgroundTint="#185502"
+            />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:background="#232427"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/nav_home"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/home_navbar"
+                android:contentDescription="Home"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/nav_recipe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/recipe_navbar"
+                android:contentDescription="Recipes"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/nav_checklist"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/checklist_navbar"
+                android:contentDescription="Boss Checklist"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/nav_beastiary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/beastiary_navbar"
+                android:contentDescription="Beastiary"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

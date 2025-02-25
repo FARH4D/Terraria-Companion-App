@@ -24,6 +24,7 @@ import java.util.Locale;
 public class HomeFragment extends Fragment {
 
     private SocketManager socketManager;
+    private boolean isReceivingData = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,8 +36,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
 
         ProgressBar health_bar = view.findViewById(R.id.health_bar);
         ProgressBar mana_bar = view.findViewById(R.id.mana_bar);
@@ -61,64 +60,83 @@ public class HomeFragment extends Fragment {
                 }
             }).start();
         });
+
+        view.findViewById(R.id.nav_beastiary).setOnClickListener(v -> {
+            new Thread(() -> {
+                socketManager.setCurrent_page("BEASTIARY");
+                if (isAdded()) {
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new BeastiaryFragment()).commit();
+                }
+            }).start();
+        });
         ///////////////////////////////////////////////////////////
 
-        new Thread(() -> {
-            try {
-                while (true) {
-                    ServerResponse server_data = socketManager.receiveMessage();
-                    if (server_data != null) {
-                        DataManager1 data = server_data.getHomeData();
-                        if (data != null) {
-                            final DataManager1 finalData = data;
-                            if (isAdded()) {
-                                requireActivity().runOnUiThread(() -> {
-                                    if (getActivity() != null) {
-                                        player_names_view.removeAllViews();
-                                        health_bar.setProgress(finalData.currentHealth, true);
-                                        health_bar.setMax(finalData.maxHealth);
-                                        mana_bar.setProgress(finalData.currentMana, true);
-                                        mana_bar.setMax(finalData.maxMana);
-                                        health_status.setText(String.format(Locale.UK, "%d/%d", finalData.currentHealth, finalData.maxHealth));
-                                        mana_status.setText(String.format(Locale.UK, "%d/%d", finalData.currentMana, finalData.maxMana));
-                                        bufftitle.setText(TextUtils.join(", ", finalData.playerNames));
+        if (!isReceivingData && "HOME".equals(socketManager.getCurrent_page())) {
+            isReceivingData = true;
+            new Thread(() -> {
+                try {
+                    while (true) {
+                        ServerResponse server_data = socketManager.receiveMessage();
+                        if (server_data != null) {
+                            DataManager1 data = server_data.getHomeData();
+                            if (data != null) {
+                                final DataManager1 finalData = data;
+                                if (isAdded()) {
+                                    requireActivity().runOnUiThread(() -> {
+                                        if (getActivity() != null) {
+                                            player_names_view.removeAllViews();
+                                            health_bar.setProgress(finalData.currentHealth, true);
+                                            health_bar.setMax(finalData.maxHealth);
+                                            mana_bar.setProgress(finalData.currentMana, true);
+                                            mana_bar.setMax(finalData.maxMana);
+                                            health_status.setText(String.format(Locale.UK, "%d/%d", finalData.currentHealth, finalData.maxHealth));
+                                            mana_status.setText(String.format(Locale.UK, "%d/%d", finalData.currentMana, finalData.maxMana));
+                                            bufftitle.setText(TextUtils.join(", ", finalData.playerNames));
 
-                                        List<String> player_names = finalData.playerNames;
+                                            List<String> player_names = finalData.playerNames;
 
-                                        for (String name : player_names) {
-                                            TextView tv = new TextView(getContext());
-                                            tv.setText(name);
-                                            tv.setTextSize(20);
-                                            Typeface custom = ResourcesCompat.getFont(getContext(), R.font.andy_bold);
-                                            tv.setTypeface(custom);
+                                            for (String name : player_names) {
+                                                TextView tv = new TextView(getContext());
+                                                tv.setText(name);
+                                                tv.setTextSize(20);
+                                                Typeface custom = ResourcesCompat.getFont(getContext(), R.font.andy_bold);
+                                                tv.setTypeface(custom);
 
-                                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                                                    LinearLayout.LayoutParams.WRAP_CONTENT
-                                            );
+                                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                                );
 
-                                            params.gravity = Gravity.CENTER_HORIZONTAL;
-                                            int marginInPixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
-                                            params.setMargins(0, marginInPixels, 0, marginInPixels);
-                                            tv.setLayoutParams(params);
+                                                params.gravity = Gravity.CENTER_HORIZONTAL;
+                                                int marginInPixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+                                                params.setMargins(0, marginInPixels, 0, marginInPixels);
+                                                tv.setLayoutParams(params);
 
-                                            player_names_view.addView(tv);
+                                                player_names_view.addView(tv);
+                                                isReceivingData = false;
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
+                            }
+                        } else {
+                            if (isAdded() && getActivity() != null) {
+                                getActivity().runOnUiThread(() ->
+                                        Toast.makeText(getActivity(), "Disconnected.", Toast.LENGTH_SHORT).show()
+                                );
                             }
                         }
-                    } else {
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Disconnected.", Toast.LENGTH_SHORT).show());
-                        }
-                        break;
+                        Thread.sleep(1000);
                     }
-                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    if (isAdded() && getActivity() != null) {
+                        getActivity().runOnUiThread(() ->
+                                Toast.makeText(getActivity(), "Connection Error.", Toast.LENGTH_SHORT).show()
+                        );
+                    }
                 }
-            } catch (Exception e) {
-                getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Connection error.", Toast.LENGTH_SHORT).show());
-            }
-        }).start();
+            }).start();
+        }
     }
 }

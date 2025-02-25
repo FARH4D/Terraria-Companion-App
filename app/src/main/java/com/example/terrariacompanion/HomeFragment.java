@@ -72,11 +72,11 @@ public class HomeFragment extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
-        if (!isReceivingData && "HOME".equals(socketManager.getCurrent_page())) {
+        if (!isReceivingData) {
             isReceivingData = true;
             new Thread(() -> {
                 try {
-                    while (true) {
+                    while ("HOME".equals(socketManager.getCurrent_page())) {
                         ServerResponse server_data = socketManager.receiveMessage();
                         if (server_data != null) {
                             DataManager1 data = server_data.getHomeData();

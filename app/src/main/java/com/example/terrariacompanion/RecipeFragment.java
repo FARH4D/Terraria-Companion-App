@@ -2,6 +2,8 @@ package com.example.terrariacompanion;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,9 +63,7 @@ public class RecipeFragment extends Fragment {
             }).start();
         });
         ///////////////////////////////////////////////////////////
-
         getData(currentNum, category);
-
 
 
 
@@ -117,8 +117,6 @@ public class RecipeFragment extends Fragment {
         }
     }
 
-
-
     private void getData(int currentNum, String category) {
         if (!isReceivingData) {
             isReceivingData = true;
@@ -127,9 +125,6 @@ public class RecipeFragment extends Fragment {
                     socketManager.sendMessage("RECIPES:" + currentNum + ":" + category);
                     final ServerResponse server_data = socketManager.receiveMessage();
                     if (server_data != null) {
-                        if (server_data.toString().startsWith("[")){
-                            System.out.println("HELLLOOOOOOOOO");
-                        }
                         List<ItemData> recipe_list = server_data.getRecipeData();
                         if (recipe_list != null && !recipe_list.isEmpty()) {
                             if (isAdded() && getActivity() != null) {
@@ -185,12 +180,6 @@ public class RecipeFragment extends Fragment {
                                     }
                                 });
                             }
-                            else {
-                                System.out.println("yup it was thaaaaaaat, not loaded");
-                            }
-                        } else {
-                            System.out.println("oh greaaaaaaat!!!");
-                            isReceivingData = false;
                         }
                     }
                     else {

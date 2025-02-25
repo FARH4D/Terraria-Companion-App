@@ -21,7 +21,6 @@ public class SocketManager {
     private PrintWriter output;
     private BufferedReader input;
     private String current_page = "HOME";
-
     public boolean connect(String ipAddress, int port) {
         try {
             socket = new Socket(ipAddress, port);
@@ -41,23 +40,39 @@ public class SocketManager {
     }
 
     public ServerResponse receiveMessage() {
-            try {
-                if (socket != null && !socket.isClosed() && input != null) {
-                    socket.setSoTimeout(3000); // Set timeout for the socket
-                    String jsonData = input.readLine(); // Attempt to read data
-                    if (jsonData != null) {
-                        System.out.println("Received: " + jsonData);
-                        if ("HOME".equals(getCurrent_page()) && jsonData.trim().startsWith("{")) {
+        try {
+            if (socket != null && !socket.isClosed() && input != null) {
+                socket.setSoTimeout(3000);
+                String jsonData = input.readLine();
+
+                if (jsonData != null) {
+                    System.out.println("Received: " + jsonData);
+
+                    String currentPage = getCurrent_page();
+
+                    if ("HOME".equals(currentPage)) {
+                        if (jsonData.trim().startsWith("{")) {
                             return new ServerResponse(processServerData(jsonData));
-                        } else if ("RECIPES".equals(getCurrent_page()) && jsonData.trim().startsWith("[")) {
-                            return new ServerResponse(processItemsData(jsonData));
+                        } else {
+                            return receiveMessage();
                         }
                     }
-                }
-            } catch (IOException e) {
-                System.err.println("Error reading from server: " + e.getMessage());
+                    else if ("RECIPES".equals(currentPage)) {
+                        if (jsonData.trim().startsWith("[")) {
+                            return new ServerResponse(processItemsData(jsonData));
+                        } else {
+                            return receiveMessage();
+                        }
+                    }
 
+                    else {
+                        return null;
+                    }
+                }
             }
+        } catch (IOException e) {
+            System.err.println("Error reading from server: " + e.getMessage());
+        }
         return null;
     }
 

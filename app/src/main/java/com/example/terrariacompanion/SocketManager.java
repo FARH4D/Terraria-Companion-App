@@ -71,6 +71,13 @@ public class SocketManager {
                             return receiveMessage();
                         }
                     }
+                    else if ("BEASTIARYINFO".equals(currentPage)) {
+                        if (jsonData.trim().startsWith("[")) {
+                            return new ServerResponse(processItemsData(jsonData));
+                        } else {
+                            return receiveMessage();
+                        }
+                    }
 
                     else {
                         return null;

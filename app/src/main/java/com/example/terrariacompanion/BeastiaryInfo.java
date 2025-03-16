@@ -64,23 +64,7 @@ public class BeastiaryInfo extends Fragment {
                 socketManager.sendMessage("BEASTIARYINFO:" + _npcId + ":" + "null");
                 final ServerResponse server_data = socketManager.receiveMessage();
                 if (server_data != null) {
-                    List<ItemData> recipe_list = server_data.getRecipeData();
-                    if (recipe_list != null && !recipe_list.isEmpty()) {
-                        if (isAdded() && getActivity() != null) {
-                            requireActivity().runOnUiThread(() -> {
-                                if (getActivity() != null) {
-                                    requireActivity().runOnUiThread(() -> {
-                                    });
 
-                                }
-                            });
-                        } else {
-                            System.out.println("yup it was thaaaaaaat, not loaded");
-                        }
-                    } else {
-                        System.out.println("oh greaaaaaaat!!!");
-                    }
-                } else {
                 }
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->

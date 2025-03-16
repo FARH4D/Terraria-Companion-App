@@ -9,7 +9,7 @@
 
 
     <TextView
-        android:id="@+id/beastiary_intro"
+        android:id="@+id/beastiary_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
@@ -24,32 +24,98 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-
-
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/main_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/beastiary_intro"
+        app:layout_constraintTop_toBottomOf="@id/beastiary_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/button_frame"
         android:fillViewport="true"
         android:clipToPadding="false"
-        android:paddingTop="50dp"
         android:paddingBottom="25dp"
         android:layout_marginBottom="20dp">
 
-        <GridLayout
-            android:id="@+id/beastiary_grid"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="5"
-            android:rowCount="6"
-            android:padding="10dp"
-            android:layout_gravity="center"
-            android:orientation="horizontal"/>
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    </ScrollView>
+            <TextView
+                android:id="@+id/npc_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NPC Name"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/andy_bold"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal" />
+
+            <!-- NPC Image -->
+            <ImageView
+                android:id="@+id/npc_image"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="NPC Image" />
+
+            <!-- Stats Section -->
+            <TextView
+                android:id="@+id/stats_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stats"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:paddingTop="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/npc_hp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HP: 1000"
+                    android:paddingEnd="16dp"/>
+
+                <TextView
+                    android:id="@+id/npc_damage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Damage: 50"/>
+            </LinearLayout>
+
+            <!-- Drops Section -->
+            <TextView
+                android:id="@+id/drops_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Drops"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:paddingTop="16dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/npc_drops_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp"/>
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 
 

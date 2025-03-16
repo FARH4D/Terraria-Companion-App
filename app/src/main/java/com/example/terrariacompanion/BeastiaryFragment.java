@@ -62,10 +62,6 @@ public class BeastiaryFragment extends Fragment {
 
         getData(currentNum);
 
-
-
-
-
         Button nextButton = requireView().findViewById(R.id.right_button);
         nextButton.setOnClickListener(v -> {
             currentNum = currentNum + 30;
@@ -111,8 +107,8 @@ public class BeastiaryFragment extends Fragment {
                                             itemFrame.setLayoutParams(params);
                                             itemFrame.setBackgroundResource(R.drawable.item_frame);
 
-                                            int itemID = entry.getId();
-                                            itemFrame.setTag(itemID);
+                                            int npcID = entry.getId();
+                                            itemFrame.setTag(npcID);
 
                                             ImageView imageView = new ImageView(requireContext());
                                             int imageSize = (int) (200 * 0.5);
@@ -137,8 +133,17 @@ public class BeastiaryFragment extends Fragment {
                                             gridLayout.addView(itemFrame);
 
                                             itemFrame.setOnClickListener(v -> {
-                                                int clickedItemID = (int) v.getTag();
-                                                Toast.makeText(getActivity(), "Item ID: " + clickedItemID, Toast.LENGTH_SHORT).show();
+                                                new Thread(() -> {
+                                                    socketManager.setCurrent_page("BEASTIARYINFO");
+                                                    if (isAdded()) {
+                                                        BeastiaryInfo beastiaryInfoFragment = new BeastiaryInfo();
+                                                        Bundle args = new Bundle();
+                                                        args.putInt("npcId", npcID);
+                                                        beastiaryInfoFragment.setArguments(args);
+                                                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                                                .replace(R.id.fragment_container, beastiaryInfoFragment).commit();
+                                                    }
+                                                }).start();
                                             });
                                             isReceivingData = false;
                                         }

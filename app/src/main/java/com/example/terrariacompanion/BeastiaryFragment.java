@@ -1,5 +1,6 @@
 package com.example.terrariacompanion;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -18,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import kotlin.Pair;
@@ -139,6 +141,8 @@ public class BeastiaryFragment extends Fragment {
                                                         BeastiaryInfo beastiaryInfoFragment = new BeastiaryInfo();
                                                         Bundle args = new Bundle();
                                                         args.putInt("npcId", npcID);
+                                                        Bitmap bitmap = entry.getImage();
+                                                        args.putByteArray("bitmap", bitmapToByteArray(bitmap));
                                                         beastiaryInfoFragment.setArguments(args);
                                                         requireActivity().getSupportFragmentManager().beginTransaction()
                                                                 .replace(R.id.fragment_container, beastiaryInfoFragment).commit();
@@ -170,6 +174,10 @@ public class BeastiaryFragment extends Fragment {
             }).start();
         }
     }
+
+    public byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
 }
-
-

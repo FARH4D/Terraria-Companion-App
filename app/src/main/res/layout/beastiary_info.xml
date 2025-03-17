@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="44dp"
         android:text="Beastiary"
         android:textColor="#37BB07"
@@ -43,26 +43,27 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- NPC Image -->
+            <ImageView
+                android:id="@+id/npc_image"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="NPC Image" />
+
             <TextView
                 android:id="@+id/npc_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="NPC Name"
                 android:textColor="@color/white"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/andy_bold"
                 android:gravity="center"
                 android:layout_gravity="center_horizontal" />
-
-            <!-- NPC Image -->
-            <ImageView
-                android:id="@+id/npc_image"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:scaleType="fitCenter"
-                android:layout_gravity="center_horizontal"
-                android:contentDescription="NPC Image" />
 
             <!-- Stats Section -->
             <TextView
@@ -88,10 +89,10 @@
                     android:paddingEnd="16dp"/>
 
                 <TextView
-                    android:id="@+id/npc_damage"
+                    android:id="@+id/npc_defense"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Damage: 50"/>
+                    android:text="Defense: 50"/>
             </LinearLayout>
 
             <!-- Drops Section -->
@@ -99,10 +100,10 @@
                 android:id="@+id/drops_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="16dp"
                 android:text="Drops"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:paddingTop="16dp"/>
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/npc_drops_recycler"

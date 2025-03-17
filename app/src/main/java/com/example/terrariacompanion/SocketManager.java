@@ -8,13 +8,11 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import kotlin.Pair;
 
 public class SocketManager {
     private Socket socket;
@@ -52,7 +50,7 @@ public class SocketManager {
 
                     if ("HOME".equals(currentPage)) {
                         if (jsonData.trim().startsWith("{")) {
-                            return new ServerResponse(processServerData(jsonData));
+                            return new ServerResponse(processHomeData(jsonData));
                         } else {
                             return receiveMessage();
                         }
@@ -72,13 +70,12 @@ public class SocketManager {
                         }
                     }
                     else if ("BEASTIARYINFO".equals(currentPage)) {
-                        if (jsonData.trim().startsWith("[")) {
-                            return new ServerResponse(processItemsData(jsonData));
+                        if (jsonData.trim().startsWith("{")) {
+                            return new ServerResponse(processNpcPage(jsonData));
                         } else {
                             return receiveMessage();
                         }
                     }
-
                     else {
                         return null;
                     }
@@ -114,7 +111,7 @@ public class SocketManager {
         }
     }
 
-    private DataManager1 processServerData(String jsonData) {
+    private DataManager1 processHomeData(String jsonData) {
         try {
             JSONObject playerData = new JSONObject(jsonData);
 
@@ -138,9 +135,40 @@ public class SocketManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return null;
+    }
 
+    private DataManager2 processNpcPage(String jsonData) {
+        try {
+            JSONObject npcData = new JSONObject(jsonData);
+
+            String name = npcData.getString("name");
+            int hp = npcData.getInt("hp");
+            int defense = npcData.getInt("defense");
+
+            JSONArray dropArray = npcData.getJSONArray("drop_list");
+            List<DropItem> dropList = new ArrayList<>();
+
+            if (dropArray.length() > 0) {
+                for (int i = 0; i < dropArray.length(); i++) {
+                    JSONObject dropObject = dropArray.getJSONObject(i);
+
+                    Map<String, Object> dropItem = new HashMap<>();
+                    int id = dropObject.getInt("id");
+                    String dropName = dropObject.getString("name");
+                    String image = dropObject.getString("image");
+                    double droprate = dropObject.getDouble("droprate");
+
+                    dropList.add(new DropItem(id, dropName, image, droprate));
+                }
+            }
+
+            return new DataManager2(name, hp, defense, dropList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

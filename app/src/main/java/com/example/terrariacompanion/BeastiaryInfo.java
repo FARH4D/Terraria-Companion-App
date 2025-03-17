@@ -1,5 +1,7 @@
 package com.example.terrariacompanion;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -8,24 +10,33 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
+import java.util.Locale;
 
 public class BeastiaryInfo extends Fragment {
 
     private SocketManager socketManager;
     private int _npcId;
+    private Bitmap _bitmap;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.beastiary_info, container, false);
         if (getArguments() != null) {
             _npcId = getArguments().getInt("npcId");
+            byte[] byteArray = getArguments().getByteArray("bitmap");
+            if (byteArray != null) {
+                _bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            }
         }
         return view;
     }
@@ -41,6 +52,12 @@ public class BeastiaryInfo extends Fragment {
             return;
         }
 
+        TextView npcTitle = view.findViewById(R.id.npc_name);
+        ImageView npcImage = view.findViewById(R.id.npc_image);
+        TextView npcHp = view.findViewById(R.id.npc_hp);
+        TextView npcDefense = view.findViewById(R.id.npc_defense);
+
+
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
             new Thread(() -> {
@@ -54,16 +71,28 @@ public class BeastiaryInfo extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
-        getData();
-
-    }
-
-    private void getData() {
         new Thread(() -> {
             try {
                 socketManager.sendMessage("BEASTIARYINFO:" + _npcId + ":" + "null");
                 final ServerResponse server_data = socketManager.receiveMessage();
                 if (server_data != null) {
+                    DataManager2 data = server_data.getNpcData();
+                    if (data != null) {
+                        final DataManager2 finalData = data;
+                        if (isAdded()) {
+                            requireActivity().runOnUiThread(() -> {
+                                if (getActivity() != null) {
+
+                                    npcTitle.setText(finalData.name);
+                                    npcImage.setImageBitmap(_bitmap);
+                                    npcHp.setText(String.valueOf(finalData.health));
+                                    npcDefense.setText(String.valueOf(finalData.defense));
+
+                                }
+                            });
+
+                        }
+                    }
 
                 }
             } catch (Exception e) {
@@ -72,5 +101,6 @@ public class BeastiaryInfo extends Fragment {
                 e.printStackTrace();
             }
         }).start();
+
     }
 }

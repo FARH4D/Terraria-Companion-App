@@ -56,6 +56,8 @@ public class BeastiaryInfo extends Fragment {
         ImageView npcImage = view.findViewById(R.id.npc_image);
         TextView npcHp = view.findViewById(R.id.npc_hp);
         TextView npcDefense = view.findViewById(R.id.npc_defense);
+        TextView npcAttack = view.findViewById(R.id.npc_attack);
+        TextView npcKnockback = view.findViewById(R.id.npc_knockback);
 
 
         // NAVBAR CODE ////////////////////////////////////////////
@@ -87,7 +89,8 @@ public class BeastiaryInfo extends Fragment {
                                     npcImage.setImageBitmap(_bitmap);
                                     npcHp.setText(String.valueOf(finalData.health));
                                     npcDefense.setText(String.valueOf(finalData.defense));
-
+                                    npcAttack.setText(String.valueOf(finalData.attack));
+                                    npcKnockback.setText(finalData.knockback);
                                 }
                             });
 

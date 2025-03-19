@@ -145,6 +145,8 @@ public class SocketManager {
             String name = npcData.getString("name");
             int hp = npcData.getInt("hp");
             int defense = npcData.getInt("defense");
+            int attack = npcData.getInt("attack");
+            String knockback = npcData.getString("knockback");
 
             JSONArray dropArray = npcData.getJSONArray("drop_list");
             List<DropItem> dropList = new ArrayList<>();
@@ -163,7 +165,7 @@ public class SocketManager {
                 }
             }
 
-            return new DataManager2(name, hp, defense, dropList);
+            return new DataManager2(name, hp, defense, attack, knockback, dropList);
 
         } catch (Exception e) {
             e.printStackTrace();

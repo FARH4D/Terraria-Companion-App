@@ -154,11 +154,7 @@ public class BeastiaryFragment extends Fragment {
                                     }
                                 });
                             }
-                            else {
-                                System.out.println("yup it was thaaaaaaat, not loaded");
-                            }
                         } else {
-                            System.out.println("oh greaaaaaaat!!!");
                             isReceivingData = false;
                         }
                     }

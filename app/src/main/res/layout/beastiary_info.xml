@@ -53,9 +53,10 @@
         android:layout_height="wrap_content"
         android:text="NPC Name"
         android:textColor="@color/white"
-        android:textSize="30sp"
+        android:textSize="40sp"
         android:textStyle="bold"
         android:layout_marginTop="30dp"
+        android:layout_marginBottom="10dp"
         android:fontFamily="@font/andy_bold"
         app:layout_constraintTop_toBottomOf="@id/npc_image"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,6 +69,7 @@
         android:fillViewport="true"
         android:clipToPadding="false"
         android:paddingBottom="25dp"
+        android:layout_marginBottom="30dp"
         app:layout_constraintTop_toBottomOf="@id/npc_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -94,7 +96,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:fontFamily="@font/andy_bold"
-                    android:text="Life"
                     android:textAlignment="textEnd"
                     android:layout_marginEnd="30dp"
                     android:textColor="@color/white"
@@ -122,7 +123,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:fontFamily="@font/andy_bold"
-                    android:text="Defense"
                     android:textAlignment="textEnd"
                     android:layout_marginEnd="30dp"
                     android:textColor="@color/white"
@@ -151,7 +151,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:fontFamily="@font/andy_bold"
-                    android:text="Attack"
                     android:textAlignment="textEnd"
                     android:layout_marginEnd="30dp"
                     android:textColor="@color/white"
@@ -160,7 +159,7 @@
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
-                    android:src="@drawable/npc_health" />
+                    android:src="@drawable/npc_attack" />
             </FrameLayout>
 
             <FrameLayout
@@ -180,7 +179,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:fontFamily="@font/andy_bold"
-                    android:text="Knockback"
                     android:textAlignment="textEnd"
                     android:layout_marginEnd="30dp"
                     android:textColor="@color/white"
@@ -189,29 +187,31 @@
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
-                    android:src="@drawable/npc_defense" />
+                    android:src="@drawable/npc_knockback" />
             </FrameLayout>
 
             <TextView
                 android:id="@+id/drops_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="32dp"
                 android:text="Drops"
-                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:textSize="30sp"
                 android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/andy_bold"
                 app:layout_constraintTop_toBottomOf="@id/stats_frame3"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/npc_drops_recycler"
+            <LinearLayout
+                android:id="@+id/drops_layout"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="16dp"
-                app:layout_constraintTop_toBottomOf="@id/drops_title"
-                app:layout_constraintStart_toStartOf="parent"/>
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/drops_title" />
 
             <Button
                 android:id="@+id/back_button"
@@ -221,7 +221,7 @@
                 android:text="Back"
                 android:gravity="center"
                 android:backgroundTint="#185502"
-                app:layout_constraintTop_toBottomOf="@id/npc_drops_recycler"
+                app:layout_constraintTop_toBottomOf="@id/drops_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>

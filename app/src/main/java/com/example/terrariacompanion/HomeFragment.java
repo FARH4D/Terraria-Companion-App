@@ -65,8 +65,12 @@ public class HomeFragment extends Fragment {
             new Thread(() -> {
                 socketManager.setCurrent_page("BEASTIARY");
                 if (isAdded()) {
+                    BeastiaryFragment beastiaryFragment = new BeastiaryFragment();
+                    Bundle args = new Bundle();
+                    args.putInt("currentNum", 30);
+                    beastiaryFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new BeastiaryFragment()).commit();
+                            .replace(R.id.fragment_container, beastiaryFragment).commit();
                 }
             }).start();
         });

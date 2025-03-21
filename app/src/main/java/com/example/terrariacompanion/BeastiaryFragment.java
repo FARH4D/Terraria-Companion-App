@@ -1,6 +1,7 @@
 package com.example.terrariacompanion;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -22,18 +23,19 @@ import androidx.fragment.app.Fragment;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-import kotlin.Pair;
-
 public class BeastiaryFragment extends Fragment {
 
     private SocketManager socketManager;
-    private int currentNum = 30;
+    private int currentNum;
     private GridLayout gridLayout;
     private boolean isReceivingData = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.beastiary, container, false);
 
+        if (getArguments() != null) {
+            currentNum = getArguments().getInt("currentNum");
+        }
         gridLayout = view.findViewById(R.id.beastiary_grid);
         return view;
     }
@@ -141,6 +143,7 @@ public class BeastiaryFragment extends Fragment {
                                                         BeastiaryInfo beastiaryInfoFragment = new BeastiaryInfo();
                                                         Bundle args = new Bundle();
                                                         args.putInt("npcId", npcID);
+                                                        args.putInt("currentNum", currentNum);
                                                         Bitmap bitmap = entry.getImage();
                                                         args.putByteArray("bitmap", bitmapToByteArray(bitmap));
                                                         beastiaryInfoFragment.setArguments(args);

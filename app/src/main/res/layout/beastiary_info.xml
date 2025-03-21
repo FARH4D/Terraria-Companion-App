@@ -73,8 +73,12 @@
         app:layout_constraintTop_toBottomOf="@id/npc_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="@id/nav_bar">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -213,31 +217,25 @@
                 android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@id/drops_title" />
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
             <Button
                 android:id="@+id/back_button"
-                android:layout_width="75dp"
+                android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:textSize="30sp"
+                android:textSize="15sp"
                 android:text="Back"
+                android:textColor="@color/white"
                 android:gravity="center"
                 android:backgroundTint="#185502"
-                app:layout_constraintTop_toBottomOf="@id/drops_layout"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_marginBottom="50dp"
+                android:includeFontPadding="false"
+                android:layout_gravity="center_horizontal" />
+
+        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-    <FrameLayout
-        android:id="@+id/button_frame"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@id/nav_bar">
-
-
-
-    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/nav_bar"

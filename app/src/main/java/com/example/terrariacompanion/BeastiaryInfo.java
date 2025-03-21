@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -31,6 +32,7 @@ public class BeastiaryInfo extends Fragment {
 
     private SocketManager socketManager;
     private int _npcId;
+    private int _currentNum;
     private Bitmap _bitmap;
 
 
@@ -38,6 +40,7 @@ public class BeastiaryInfo extends Fragment {
         View view = inflater.inflate(R.layout.beastiary_info, container, false);
         if (getArguments() != null) {
             _npcId = getArguments().getInt("npcId");
+            _currentNum = getArguments().getInt("currentNum");
             byte[] byteArray = getArguments().getByteArray("bitmap");
             if (byteArray != null) {
                 _bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -172,5 +175,20 @@ public class BeastiaryInfo extends Fragment {
                 e.printStackTrace();
             }
         }).start();
+
+        view.findViewById(R.id.back_button).setOnClickListener(v -> {
+            new Thread(() -> {
+                socketManager.setCurrent_page("BEASTIARY");
+                if (isAdded()) {
+                    BeastiaryFragment beastiaryFragment = new BeastiaryFragment();
+                    Bundle args = new Bundle();
+                    args.putInt("currentNum", _currentNum);
+                    beastiaryFragment.setArguments(args);
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, beastiaryFragment).commit();
+                }
+            }).start();
+        });
+
     }
 }

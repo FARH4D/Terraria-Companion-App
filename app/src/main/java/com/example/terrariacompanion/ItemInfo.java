@@ -91,120 +91,110 @@ public class ItemInfo extends Fragment {
                                     itemImage.setImageBitmap(_bitmap);
 
                                     for (List<Map<String, Object>> entryList : finalData.recipes) {
+                                        int i = 0;
                                         FrameLayout dropFrame = new FrameLayout(requireContext());
                                         LinearLayout.LayoutParams frameParams = new LinearLayout.LayoutParams(
                                                 LinearLayout.LayoutParams.MATCH_PARENT,
-                                                200
+                                                LinearLayout.LayoutParams.WRAP_CONTENT
                                         );
                                         frameParams.setMargins(10, 10, 10, 10);
                                         dropFrame.setLayoutParams(frameParams);
                                         dropFrame.setBackgroundResource(R.drawable.home_frames);
 
-                                        LinearLayout verticalLayout = new LinearLayout(requireContext());
-                                        verticalLayout.setOrientation(LinearLayout.VERTICAL);
-                                        verticalLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                                        // Create a vertical layout for the recipe (crafting station + items)
+                                        LinearLayout recipeLayout = new LinearLayout(requireContext());
+                                        recipeLayout.setOrientation(LinearLayout.VERTICAL);
+                                        recipeLayout.setLayoutParams(new LinearLayout.LayoutParams(
                                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                                 LinearLayout.LayoutParams.WRAP_CONTENT
                                         ));
 
-                                        for (Map<String, Object> entry : entryList) {
-                                            String craftingStationImage = (String) entry.get("craftingStationImage");
+                                        boolean craftingStationAdded = false;
 
-                                            if (craftingStationImage != null && !craftingStationImage.trim().isEmpty()) {
-                                                craftingStationImage = craftingStationImage.trim();
+                                        for (Map<String, Object> entry : entryList) {
+                                            String imageType = (String) entry.get("type");
+
+                                            if (!craftingStationAdded) {
+
+                                                String craftingStationImage = (String) entry.get("image");
+
                                                 ImageView craftingStationImageView = new ImageView(requireContext());
                                                 int craftingImageSize = (int) (200 * 0.7);
                                                 LinearLayout.LayoutParams craftingImageParams = new LinearLayout.LayoutParams(craftingImageSize, craftingImageSize);
                                                 craftingImageParams.gravity = Gravity.CENTER_HORIZONTAL;
                                                 craftingStationImageView.setLayoutParams(craftingImageParams);
 
-                                                try {
-                                                    byte[] decodedBytes = android.util.Base64.decode(craftingStationImage, Base64.DEFAULT);
-                                                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-                                                    craftingStationImageView.setImageBitmap(bitmap);
-                                                } catch (IllegalArgumentException e) {
-                                                    e.printStackTrace();
+                                                if (craftingStationImage != null && !craftingStationImage.trim().isEmpty()) {
+                                                    craftingStationImage = craftingStationImage.trim();
+                                                    try {
+                                                        byte[] decodedBytes = android.util.Base64.decode(craftingStationImage, Base64.DEFAULT);
+                                                        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                                                        craftingStationImageView.setImageBitmap(bitmap);
+                                                    } catch (IllegalArgumentException e) {
+                                                        e.printStackTrace();
+                                                        craftingStationImageView.setImageResource(R.drawable.no_item);
+                                                    }
+                                                } else {
                                                     craftingStationImageView.setImageResource(R.drawable.no_item);
                                                 }
 
                                                 craftingStationImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                                                verticalLayout.addView(craftingStationImageView);
+                                                recipeLayout.addView(craftingStationImageView);
+                                                craftingStationAdded = true;
                                             } else {
-                                                ImageView craftingStationImageView = new ImageView(requireContext());
-                                                craftingStationImageView.setImageResource(R.drawable.no_item);
+                                                String itemName = (String) entry.get("name");
+                                                String current_itemImage = (String) entry.get("image");
+                                                Integer quantity = (Integer) entry.get("quantity");
 
-                                                int craftingImageSize = (int) (200 * 0.7);
-                                                LinearLayout.LayoutParams craftingImageParams = new LinearLayout.LayoutParams(craftingImageSize, craftingImageSize);
-                                                craftingImageParams.gravity = Gravity.CENTER_HORIZONTAL;
-                                                craftingStationImageView.setLayoutParams(craftingImageParams);
+                                                LinearLayout itemLayout = new LinearLayout(requireContext());
+                                                itemLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                                itemLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                                                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                                                ));
+                                                itemLayout.setGravity(Gravity.CENTER_VERTICAL);
 
-                                                craftingStationImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                                                verticalLayout.addView(craftingStationImageView);
-                                            }
-                                        }
+                                                ImageView itemImageView = new ImageView(requireContext());
+                                                int itemImageSize = (int) (150 * 0.7);
+                                                LinearLayout.LayoutParams itemImageParams = new LinearLayout.LayoutParams(itemImageSize, itemImageSize);
+                                                itemImageParams.gravity = Gravity.START;
+                                                itemImageView.setLayoutParams(itemImageParams);
 
-                                        LinearLayout itemsLayout = new LinearLayout(requireContext());
-                                        itemsLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                        itemsLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                                LinearLayout.LayoutParams.WRAP_CONTENT
-                                        ));
-                                        itemsLayout.setGravity(Gravity.CENTER_VERTICAL);
-
-                                        for (Map<String, Object> itemEntry : entryList) {
-                                            String itemName = (String) itemEntry.get("itemName");
-                                            String current_itemImage = (String) itemEntry.get("itemImage");
-                                            Integer quantity = (Integer) itemEntry.get("quantity");
-                                            Double dropRate = (Double) itemEntry.get("dropRate");
-
-                                            LinearLayout itemLayout = new LinearLayout(requireContext());
-                                            itemLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                            itemLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                                                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-                                            ));
-                                            itemLayout.setGravity(Gravity.CENTER_VERTICAL);
-
-                                            ImageView itemImageView = new ImageView(requireContext());
-                                            int itemImageSize = (int) (150 * 0.7);
-                                            LinearLayout.LayoutParams itemImageParams = new LinearLayout.LayoutParams(itemImageSize, itemImageSize);
-                                            itemImageParams.gravity = Gravity.START;
-                                            itemImageView.setLayoutParams(itemImageParams);
-
-                                            if (current_itemImage != null) {
-                                                try {
-                                                    byte[] decodedBytes = android.util.Base64.decode(current_itemImage, Base64.DEFAULT);
-                                                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-                                                    itemImageView.setImageBitmap(bitmap);
-                                                } catch (IllegalArgumentException e) {
-                                                    e.printStackTrace();
+                                                if (current_itemImage != null) {
+                                                    try {
+                                                        byte[] decodedBytes = android.util.Base64.decode(current_itemImage, Base64.DEFAULT);
+                                                        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                                                        itemImageView.setImageBitmap(bitmap);
+                                                    } catch (IllegalArgumentException e) {
+                                                        e.printStackTrace();
+                                                        itemImageView.setImageResource(R.drawable.no_item);
+                                                    }
+                                                } else {
                                                     itemImageView.setImageResource(R.drawable.no_item);
                                                 }
-                                            } else {
-                                                itemImageView.setImageResource(R.drawable.no_item);
+
+                                                itemImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                                                TextView itemQuantityView = new TextView(requireContext());
+                                                itemQuantityView.setText(String.format(Locale.getDefault(), "x%d", quantity != null ? quantity : 0));
+                                                itemQuantityView.setTextSize(18);
+                                                itemQuantityView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+
+                                                LinearLayout.LayoutParams quantityParams = new LinearLayout.LayoutParams(
+                                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                                );
+                                                quantityParams.leftMargin = 10;
+                                                itemQuantityView.setLayoutParams(quantityParams);
+
+                                                itemLayout.addView(itemImageView);
+                                                itemLayout.addView(itemQuantityView);
+
+                                                recipeLayout.addView(itemLayout);
                                             }
-
-                                            itemImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-                                            TextView itemQuantityView = new TextView(requireContext());
-                                            itemQuantityView.setText(String.format(Locale.getDefault(), "x%d", quantity != null ? quantity : 0));
-                                            itemQuantityView.setTextSize(18);
-                                            itemQuantityView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-
-                                            LinearLayout.LayoutParams quantityParams = new LinearLayout.LayoutParams(
-                                                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                                                    LinearLayout.LayoutParams.WRAP_CONTENT
-                                            );
-                                            quantityParams.leftMargin = 10;
-                                            itemQuantityView.setLayoutParams(quantityParams);
-
-                                            itemLayout.addView(itemImageView);
-                                            itemLayout.addView(itemQuantityView);
-
-                                            itemsLayout.addView(itemLayout);
                                         }
 
-                                        verticalLayout.addView(itemsLayout);
-                                        dropFrame.addView(verticalLayout);
+                                        dropFrame.addView(recipeLayout);
+
                                         drops_layout.addView(dropFrame);
 
                                         dropFrame.setOnClickListener(v -> {

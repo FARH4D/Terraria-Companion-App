@@ -1,5 +1,6 @@
 package com.example.terrariacompanion;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class ItemFragment extends Fragment {
@@ -163,10 +165,23 @@ public class ItemFragment extends Fragment {
                                             gridLayout.addView(itemFrame);
 
                                             itemFrame.setOnClickListener(v -> {
-                                                int clickedItemID = (int) v.getTag();
-                                                Toast.makeText(getActivity(), "Item ID: " + clickedItemID, Toast.LENGTH_SHORT).show();
+                                                new Thread(() -> {
+                                                    socketManager.setCurrent_page("ITEMINFO");
+                                                    if (isAdded()) {
+                                                        ItemInfo itemInfoFragment = new ItemInfo();
+                                                        Bundle args = new Bundle();
+                                                        args.putInt("itemId", itemID);
+                                                        args.putInt("currentNum", currentNum);
+                                                        Bitmap bitmap = entry.getImage();
+                                                        args.putByteArray("bitmap", bitmapToByteArray(bitmap));
+                                                        itemInfoFragment.setArguments(args);
+                                                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                                                .replace(R.id.fragment_container, itemInfoFragment).commit();
+                                                    }
+                                                }).start();
                                             });
                                             isReceivingData = false;
+
                                         }
                                     }
                                 });
@@ -184,6 +199,12 @@ public class ItemFragment extends Fragment {
                 }
             }).start();
         }
+    }
+
+    public byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
     }
 }
 

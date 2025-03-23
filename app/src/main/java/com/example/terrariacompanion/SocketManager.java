@@ -76,6 +76,13 @@ public class SocketManager {
                             return receiveMessage();
                         }
                     }
+                    else if ("ITEMINFO".equals(currentPage)) {
+                        if (jsonData.trim().startsWith("{")) {
+                            return new ServerResponse(processItemPage(jsonData));
+                        } else {
+                            return receiveMessage();
+                        }
+                    }
                     else {
                         return null;
                     }
@@ -196,6 +203,47 @@ public class SocketManager {
         }
 
         return itemList;
+    }
+
+    private DataManager3 processItemPage(String jsonData) {
+        try {
+            JSONObject itemData = new JSONObject(jsonData);
+
+            String name = itemData.getString("name");
+            JSONArray recipeArray = itemData.getJSONArray("recipes");
+            List<List<Map<String, Object>>> recipeList = new ArrayList<>();
+
+            if (recipeArray.length() > 0) {
+                for (int i = 0; i < recipeArray.length(); i++) {
+                    JSONArray recipeObject = recipeArray.getJSONArray(i);
+
+                    List<Map<String, Object>> recipe = new ArrayList<>();
+
+                    for (int j = 0; j < recipeObject.length(); j++) {
+                        JSONObject entryObject = recipeObject.getJSONObject(j);
+
+                        Map<String, Object> data = new HashMap<>();
+                        if (entryObject.has("id") && entryObject.has("name") && entryObject.has("image")) {
+                            data.put("id", entryObject.getInt("id"));
+                            data.put("name", entryObject.getString("name"));
+                            data.put("image", entryObject.getString("image"));
+
+                            if (entryObject.has("quantity")) {
+                                data.put("quantity", entryObject.getInt("quantity"));
+                            }
+                            recipe.add(data);
+                        }
+                    }
+                    recipeList.add(recipe);
+                }
+            }
+
+            return new DataManager3(name, recipeList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Bitmap decodeBase64ToBitmap(String base64Image) {

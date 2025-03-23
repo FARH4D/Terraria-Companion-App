@@ -1,19 +1,14 @@
 package com.example.terrariacompanion;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Gravity;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,9 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.List;
 
-import kotlin.Pair;
-
-public class RecipeFragment extends Fragment {
+public class ItemFragment extends Fragment {
 
     private SocketManager socketManager;
     private int currentNum = 30;
@@ -33,7 +26,7 @@ public class RecipeFragment extends Fragment {
     private boolean isReceivingData = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.recipe_list, container, false);
+        View view = inflater.inflate(R.layout.item_list, container, false);
         setupCategoryClickListeners(view);
 
         gridLayout = view.findViewById(R.id.recipe_grid);

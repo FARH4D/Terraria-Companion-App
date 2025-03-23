@@ -5,17 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1C0340"
-    tools:context=".RecipeFragment">
-
+    tools:context=".ItemFragment">
 
     <TextView
         android:id="@+id/recipe_intro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="45dp"
         android:layout_marginEnd="44dp"
-        android:text="Recipes"
+        android:text="Items"
         android:textColor="#37BB07"
         android:fontFamily="@font/andy_bold"
         android:textSize="40sp"
@@ -23,7 +22,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 
     <FrameLayout
         android:id="@+id/recipe_cats"
@@ -120,8 +118,6 @@
 
     </FrameLayout>
 
-
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -146,8 +142,6 @@
             android:orientation="horizontal"/>
 
     </ScrollView>
-
-
 
     <FrameLayout
         android:id="@+id/button_frame"
@@ -176,7 +170,6 @@
             android:layout_width="100dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
-            android:text="Item"
             android:textSize="20sp"
             android:backgroundTint="#185502"
             />

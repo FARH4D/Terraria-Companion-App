@@ -56,7 +56,7 @@ public class HomeFragment extends Fragment {
                 socketManager.setCurrent_page("RECIPES");
                 if (isAdded()) {
                     requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new RecipeFragment()).commit();
+                            .replace(R.id.fragment_container, new ItemFragment()).commit();
                 }
             }).start();
         });

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -92,129 +93,138 @@ public class ItemInfo extends Fragment {
 
                                     for (List<Map<String, Object>> entryList : finalData.recipes) {
                                         int i = 0;
-                                        FrameLayout dropFrame = new FrameLayout(requireContext());
+                                        LinearLayout dropFrame = new LinearLayout(requireContext());
+                                        dropFrame.setOrientation(LinearLayout.VERTICAL);
                                         LinearLayout.LayoutParams frameParams = new LinearLayout.LayoutParams(
                                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                                 LinearLayout.LayoutParams.WRAP_CONTENT
                                         );
                                         frameParams.setMargins(10, 10, 10, 10);
                                         dropFrame.setLayoutParams(frameParams);
-                                        dropFrame.setBackgroundResource(R.drawable.home_frames);
+                                        dropFrame.setBackgroundResource(R.drawable.grey_frames);
 
-                                        // Create a vertical layout for the recipe (crafting station + items)
-                                        LinearLayout recipeLayout = new LinearLayout(requireContext());
-                                        recipeLayout.setOrientation(LinearLayout.VERTICAL);
-                                        recipeLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                                        LinearLayout craftingStationLayout = new LinearLayout(requireContext());
+                                        craftingStationLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                        LinearLayout.LayoutParams craftingStationParams = new LinearLayout.LayoutParams(
                                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                                 LinearLayout.LayoutParams.WRAP_CONTENT
-                                        ));
+                                        );
+                                        craftingStationLayout.setLayoutParams(craftingStationParams);
+                                        craftingStationLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                                        LinearLayout ingredientLayout = new LinearLayout(requireContext());
+                                        ingredientLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                        LinearLayout.LayoutParams ingredientLayoutParams = new LinearLayout.LayoutParams(
+                                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                                LinearLayout.LayoutParams.WRAP_CONTENT
+                                        );
+                                        ingredientLayout.setLayoutParams(ingredientLayoutParams);
 
                                         for (Map<String, Object> entry : entryList) {
-                                            String imageType = (String) entry.get("type");
+                                            Integer quantity = entry.containsKey("quantity") && entry.get("quantity") instanceof Integer ? (Integer) entry.get("quantity") : 0;
 
-                                            if (entry.containsKey("quantity") && entry.get("quantity") instanceof Integer) {
-                                                Integer quantity = (Integer) entry.get("quantity");
-
-                                                if (quantity == 0) {
-                                                    String entryName = (String) entry.get("name");
-
-                                                    if (entryName.equals("None")) {
-                                                        TextView noStationTextView = new TextView(requireContext());
-                                                        noStationTextView.setText("No Crafting Station");
-                                                        noStationTextView.setGravity(Gravity.CENTER);
-                                                        noStationTextView.setTextSize(25f);
-                                                        noStationTextView.setLayoutParams(new LinearLayout.LayoutParams(
-                                                                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                                                        ));
-                                                        Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
-                                                        noStationTextView.setTypeface(typeface);
-
-                                                        noStationTextView.setPadding(0, 10, 0, 20);
-                                                        recipeLayout.addView(noStationTextView);
-                                                    } else {
-                                                        String craftingStationImage = (String) entry.get("image");
-                                                        ImageView craftingStationImageView = new ImageView(requireContext());
-                                                        int craftingImageSize = (int) (200 * 0.7);
-                                                        LinearLayout.LayoutParams craftingImageParams = new LinearLayout.LayoutParams(craftingImageSize, craftingImageSize);
-                                                        craftingImageParams.gravity = Gravity.CENTER_HORIZONTAL;
-                                                        craftingStationImageView.setLayoutParams(craftingImageParams);
-
-                                                        if (craftingStationImage != null && !craftingStationImage.trim().isEmpty()) {
-                                                            craftingStationImage = craftingStationImage.trim();
-                                                            try {
-                                                                byte[] decodedBytes = android.util.Base64.decode(craftingStationImage, Base64.DEFAULT);
-                                                                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-                                                                craftingStationImageView.setImageBitmap(bitmap);
-                                                            } catch (IllegalArgumentException e) {
-                                                                e.printStackTrace();
-                                                                craftingStationImageView.setImageResource(R.drawable.no_item);
-                                                            }
-                                                        } else {
-                                                            craftingStationImageView.setImageResource(R.drawable.no_item);
-                                                        }
-                                                        craftingStationImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                                                        recipeLayout.addView(craftingStationImageView);
-                                                    }
-                                                }
-                                                else {
-                                                    String itemName = (String) entry.get("name");
-                                                    String current_itemImage = (String) entry.get("image");
-
-                                                    LinearLayout itemLayout = new LinearLayout(requireContext());
-                                                    itemLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                                    itemLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                                                            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                                            if (quantity == 0) {
+                                                String entryName = (String) entry.get("name");
+                                                if (entryName.equals("None")) {
+                                                    TextView noStationTextView = new TextView(requireContext());
+                                                    noStationTextView.setText("No Crafting Station");
+                                                    noStationTextView.setGravity(Gravity.CENTER);
+                                                    noStationTextView.setTextSize(25f);
+                                                    noStationTextView.setLayoutParams(new LinearLayout.LayoutParams(
+                                                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
                                                     ));
-                                                    itemLayout.setGravity(Gravity.CENTER_VERTICAL);
+                                                    Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
+                                                    noStationTextView.setTypeface(typeface);
+                                                    noStationTextView.setPadding(0, 10, 0, 20);
+                                                    craftingStationLayout.addView(noStationTextView);
+                                                } else {
+                                                    String craftingStationImage = (String) entry.get("image");
+                                                    ImageView craftingStationImageView = new ImageView(requireContext());
+                                                    int craftingImageSize = (int) (300 * 0.7);
+                                                    LinearLayout.LayoutParams craftingImageParams = new LinearLayout.LayoutParams(craftingImageSize, craftingImageSize);
+                                                    craftingImageParams.gravity = Gravity.CENTER;
+                                                    craftingStationImageView.setLayoutParams(craftingImageParams);
 
-                                                    ImageView itemImageView = new ImageView(requireContext());
-                                                    int itemImageSize = (int) (150 * 0.7);
-                                                    LinearLayout.LayoutParams itemImageParams = new LinearLayout.LayoutParams(itemImageSize, itemImageSize);
-                                                    itemImageParams.gravity = Gravity.START;
-                                                    itemImageView.setLayoutParams(itemImageParams);
-
-                                                    if (current_itemImage != null) {
+                                                    if (craftingStationImage != null && !craftingStationImage.trim().isEmpty()) {
+                                                        craftingStationImage = craftingStationImage.trim();
                                                         try {
-                                                            byte[] decodedBytes = android.util.Base64.decode(current_itemImage, Base64.DEFAULT);
+                                                            byte[] decodedBytes = android.util.Base64.decode(craftingStationImage, Base64.DEFAULT);
                                                             Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-                                                            itemImageView.setImageBitmap(bitmap);
+                                                            craftingStationImageView.setImageBitmap(bitmap);
                                                         } catch (IllegalArgumentException e) {
                                                             e.printStackTrace();
-                                                            itemImageView.setImageResource(R.drawable.no_item);
+                                                            craftingStationImageView.setImageResource(R.drawable.no_item);
                                                         }
                                                     } else {
+                                                        craftingStationImageView.setImageResource(R.drawable.no_item);
+                                                    }
+                                                    craftingStationImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                                    craftingStationLayout.addView(craftingStationImageView);
+                                                }
+                                            } else {
+                                                String itemName = (String) entry.get("name");
+                                                String current_itemImage = (String) entry.get("image");
+
+                                                FrameLayout itemFrame = new FrameLayout(requireContext());
+                                                LinearLayout.LayoutParams itemParams = new LinearLayout.LayoutParams(
+                                                        150, 150
+                                                );
+                                                itemParams.setMargins(10, 10, 10, 10);
+                                                itemFrame.setLayoutParams(itemParams);
+                                                itemFrame.setBackgroundResource(R.drawable.item_frame);
+
+                                                ImageView itemImageView = new ImageView(requireContext());
+                                                int itemImageSize = (int) (150 * 0.7);
+                                                FrameLayout.LayoutParams itemImageParams = new FrameLayout.LayoutParams(
+                                                        itemImageSize, itemImageSize);
+                                                itemImageParams.gravity = Gravity.CENTER;
+                                                itemImageView.setLayoutParams(itemImageParams);
+
+                                                if (current_itemImage != null) {
+                                                    try {
+                                                        byte[] decodedBytes = android.util.Base64.decode(current_itemImage, Base64.DEFAULT);
+                                                        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                                                        itemImageView.setImageBitmap(bitmap);
+                                                    } catch (IllegalArgumentException e) {
+                                                        e.printStackTrace();
                                                         itemImageView.setImageResource(R.drawable.no_item);
                                                     }
-
-                                                    itemImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-                                                    TextView itemQuantityView = new TextView(requireContext());
-                                                    itemQuantityView.setText(String.format(Locale.getDefault(), "x%d", quantity != null ? quantity : 0));
-                                                    itemQuantityView.setTextSize(18);
-                                                    itemQuantityView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-
-                                                    LinearLayout.LayoutParams quantityParams = new LinearLayout.LayoutParams(
-                                                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                                                            LinearLayout.LayoutParams.WRAP_CONTENT
-                                                    );
-                                                    quantityParams.leftMargin = 10;
-                                                    itemQuantityView.setLayoutParams(quantityParams);
-
-                                                    itemLayout.addView(itemImageView);
-                                                    itemLayout.addView(itemQuantityView);
-
-                                                    recipeLayout.addView(itemLayout);
+                                                } else {
+                                                    itemImageView.setImageResource(R.drawable.no_item);
                                                 }
+                                                itemImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                                                TextView itemQuantityView = new TextView(requireContext());
+                                                itemQuantityView.setText(String.format(Locale.getDefault(), "%d", quantity != null ? quantity : 0));
+                                                itemQuantityView.setTextSize(23);
+                                                Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
+                                                itemQuantityView.setTypeface(typeface);
+                                                itemQuantityView.setPadding(0, 10, 10, 0);
+                                                itemQuantityView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+
+                                                FrameLayout.LayoutParams quantityParams = new FrameLayout.LayoutParams(
+                                                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                        FrameLayout.LayoutParams.WRAP_CONTENT
+                                                );
+                                                quantityParams.gravity = Gravity.BOTTOM | Gravity.END;
+                                                itemQuantityView.setLayoutParams(quantityParams);
+
+                                                itemFrame.addView(itemImageView);
+                                                itemFrame.addView(itemQuantityView);
+
+                                                ingredientLayout.addView(itemFrame);
+
+                                                itemFrame.setOnClickListener(v -> {
+                                                    Toast.makeText(requireContext(), "Recipe clicked " + itemName, Toast.LENGTH_SHORT).show();
+                                                });
                                             }
                                         }
 
-                                        dropFrame.addView(recipeLayout);
+                                        dropFrame.addView(craftingStationLayout);
+
+                                        dropFrame.addView(ingredientLayout);
 
                                         drops_layout.addView(dropFrame);
-
-                                        dropFrame.setOnClickListener(v -> {
-                                            Toast.makeText(requireContext(), "Recipe clicked", Toast.LENGTH_SHORT).show();
-                                        });
                                     }
                                 }
                             });

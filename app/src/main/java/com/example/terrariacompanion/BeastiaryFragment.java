@@ -64,31 +64,39 @@ public class BeastiaryFragment extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
-        getData(currentNum);
+        getData();
 
         Button nextButton = requireView().findViewById(R.id.right_button);
         nextButton.setOnClickListener(v -> {
-            currentNum = currentNum + 30;
-            getData(currentNum);
-
+            if (!socketManager.getAgain()) {
+                currentNum = currentNum + 30;
+                getData();
+            }
         });
 
         Button backButton = requireView().findViewById(R.id.left_button);
         backButton.setOnClickListener(v -> {
-            currentNum = currentNum - 30;
-            getData(currentNum);
-
+            if (currentNum - 30 < 30) currentNum = 30;
+            else {
+                socketManager.setAgain(false);
+                currentNum = currentNum - 30;
+                getData();
+            }
         });
-
     }
 
-    private void getData(int currentNum) {
+    private void getData() {
         if (!isReceivingData) {
             isReceivingData = true;
             new Thread(() -> {
                 try {
                     socketManager.sendMessage("BEASTIARY:" + currentNum + ":" + "null");
                     final ServerResponse server_data = socketManager.receiveMessage();
+                    if (socketManager.getStatus().equals("MAX")) {
+                        currentNum = currentNum - 30;
+                        socketManager.setAgain(true);
+                    }
+
                     if (server_data != null) {
                         List<ItemData> recipe_list = server_data.getRecipeData();
                         if (recipe_list != null && !recipe_list.isEmpty()) {
@@ -98,14 +106,14 @@ public class BeastiaryFragment extends Fragment {
                                         requireActivity().runOnUiThread(() -> {
                                             gridLayout.removeAllViews();
                                             gridLayout.invalidate();
-                                            gridLayout.requestLayout();  // Ensures the layout is re-measured and redrawn
+                                            gridLayout.requestLayout();
                                         });
                                         for (ItemData entry : recipe_list) {
                                             FrameLayout itemFrame = new FrameLayout(requireContext());
                                             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                                             params.width = 0;
                                             params.height = 200;
-                                            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // Equal width
+                                            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
                                             params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
                                             params.setMargins(10, 10, 10, 10);
                                             itemFrame.setLayoutParams(params);

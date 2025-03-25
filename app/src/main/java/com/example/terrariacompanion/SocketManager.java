@@ -18,7 +18,10 @@ public class SocketManager {
     private Socket socket;
     private PrintWriter output;
     private BufferedReader input;
+    private SocketManager socketManager;
     private String current_page = "HOME";
+    private volatile String status = "working";
+    private volatile boolean again = true;
     public boolean connect(String ipAddress, int port) {
         try {
             socket = new Socket(ipAddress, port);
@@ -39,8 +42,9 @@ public class SocketManager {
 
     public ServerResponse receiveMessage() {
         try {
+            socketManager = SocketManagerSingleton.getInstance();
             if (socket != null && !socket.isClosed() && input != null) {
-                socket.setSoTimeout(3000);
+                socket.setSoTimeout(2000);
                 String jsonData = input.readLine();
 
                 if (jsonData != null) {
@@ -57,8 +61,15 @@ public class SocketManager {
                     }
                     else if ("RECIPES".equals(currentPage)) {
                         if (jsonData.trim().startsWith("[")) {
+                            socketManager.setStatus("working");
                             return new ServerResponse(processItemsData(jsonData));
-                        } else {
+                        } else if (jsonData.trim().equals("MAX")){
+                            System.out.println("before "+ socketManager.getStatus());
+                            socketManager.setStatus("MAX");
+                            System.out.println("after " + socketManager.getStatus());
+                            return receiveMessage();
+                        }
+                        else {
                             return receiveMessage();
                         }
                     }
@@ -98,9 +109,17 @@ public class SocketManager {
         return socket != null && socket.isConnected() && !socket.isClosed() && output != null && input != null;
     }
 
-    public void setCurrent_page(String current_page){ this.current_page = current_page;}
+    public void setCurrent_page(String current_page){ this.current_page = current_page; }
 
     public String getCurrent_page(){ return this.current_page; }
+
+    public synchronized void setStatus(String new_status) { status = new_status; }
+
+    public synchronized String getStatus(){ return status; }
+
+    public synchronized void setAgain(boolean new_status) { again = new_status; }
+
+    public synchronized boolean getAgain(){ return again; }
 
     public void disconnect() {
         try {
@@ -249,6 +268,20 @@ public class SocketManager {
     public Bitmap decodeBase64ToBitmap(String base64Image) {
         byte[] decodedBytes = android.util.Base64.decode(base64Image, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+    }
+
+    public void flushSocket() {
+        try {
+            if (input != null) {
+                while (input.ready()) {
+                    String discarded = input.readLine();
+                    System.out.println("Flushed: " + discarded);
+                }
+                System.out.println("Socket flushed.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error while flushing socket: " + e.getMessage());
+        }
     }
 
 }

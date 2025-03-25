@@ -79,6 +79,7 @@ public class ItemInfo extends Fragment {
 
         new Thread(() -> {
             try {
+                Thread.sleep(1000);
                 socketManager.sendMessage("ITEMINFO:" + _itemId + ":" + "null");
                 final ServerResponse server_data = socketManager.receiveMessage();
                 if (server_data != null) {
@@ -240,14 +241,14 @@ public class ItemInfo extends Fragment {
 
         view.findViewById(R.id.back_button).setOnClickListener(v -> {
             new Thread(() -> {
-                socketManager.setCurrent_page("BEASTIARY");
+                socketManager.setCurrent_page("RECIPES");
                 if (isAdded()) {
-                    BeastiaryFragment beastiaryFragment = new BeastiaryFragment();
+                    ItemFragment itemFragment = new ItemFragment();
                     Bundle args = new Bundle();
                     args.putInt("currentNum", _currentNum);
-                    beastiaryFragment.setArguments(args);
+                    itemFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, beastiaryFragment).commit();
+                            .replace(R.id.fragment_container, itemFragment).commit();
                 }
             }).start();
         });

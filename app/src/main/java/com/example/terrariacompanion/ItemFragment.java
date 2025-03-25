@@ -22,7 +22,7 @@ import java.util.List;
 public class ItemFragment extends Fragment {
 
     private SocketManager socketManager;
-    private int currentNum = 30;
+    private int currentNum;
     private String category = "all";
     private GridLayout gridLayout;
     private boolean isReceivingData = false;
@@ -31,6 +31,9 @@ public class ItemFragment extends Fragment {
         View view = inflater.inflate(R.layout.item_list, container, false);
         setupCategoryClickListeners(view);
 
+        if (getArguments() != null) {
+            currentNum = getArguments().getInt("currentNum");
+        }
         gridLayout = view.findViewById(R.id.recipe_grid);
         return view;
     }
@@ -58,25 +61,27 @@ public class ItemFragment extends Fragment {
             }).start();
         });
         ///////////////////////////////////////////////////////////
-        getData(currentNum, category);
+        socketManager.setAgain(false);
 
-
-
+        getData(category);
 
         Button nextButton = requireView().findViewById(R.id.right_button);
         nextButton.setOnClickListener(v -> {
-            currentNum = currentNum + 30;
-            getData(currentNum, category);
-
+            if (!socketManager.getAgain()) {
+                currentNum = currentNum + 30;
+                getData(category);
+            }
         });
 
         Button backButton = requireView().findViewById(R.id.left_button);
         backButton.setOnClickListener(v -> {
-            currentNum = currentNum - 30;
-            getData(currentNum, category);
-
+            if (currentNum - 30 < 30) currentNum = 30;
+            else {
+                socketManager.setAgain(false);
+                currentNum = currentNum - 30;
+                getData(category);
+            }
         });
-
     }
 
     private void setupCategoryClickListeners(View rootView) {
@@ -102,7 +107,7 @@ public class ItemFragment extends Fragment {
                                 category = tempCategory;
                                 currentNum = 30;
                             }
-                            getData(currentNum, category);
+                            getData(category);
                         });
                     }
                 }
@@ -110,13 +115,18 @@ public class ItemFragment extends Fragment {
         }
     }
 
-    private void getData(int currentNum, String category) {
+    private void getData(String category) {
         if (!isReceivingData) {
             isReceivingData = true;
             new Thread(() -> {
                 try {
                     socketManager.sendMessage("RECIPES:" + currentNum + ":" + category);
                     final ServerResponse server_data = socketManager.receiveMessage();
+                    if (socketManager.getStatus().equals("MAX")) {
+                        currentNum = currentNum - 30;
+                        socketManager.setAgain(true);
+                    }
+
                     if (server_data != null) {
                         List<ItemData> recipe_list = server_data.getRecipeData();
                         if (recipe_list != null && !recipe_list.isEmpty()) {
@@ -133,7 +143,7 @@ public class ItemFragment extends Fragment {
                                             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                                             params.width = 0;
                                             params.height = 200;
-                                            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // Equal width
+                                            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
                                             params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
                                             params.setMargins(10, 10, 10, 10);
                                             itemFrame.setLayoutParams(params);

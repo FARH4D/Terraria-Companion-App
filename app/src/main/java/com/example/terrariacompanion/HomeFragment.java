@@ -41,7 +41,6 @@ public class HomeFragment extends Fragment {
         ProgressBar mana_bar = view.findViewById(R.id.mana_bar);
         TextView health_status = view.findViewById(R.id.health_status);
         TextView mana_status = view.findViewById(R.id.mana_status);
-        TextView bufftitle = view.findViewById(R.id.buffTitle);
         LinearLayout player_names_view = view.findViewById(R.id.player_names_view);
 
         socketManager = SocketManagerSingleton.getInstance();
@@ -53,17 +52,37 @@ public class HomeFragment extends Fragment {
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_recipe).setOnClickListener(v -> {
             new Thread(() -> {
+                isReceivingData = false;
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 socketManager.setCurrent_page("RECIPES");
+                socketManager.flushSocket();
                 if (isAdded()) {
+                    ItemFragment itemFragment = new ItemFragment();
+                    Bundle args = new Bundle();
+                    args.putInt("currentNum", 30);
+                    itemFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new ItemFragment()).commit();
+                            .replace(R.id.fragment_container, itemFragment).commit();
                 }
             }).start();
         });
 
         view.findViewById(R.id.nav_beastiary).setOnClickListener(v -> {
             new Thread(() -> {
+                isReceivingData = false;
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 socketManager.setCurrent_page("BEASTIARY");
+                socketManager.flushSocket();
                 if (isAdded()) {
                     BeastiaryFragment beastiaryFragment = new BeastiaryFragment();
                     Bundle args = new Bundle();
@@ -76,71 +95,63 @@ public class HomeFragment extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
-        if (!isReceivingData) {
-            isReceivingData = true;
-            new Thread(() -> {
-                try {
-                    while ("HOME".equals(socketManager.getCurrent_page())) {
-                        ServerResponse server_data = socketManager.receiveMessage();
-                        if (server_data != null) {
-                            DataManager1 data = server_data.getHomeData();
-                            if (data != null) {
-                                final DataManager1 finalData = data;
-                                if (isAdded()) {
-                                    requireActivity().runOnUiThread(() -> {
-                                        if (getActivity() != null) {
-                                            player_names_view.removeAllViews();
-                                            health_bar.setProgress(finalData.currentHealth, true);
-                                            health_bar.setMax(finalData.maxHealth);
-                                            mana_bar.setProgress(finalData.currentMana, true);
-                                            mana_bar.setMax(finalData.maxMana);
-                                            health_status.setText(String.format(Locale.UK, "%d/%d", finalData.currentHealth, finalData.maxHealth));
-                                            mana_status.setText(String.format(Locale.UK, "%d/%d", finalData.currentMana, finalData.maxMana));
-                                            bufftitle.setText(TextUtils.join(", ", finalData.playerNames));
+        isReceivingData = true;
+        new Thread(() -> {
+            try {
+                while (isReceivingData && "HOME".equals(socketManager.getCurrent_page())) {
+                    ServerResponse server_data = socketManager.receiveMessage();
+                    if (server_data != null && isAdded()) {
+                        DataManager1 data = server_data.getHomeData();
+                        if (data != null) {
+                            requireActivity().runOnUiThread(() -> {
+                                if (!isAdded() || getActivity() == null || getActivity().isDestroyed()) {
+                                    health_bar.setProgress(data.currentHealth, true);
+                                    health_bar.setMax(data.maxHealth);
+                                    mana_bar.setProgress(data.currentMana, true);
+                                    mana_bar.setMax(data.maxMana);
+                                    health_status.setText(String.format(Locale.UK, "%d/%d", data.currentHealth, data.maxHealth));
+                                    mana_status.setText(String.format(Locale.UK, "%d/%d", data.currentMana, data.maxMana));
 
-                                            List<String> player_names = finalData.playerNames;
+                                    player_names_view.removeAllViews();
+                                    List<String> player_names = data.playerNames;
+                                    for (String name : player_names) {
+                                        TextView tv = new TextView(getContext());
+                                        tv.setText(name);
+                                        tv.setTextSize(20);
+                                        Typeface custom = ResourcesCompat.getFont(getContext(), R.font.andy_bold);
+                                        tv.setTypeface(custom);
 
-                                            for (String name : player_names) {
-                                                TextView tv = new TextView(getContext());
-                                                tv.setText(name);
-                                                tv.setTextSize(20);
-                                                Typeface custom = ResourcesCompat.getFont(getContext(), R.font.andy_bold);
-                                                tv.setTypeface(custom);
+                                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                                LinearLayout.LayoutParams.WRAP_CONTENT
+                                        );
 
-                                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                                                        LinearLayout.LayoutParams.WRAP_CONTENT
-                                                );
+                                        params.gravity = Gravity.CENTER_HORIZONTAL;
+                                        int marginInPixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+                                        params.setMargins(0, marginInPixels, 0, marginInPixels);
+                                        tv.setLayoutParams(params);
 
-                                                params.gravity = Gravity.CENTER_HORIZONTAL;
-                                                int marginInPixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
-                                                params.setMargins(0, marginInPixels, 0, marginInPixels);
-                                                tv.setLayoutParams(params);
-
-                                                player_names_view.addView(tv);
-                                                isReceivingData = false;
-                                            }
-                                        }
-                                    });
+                                        player_names_view.addView(tv);
+                                    }
                                 }
-                            }
-                        } else {
-                            if (isAdded() && getActivity() != null) {
-                                getActivity().runOnUiThread(() ->
-                                        Toast.makeText(getActivity(), "Disconnected.", Toast.LENGTH_SHORT).show()
-                                );
-                            }
+                            });
                         }
-                        Thread.sleep(1000);
+                    } else {
+                        if (isAdded() && getActivity() != null) {
+                            getActivity().runOnUiThread(() ->
+                                    Toast.makeText(getActivity(), "Disconnected.", Toast.LENGTH_SHORT).show()
+                            );
+                        }
                     }
-                } catch (Exception e) {
-                    if (isAdded() && getActivity() != null) {
-                        getActivity().runOnUiThread(() ->
-                                Toast.makeText(getActivity(), "Connection Error.", Toast.LENGTH_SHORT).show()
-                        );
-                    }
+                    Thread.sleep(1000);
                 }
-            }).start();
-        }
+            } catch (Exception e) {
+                if (isAdded() && getActivity() != null) {
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(getActivity(), "Connection Error.", Toast.LENGTH_SHORT).show()
+                    );
+                }
+            }
+        }).start();
     }
 }

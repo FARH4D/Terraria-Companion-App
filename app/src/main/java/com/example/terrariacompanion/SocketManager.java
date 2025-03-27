@@ -137,7 +137,7 @@ public class SocketManager {
         }
     }
 
-    private DataManager1 processHomeData(String jsonData) {
+    private HomeDataManager processHomeData(String jsonData) {
         try {
             JSONObject playerData = new JSONObject(jsonData);
 
@@ -156,7 +156,7 @@ public class SocketManager {
                 player_names.add(player_array.getString(i));
             }
 
-            return new DataManager1(currentHealth, maxHealth, currentMana, maxMana, player_names);
+            return new HomeDataManager(currentHealth, maxHealth, currentMana, maxMana, player_names);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,7 +164,7 @@ public class SocketManager {
         return null;
     }
 
-    private DataManager2 processNpcPage(String jsonData) {
+    private NpcDataManager processNpcPage(String jsonData) {
         try {
             JSONObject npcData = new JSONObject(jsonData);
 
@@ -191,7 +191,7 @@ public class SocketManager {
                 }
             }
 
-            return new DataManager2(name, hp, defense, attack, knockback, dropList);
+            return new NpcDataManager(name, hp, defense, attack, knockback, dropList);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -224,7 +224,7 @@ public class SocketManager {
         return itemList;
     }
 
-    private DataManager3 processItemPage(String jsonData) {
+    private ItemDataManager processItemPage(String jsonData) {
         try {
             JSONObject itemData = new JSONObject(jsonData);
 
@@ -257,7 +257,7 @@ public class SocketManager {
                 }
             }
 
-            return new DataManager3(name, recipeList);
+            return new ItemDataManager(name, recipeList);
 
         } catch (Exception e) {
             e.printStackTrace();

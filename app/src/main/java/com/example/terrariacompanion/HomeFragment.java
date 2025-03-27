@@ -2,7 +2,6 @@ package com.example.terrariacompanion;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -93,6 +92,24 @@ public class HomeFragment extends Fragment {
                 }
             }).start();
         });
+
+        view.findViewById(R.id.nav_checklist).setOnClickListener(v -> {
+            new Thread(() -> {
+                isReceivingData = false;
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                socketManager.setCurrent_page("CHECKLIST");
+                socketManager.flushSocket();
+                if (isAdded()) {
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new BossChecklist()).commit();
+                }
+            }).start();
+        });
         ///////////////////////////////////////////////////////////
 
         isReceivingData = true;
@@ -101,10 +118,10 @@ public class HomeFragment extends Fragment {
                 while (isReceivingData && "HOME".equals(socketManager.getCurrent_page())) {
                     ServerResponse server_data = socketManager.receiveMessage();
                     if (server_data != null && isAdded()) {
-                        DataManager1 data = server_data.getHomeData();
+                        HomeDataManager data = server_data.getHomeData();
                         if (data != null) {
                             requireActivity().runOnUiThread(() -> {
-                                if (!isAdded() || getActivity() == null || getActivity().isDestroyed()) {
+                                if (isAdded() && getActivity() != null) {
                                     health_bar.setProgress(data.currentHealth, true);
                                     health_bar.setMax(data.maxHealth);
                                     mana_bar.setProgress(data.currentMana, true);

@@ -9,10 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.GridLayout;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -83,9 +80,9 @@ public class ItemInfo extends Fragment {
                 socketManager.sendMessage("ITEMINFO:" + _itemId + ":" + "null");
                 final ServerResponse server_data = socketManager.receiveMessage();
                 if (server_data != null) {
-                    DataManager3 data = server_data.getItemData();
+                    ItemDataManager data = server_data.getItemData();
                     if (data != null) {
-                        final DataManager3 finalData = data;
+                        final ItemDataManager finalData = data;
                         if (isAdded()) {
                             requireActivity().runOnUiThread(() -> {
                                 if (getActivity() != null) {

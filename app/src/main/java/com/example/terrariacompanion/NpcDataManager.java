@@ -2,7 +2,7 @@ package com.example.terrariacompanion;
 
 import java.util.List;
 
-public class DataManager2 {
+public class NpcDataManager {
 
     public String name;
     public int health;
@@ -11,7 +11,7 @@ public class DataManager2 {
     public String knockback;
     public List<DropItem> drop_list;
 
-    public DataManager2(String name, int health, int defense, int attack, String knockback, List<DropItem> drop_list) {
+    public NpcDataManager(String name, int health, int defense, int attack, String knockback, List<DropItem> drop_list) {
         this.name = name;
         this.health = health;
         this.defense = defense;

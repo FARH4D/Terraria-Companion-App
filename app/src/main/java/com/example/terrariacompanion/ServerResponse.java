@@ -1,35 +1,32 @@
 package com.example.terrariacompanion;
 
-import java.util.HashMap;
 import java.util.List;
 
-import kotlin.Pair;
-
 public class ServerResponse {
-    private DataManager1 homeData;
-    private DataManager2 npcData;
-    private DataManager3 itemData;
+    private HomeDataManager homeData;
+    private NpcDataManager npcData;
+    private ItemDataManager itemData;
     private List<ItemData> recipeData;
 
-    public ServerResponse(DataManager1 homeData) {
+    public ServerResponse(HomeDataManager homeData) {
         this.homeData = homeData;
     }
 
-    public ServerResponse(DataManager2 npcData) {
+    public ServerResponse(NpcDataManager npcData) {
         this.npcData = npcData;
     }
 
-    public ServerResponse(DataManager3 itemData) {
+    public ServerResponse(ItemDataManager itemData) {
         this.itemData = itemData;
     }
 
     public ServerResponse(List<ItemData> recipeData) { this.recipeData = recipeData;}
 
-    public DataManager1 getHomeData() { return homeData; }
+    public HomeDataManager getHomeData() { return homeData; }
 
-    public DataManager2 getNpcData() { return npcData; }
+    public NpcDataManager getNpcData() { return npcData; }
 
-    public DataManager3 getItemData() { return itemData; }
+    public ItemDataManager getItemData() { return itemData; }
 
     public List<ItemData> getRecipeData() { return recipeData; }
 

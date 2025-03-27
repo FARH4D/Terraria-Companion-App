@@ -9,9 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,9 +21,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import org.w3c.dom.Text;
-
-import java.util.List;
 import java.util.Locale;
 
 public class BeastiaryInfo extends Fragment {
@@ -86,9 +81,9 @@ public class BeastiaryInfo extends Fragment {
                 socketManager.sendMessage("BEASTIARYINFO:" + _npcId + ":" + "null");
                 final ServerResponse server_data = socketManager.receiveMessage();
                 if (server_data != null) {
-                    DataManager2 data = server_data.getNpcData();
+                    NpcDataManager data = server_data.getNpcData();
                     if (data != null) {
-                        final DataManager2 finalData = data;
+                        final NpcDataManager finalData = data;
                         if (isAdded()) {
                             requireActivity().runOnUiThread(() -> {
                                 if (getActivity() != null) {

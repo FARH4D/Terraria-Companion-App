@@ -95,8 +95,75 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
-            <!-- Add your Hardmode Boss items here -->
         </LinearLayout>
     </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:background="#232427"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/nav_home"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/home_navbar"
+                android:contentDescription="Home"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/nav_recipe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/recipe_navbar"
+                android:contentDescription="Recipes"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/nav_checklist"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/checklist_navbar"
+                android:contentDescription="Boss Checklist"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/nav_beastiary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/beastiary_navbar"
+                android:contentDescription="Beastiary"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

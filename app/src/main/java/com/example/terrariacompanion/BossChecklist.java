@@ -33,10 +33,6 @@ public class BossChecklist extends Fragment {
             return;
         }
 
-        TextView itemTitle = view.findViewById(R.id.item_name);
-        ImageView itemImage = view.findViewById(R.id.item_image);
-        LinearLayout drops_layout = view.findViewById(R.id.drops_layout);
-
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
             new Thread(() -> {
@@ -52,22 +48,22 @@ public class BossChecklist extends Fragment {
 
         new Thread(() -> {
             try {
-                Thread.sleep(1000);
-                socketManager.sendMessage("CHECKLIST:null:null");
+                socketManager.sendMessage("CHECKLIST");
                 final ServerResponse server_data = socketManager.receiveMessage();
-                if (server_data != null) {
-                    ItemDataManager data = server_data.getItemData();
-                    if (data != null) {
-                        final ItemDataManager finalData = data;
-                        if (isAdded()) {
-                            requireActivity().runOnUiThread(() -> {
-                                if (getActivity() != null) {
-
-                                }
-                            });
-                        }
-                    }
-                }
+//                if (server_data != null) {
+//                    List<String> boss_checklist = server_data.getChecklistData();
+//
+//
+//                    if (data != null) {
+//                        if (isAdded()) {
+//                            requireActivity().runOnUiThread(() -> {
+//                                if (getActivity() != null) {
+//
+//                                }
+//                            });
+//                        }
+//                    }
+//                }
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->
                         Toast.makeText(requireActivity(), "Connection error.", Toast.LENGTH_SHORT).show());

@@ -1,6 +1,11 @@
 package com.example.terrariacompanion;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +16,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+
+import java.util.List;
 
 public class BossChecklist extends Fragment {
 
@@ -46,24 +54,50 @@ public class BossChecklist extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
+        LinearLayout pre_hardmode_container = view.findViewById(R.id.pre_hardmode_container);
+        LinearLayout hardmode_container = view.findViewById(R.id.hardmode_container);
+
+
+
         new Thread(() -> {
             try {
+                Thread.sleep(1000);
                 socketManager.sendMessage("CHECKLIST");
                 final ServerResponse server_data = socketManager.receiveMessage();
-//                if (server_data != null) {
-//                    List<String> boss_checklist = server_data.getChecklistData();
-//
-//
-//                    if (data != null) {
-//                        if (isAdded()) {
-//                            requireActivity().runOnUiThread(() -> {
-//                                if (getActivity() != null) {
-//
-//                                }
-//                            });
-//                        }
-//                    }
-//                }
+                if (server_data != null) {
+                    List<Pair<String, Boolean>> boss_checklist = server_data.getChecklistData();
+                    if (boss_checklist != null) {
+                        if (isAdded()) {
+                            requireActivity().runOnUiThread(() -> {
+                                if (getActivity() != null) {
+                                    boolean wallOfFlesh = false;
+                                    for (Pair<String, Boolean> boss : boss_checklist) {
+                                        String bossName = boss.first;
+                                        boolean defeated = boss.second;
+
+                                        TextView bossView = new TextView(getContext());
+                                        bossView.setText(bossName + (defeated ? " ✔" : " ✖"));
+                                        bossView.setTextColor(defeated ? Color.GREEN : Color.RED);
+                                        bossView.setTextSize(21);
+                                        bossView.setPadding(8, 8, 8, 8);
+                                        bossView.setGravity(Gravity.CENTER);
+                                        Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
+                                        bossView.setTypeface(typeface);
+
+                                        if (bossName.equalsIgnoreCase("Wall of Flesh")) {
+                                            pre_hardmode_container.addView(bossView);
+                                            wallOfFlesh = true;
+                                        } else if (!wallOfFlesh) {
+                                            pre_hardmode_container.addView(bossView);
+                                        } else {
+                                            hardmode_container.addView(bossView);
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->
                         Toast.makeText(requireActivity(), "Connection error.", Toast.LENGTH_SHORT).show());

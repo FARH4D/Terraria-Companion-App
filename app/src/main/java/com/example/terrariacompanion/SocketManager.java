@@ -3,6 +3,7 @@ package com.example.terrariacompanion;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+import android.util.Pair;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class SocketManager {
@@ -61,12 +63,9 @@ public class SocketManager {
                     }
                     else if ("RECIPES".equals(currentPage)) {
                         if (jsonData.trim().startsWith("[")) {
-                            socketManager.setStatus("working");
-                            return new ServerResponse(processItemsData(jsonData));
+                            return ServerResponse.fromRecipes(processItemsData(jsonData));
                         } else if (jsonData.trim().equals("MAX")){
-                            System.out.println("before "+ socketManager.getStatus());
                             socketManager.setStatus("MAX");
-                            System.out.println("after " + socketManager.getStatus());
                             return receiveMessage();
                         }
                         else {
@@ -75,7 +74,7 @@ public class SocketManager {
                     }
                     else if ("BEASTIARY".equals(currentPage)) {
                         if (jsonData.trim().startsWith("[")) {
-                            return new ServerResponse(processItemsData(jsonData));
+                            return ServerResponse.fromRecipes(processItemsData(jsonData));
                         } else {
                             return receiveMessage();
                         }
@@ -90,6 +89,13 @@ public class SocketManager {
                     else if ("ITEMINFO".equals(currentPage)) {
                         if (jsonData.trim().startsWith("{")) {
                             return new ServerResponse(processItemPage(jsonData));
+                        } else {
+                            return receiveMessage();
+                        }
+                    }
+                    else if ("CHECKLIST".equals(currentPage)) {
+                        if (jsonData.trim().startsWith("[")) {
+                            return ServerResponse.fromChecklist(processChecklist(jsonData));
                         } else {
                             return receiveMessage();
                         }
@@ -265,6 +271,25 @@ public class SocketManager {
         }
     }
 
+    private List<Pair<String, Boolean>> processChecklist(String jsonData) {
+        List<Pair<String, Boolean>> bossList = new ArrayList<>();
+
+        try {
+            JSONArray jsonArray = new JSONArray(jsonData);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = jsonArray.getJSONObject(i);
+                String name = obj.getString("name");
+                boolean downed = obj.getBoolean("downed");
+                bossList.add(new Pair<>(name, downed));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return bossList;
+    }
+
     public Bitmap decodeBase64ToBitmap(String base64Image) {
         byte[] decodedBytes = android.util.Base64.decode(base64Image, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
@@ -277,11 +302,9 @@ public class SocketManager {
                     String discarded = input.readLine();
                     System.out.println("Flushed: " + discarded);
                 }
-                System.out.println("Socket flushed.");
             }
         } catch (Exception e) {
             System.out.println("Error while flushing socket: " + e.getMessage());
         }
     }
-
 }

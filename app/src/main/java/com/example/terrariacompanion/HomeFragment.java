@@ -24,6 +24,11 @@ public class HomeFragment extends Fragment {
 
     private SocketManager socketManager;
     private boolean isReceivingData = false;
+    private ProgressBar health_bar;
+    private ProgressBar mana_bar;
+    private TextView health_status;
+    private TextView mana_status;
+    private LinearLayout player_names_view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,11 +41,11 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ProgressBar health_bar = view.findViewById(R.id.health_bar);
-        ProgressBar mana_bar = view.findViewById(R.id.mana_bar);
-        TextView health_status = view.findViewById(R.id.health_status);
-        TextView mana_status = view.findViewById(R.id.mana_status);
-        LinearLayout player_names_view = view.findViewById(R.id.player_names_view);
+        health_bar = view.findViewById(R.id.health_bar);
+        mana_bar = view.findViewById(R.id.mana_bar);
+        health_status = view.findViewById(R.id.health_status);
+        mana_status = view.findViewById(R.id.mana_status);
+        player_names_view = view.findViewById(R.id.player_names_view);
 
         socketManager = SocketManagerSingleton.getInstance();
         if (socketManager == null || !socketManager.isConnected()) {
@@ -102,17 +107,29 @@ public class HomeFragment extends Fragment {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                socketManager.setCurrent_page("CHECKLIST");
                 socketManager.flushSocket();
-                if (isAdded()) {
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new BossChecklist()).commit();
+                socketManager.sendMessage("CHECKLIST");
+                final ServerResponse server_data = socketManager.receiveMessage();
+                if (server_data.getChecklistError().equals("No BossChecklist")){
+                    socketManager.sendMessage("HOME");
+                    isReceivingData = true;
+                } else {
+                    socketManager.setCurrent_page("CHECKLIST");
+                    if (isAdded()) {
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, new BossChecklist()).commit();
+                    }
                 }
             }).start();
         });
         ///////////////////////////////////////////////////////////
 
         isReceivingData = true;
+        getData();
+
+    }
+
+    public void getData() {
         new Thread(() -> {
             try {
                 while (isReceivingData && "HOME".equals(socketManager.getCurrent_page())) {
@@ -171,4 +188,5 @@ public class HomeFragment extends Fragment {
             }
         }).start();
     }
+
 }

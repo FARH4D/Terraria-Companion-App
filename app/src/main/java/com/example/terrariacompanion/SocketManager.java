@@ -51,8 +51,13 @@ public class SocketManager {
 
                 if (jsonData != null) {
                     System.out.println("Received: " + jsonData);
+                    String cleanedData = jsonData.replaceAll("\"", "").trim();
 
                     String currentPage = getCurrent_page();
+
+                    if (cleanedData.trim().equals("No BossChecklist")) {
+                        return new ServerResponse(cleanedData.trim());
+                    }
 
                     if ("HOME".equals(currentPage)) {
                         if (jsonData.trim().startsWith("{")) {

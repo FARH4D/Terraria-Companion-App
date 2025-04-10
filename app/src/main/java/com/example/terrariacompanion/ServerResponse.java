@@ -2,7 +2,6 @@ package com.example.terrariacompanion;
 
 import android.util.Pair;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class ServerResponse {
@@ -11,6 +10,7 @@ public class ServerResponse {
     private ItemDataManager itemData;
     private List<ItemData> recipeData;
     private List<Pair<String, Boolean>> checklistData;
+    private String checklistError;
 
     private ServerResponse() {}
     public ServerResponse(HomeDataManager homeData) {
@@ -37,6 +37,9 @@ public class ServerResponse {
         return response;
     }
 
+    public ServerResponse(String errorMessage) {
+        this.checklistError = errorMessage;}
+
     public HomeDataManager getHomeData() { return homeData; }
 
     public NpcDataManager getNpcData() { return npcData; }
@@ -46,5 +49,7 @@ public class ServerResponse {
     public List<ItemData> getRecipeData() { return recipeData; }
 
     public List<Pair<String, Boolean>> getChecklistData() { return checklistData; }
+
+    public String getChecklistError() { return checklistError; }
 
 }

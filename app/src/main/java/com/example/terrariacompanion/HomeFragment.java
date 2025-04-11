@@ -108,17 +108,17 @@ public class HomeFragment extends Fragment {
                     e.printStackTrace();
                 }
                 socketManager.flushSocket();
+                socketManager.setCurrent_page("CHECKLIST");
                 socketManager.sendMessage("CHECKLIST");
                 final ServerResponse server_data = socketManager.receiveMessage();
-                if (server_data.getChecklistError().equals("No BossChecklist")){
+                if (server_data != null && "No BossChecklist".equals(server_data.getChecklistError())) {
+                    socketManager.setCurrent_page("HOME");
                     socketManager.sendMessage("HOME");
                     isReceivingData = true;
+                    getData();
                 } else {
-                    socketManager.setCurrent_page("CHECKLIST");
-                    if (isAdded()) {
-                        requireActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, new BossChecklist()).commit();
-                    }
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new BossChecklist()).commit();
                 }
             }).start();
         });

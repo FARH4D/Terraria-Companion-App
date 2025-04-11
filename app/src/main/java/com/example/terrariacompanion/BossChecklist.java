@@ -61,7 +61,10 @@ public class BossChecklist extends Fragment {
 
         new Thread(() -> {
             try {
+                System.out.println("hey");
+                socketManager.sendMessage("CHECKLIST");
                 Thread.sleep(1000);
+                System.out.println("hey 2");
                 socketManager.sendMessage("CHECKLIST");
                 final ServerResponse server_data = socketManager.receiveMessage();
                 if (server_data != null) {

@@ -10,7 +10,7 @@ public class ServerResponse {
     private ItemDataManager itemData;
     private List<ItemData> recipeData;
     private List<Pair<String, Boolean>> checklistData;
-    private String checklistError;
+    private String checklistError = "";
 
     private ServerResponse() {}
     public ServerResponse(HomeDataManager homeData) {

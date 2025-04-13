@@ -24,6 +24,7 @@ import java.util.List;
 public class BossChecklist extends Fragment {
 
     private SocketManager socketManager;
+    private boolean changePage = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.boss_checklist, container, false);
@@ -43,28 +44,31 @@ public class BossChecklist extends Fragment {
 
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
-            new Thread(() -> {
-                socketManager.setCurrent_page("HOME");
-                socketManager.sendMessage("HOME");
-                if (isAdded()) {
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new HomeFragment()).commit();
+            if (changePage) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-            }).start();
+                new Thread(() -> {
+                    socketManager.setCurrent_page("HOME");
+                    socketManager.sendMessage("HOME");
+                    if (isAdded()) {
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, new HomeFragment()).commit();
+                    }
+                }).start();
+            }
         });
         ///////////////////////////////////////////////////////////
 
         LinearLayout pre_hardmode_container = view.findViewById(R.id.pre_hardmode_container);
         LinearLayout hardmode_container = view.findViewById(R.id.hardmode_container);
 
-
-
         new Thread(() -> {
             try {
-                System.out.println("hey");
                 socketManager.sendMessage("CHECKLIST");
                 Thread.sleep(1000);
-                System.out.println("hey 2");
                 socketManager.sendMessage("CHECKLIST");
                 final ServerResponse server_data = socketManager.receiveMessage();
                 if (server_data != null) {
@@ -99,6 +103,7 @@ public class BossChecklist extends Fragment {
                                 }
                             });
                         }
+                        changePage = true;
                     }
                 }
             } catch (Exception e) {
@@ -107,5 +112,6 @@ public class BossChecklist extends Fragment {
                 e.printStackTrace();
             }
         }).start();
+
     }
 }

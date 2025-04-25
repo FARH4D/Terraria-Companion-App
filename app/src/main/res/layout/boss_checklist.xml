@@ -31,14 +31,30 @@
                 android:textSize="40sp"
                 android:textAlignment="center" />
 
-            <ImageView
-                android:id="@+id/progression_button"
-                android:layout_width="30dp"
+            <FrameLayout
+                android:layout_width="100dp"
                 android:layout_height="30dp"
                 android:layout_gravity="right"
                 android:layout_marginTop="30dp"
-                android:layout_marginRight="30dp"
-                android:src="@drawable/green_buttons"/>
+                android:layout_marginRight="30dp">
+
+                <ImageView
+                    android:id="@+id/progression_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/red_button" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Progression"
+                    android:textColor="#FFFFFF"
+                    android:gravity="center"
+                    android:fontFamily="@font/andy_bold"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
 
             <TextView
                 android:id="@+id/pre_hardmode_title"
@@ -48,7 +64,7 @@
                 android:textColor="#FFFFFF"
                 android:fontFamily="@font/andy_bold"
                 android:textSize="25sp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:textAlignment="center" />
 
             <LinearLayout

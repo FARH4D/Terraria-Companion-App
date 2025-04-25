@@ -25,6 +25,11 @@ public class BossChecklist extends Fragment {
 
     private SocketManager socketManager;
     private boolean changePage = false;
+    private boolean previousDefeated = false;
+    private boolean progressionMode = true;
+    private LinearLayout pre_hardmode_container;
+    private LinearLayout hardmode_container;
+    private ServerResponse server_data;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.boss_checklist, container, false);
@@ -62,50 +67,37 @@ public class BossChecklist extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
-        LinearLayout pre_hardmode_container = view.findViewById(R.id.pre_hardmode_container);
-        LinearLayout hardmode_container = view.findViewById(R.id.hardmode_container);
+        pre_hardmode_container = view.findViewById(R.id.pre_hardmode_container);
+        hardmode_container = view.findViewById(R.id.hardmode_container);
+        ImageView progression_button = view.findViewById(R.id.progression_button);
+
+        progression_button.setOnClickListener(v -> {
+            if (progressionMode) {
+                progressionMode = false;
+                progression_button.setImageResource(R.drawable.grey_button);
+                requireActivity().runOnUiThread(() -> {
+                    this.setupNoProgression();
+                });
+            }
+            else {
+                progressionMode = true;
+                progression_button.setImageResource(R.drawable.red_button);
+                requireActivity().runOnUiThread(() -> {
+                    this.setupProgression();
+                });
+            }
+        });
 
         new Thread(() -> {
             try {
                 socketManager.sendMessage("CHECKLIST");
                 Thread.sleep(1000);
                 socketManager.sendMessage("CHECKLIST");
-                final ServerResponse server_data = socketManager.receiveMessage();
-                if (server_data != null) {
-                    List<Pair<String, Boolean>> boss_checklist = server_data.getChecklistData();
-                    if (boss_checklist != null) {
-                        if (isAdded()) {
-                            requireActivity().runOnUiThread(() -> {
-                                if (getActivity() != null) {
-                                    boolean wallOfFlesh = false;
-                                    for (Pair<String, Boolean> boss : boss_checklist) {
-                                        String bossName = boss.first;
-                                        boolean defeated = boss.second;
+                server_data = socketManager.receiveMessage();
 
-                                        TextView bossView = new TextView(getContext());
-                                        bossView.setText(bossName + (defeated ? " ✔" : " ✖"));
-                                        bossView.setTextColor(defeated ? Color.GREEN : Color.RED);
-                                        bossView.setTextSize(21);
-                                        bossView.setPadding(8, 8, 8, 8);
-                                        bossView.setGravity(Gravity.CENTER);
-                                        Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
-                                        bossView.setTypeface(typeface);
-
-                                        if (bossName.equalsIgnoreCase("Wall of Flesh")) {
-                                            pre_hardmode_container.addView(bossView);
-                                            wallOfFlesh = true;
-                                        } else if (!wallOfFlesh) {
-                                            pre_hardmode_container.addView(bossView);
-                                        } else {
-                                            hardmode_container.addView(bossView);
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                        changePage = true;
-                    }
-                }
+                requireActivity().runOnUiThread(() -> {
+                    this.setupProgression();
+                });
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->
                         Toast.makeText(requireActivity(), "Connection error.", Toast.LENGTH_SHORT).show());
@@ -113,5 +105,103 @@ public class BossChecklist extends Fragment {
             }
         }).start();
 
+    }
+
+    private void setupNoProgression() {
+        if (server_data != null) {
+            pre_hardmode_container.removeAllViews();
+            hardmode_container.removeAllViews();
+            List<Pair<String, Boolean>> boss_checklist = server_data.getChecklistData();
+            if (boss_checklist != null) {
+                if (isAdded()) {
+                    requireActivity().runOnUiThread(() -> {
+                        if (getActivity() != null) {
+                            boolean wallOfFlesh = false;
+                            for (Pair<String, Boolean> boss : boss_checklist) {
+                                String bossName = boss.first;
+                                boolean defeated = boss.second;
+
+                                TextView bossView = new TextView(getContext());
+                                bossView.setText(bossName + (defeated ? " ✔" : " ✖"));
+                                bossView.setTextColor(defeated ? Color.GREEN : Color.RED);
+                                bossView.setTextSize(23);
+                                bossView.setPadding(8, 8, 8, 8);
+                                bossView.setGravity(Gravity.CENTER);
+                                Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
+                                bossView.setTypeface(typeface);
+
+                                if (bossName.equalsIgnoreCase("Wall of Flesh")) {
+                                    pre_hardmode_container.addView(bossView);
+                                    wallOfFlesh = true;
+                                } else if (!wallOfFlesh) {
+                                    pre_hardmode_container.addView(bossView);
+                                } else {
+                                    hardmode_container.addView(bossView);
+                                }
+                            }
+                        }
+                    });
+                }
+                changePage = true;
+            }
+        }
+    }
+
+    private void setupProgression() {
+        if (server_data != null) {
+            previousDefeated = false;
+
+            pre_hardmode_container.removeAllViews();
+            hardmode_container.removeAllViews();
+
+            List<Pair<String, Boolean>> boss_checklist = server_data.getChecklistData();
+
+            if (boss_checklist != null) {
+                if (isAdded()) {
+                    requireActivity().runOnUiThread(() -> {
+                        if (getActivity() != null) {
+                            boolean wallOfFlesh = false;
+                            final boolean[] revealedNext = {false}; // wrapped in array for lambda
+
+                            for (Pair<String, Boolean> boss : boss_checklist) {
+                                String bossName = boss.first;
+                                boolean defeated = boss.second;
+
+                                TextView bossView = new TextView(getContext());
+                                bossView.setTextSize(23);
+                                bossView.setPadding(8, 8, 8, 8);
+                                bossView.setGravity(Gravity.CENTER);
+                                Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
+                                bossView.setTypeface(typeface);
+
+                                if (defeated) {
+                                    bossView.setText(bossName + " ✔");
+                                    bossView.setTextColor(Color.GREEN);
+                                    previousDefeated = true;
+                                } else if (previousDefeated && !revealedNext[0]) {
+                                    bossView.setText(bossName + " ✖");
+                                    bossView.setTextColor(Color.RED);
+                                    revealedNext[0] = true;
+                                } else {
+                                    bossView.setText("???");
+                                    bossView.setTextSize(25);
+                                    bossView.setTextColor(Color.RED);
+                                }
+
+                                if (bossName.equalsIgnoreCase("Wall of Flesh")) {
+                                    pre_hardmode_container.addView(bossView);
+                                    wallOfFlesh = true;
+                                } else if (!wallOfFlesh) {
+                                    pre_hardmode_container.addView(bossView);
+                                } else {
+                                    hardmode_container.addView(bossView);
+                                }
+                            }
+                        }
+                    });
+                }
+                changePage = true;
+            }
+        }
     }
 }

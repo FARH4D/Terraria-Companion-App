@@ -97,7 +97,7 @@
         android:background="#C5C4C4"
         android:ems="10"
         android:inputType="text"
-        android:text="192.168.1.230:12345"
+        android:text="192.168.1.179:12345"
         android:textStyle="bold"
         android:textAlignment="center"
         android:textColor="@color/black"

@@ -1,5 +1,6 @@
 package com.example.terrariacompanion;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -117,6 +118,8 @@ public class BossChecklist extends Fragment {
                     requireActivity().runOnUiThread(() -> {
                         if (getActivity() != null) {
                             boolean wallOfFlesh = false;
+                            int i = 0;
+
                             for (Pair<String, Boolean> boss : boss_checklist) {
                                 String bossName = boss.first;
                                 boolean defeated = boss.second;
@@ -130,6 +133,12 @@ public class BossChecklist extends Fragment {
                                 Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
                                 bossView.setTypeface(typeface);
 
+                                bossView.setTag(i);
+
+                                bossView.setOnClickListener(v -> {
+
+                                });
+
                                 if (bossName.equalsIgnoreCase("Wall of Flesh")) {
                                     pre_hardmode_container.addView(bossView);
                                     wallOfFlesh = true;
@@ -138,6 +147,8 @@ public class BossChecklist extends Fragment {
                                 } else {
                                     hardmode_container.addView(bossView);
                                 }
+
+                                i++;
                             }
                         }
                     });
@@ -161,6 +172,7 @@ public class BossChecklist extends Fragment {
                     requireActivity().runOnUiThread(() -> {
                         if (getActivity() != null) {
                             boolean wallOfFlesh = false;
+                            int i = 0;
                             final boolean[] revealedNext = {false}; // wrapped in array for lambda
 
                             for (Pair<String, Boolean> boss : boss_checklist) {
@@ -173,6 +185,8 @@ public class BossChecklist extends Fragment {
                                 bossView.setGravity(Gravity.CENTER);
                                 Typeface typeface = ResourcesCompat.getFont(requireContext(), R.font.andy_bold);
                                 bossView.setTypeface(typeface);
+
+                                bossView.setTag(i);
 
                                 if (defeated) {
                                     bossView.setText(bossName + " ✔");
@@ -196,6 +210,23 @@ public class BossChecklist extends Fragment {
                                 } else {
                                     hardmode_container.addView(bossView);
                                 }
+
+                                i++;
+
+                                bossView.setOnClickListener(v -> {
+                                    new Thread(() -> {
+                                        socketManager.setCurrent_page("BOSSINFO");
+                                        if (isAdded()) {
+                                            BossInfo bossInfoFragment = new BossInfo();
+                                            Bundle args = new Bundle();
+                                            args.putInt("bossNum", (int) bossView.getTag());
+                                            bossInfoFragment.setArguments(args);
+                                            requireActivity().getSupportFragmentManager().beginTransaction()
+                                                    .replace(R.id.fragment_container, bossInfoFragment).commit();
+                                        }
+                                    }).start();
+                                });
+
                             }
                         }
                     });

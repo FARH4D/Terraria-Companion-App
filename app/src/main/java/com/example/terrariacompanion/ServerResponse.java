@@ -10,6 +10,7 @@ public class ServerResponse {
     private ItemDataManager itemData;
     private List<ItemData> recipeData;
     private List<Pair<String, Boolean>> checklistData;
+    private BossDataManager bossData;
     private String checklistError = "";
 
     private ServerResponse() {}
@@ -37,6 +38,10 @@ public class ServerResponse {
         return response;
     }
 
+    public ServerResponse(BossDataManager bossData) {
+        this.bossData = bossData;
+    }
+
     public ServerResponse(String errorMessage) {
         this.checklistError = errorMessage;}
 
@@ -49,6 +54,8 @@ public class ServerResponse {
     public List<ItemData> getRecipeData() { return recipeData; }
 
     public List<Pair<String, Boolean>> getChecklistData() { return checklistData; }
+
+    public BossDataManager getBossData() { return bossData; }
 
     public String getChecklistError() { return checklistError; }
 

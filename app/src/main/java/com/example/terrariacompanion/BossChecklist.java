@@ -134,10 +134,6 @@ public class BossChecklist extends Fragment {
 
                                 bossView.setTag(i);
 
-                                bossView.setOnClickListener(v -> {
-
-                                });
-
                                 if (bossName.equalsIgnoreCase("Wall of Flesh")) {
                                     pre_hardmode_container.addView(bossView);
                                     wallOfFlesh = true;
@@ -148,6 +144,20 @@ public class BossChecklist extends Fragment {
                                 }
 
                                 i++;
+
+                                bossView.setOnClickListener(v -> {
+                                    new Thread(() -> {
+                                        socketManager.setCurrent_page("BOSSINFO");
+                                        if (isAdded()) {
+                                            BossInfo bossInfoFragment = new BossInfo();
+                                            Bundle args = new Bundle();
+                                            args.putInt("bossNum", (int) bossView.getTag());
+                                            bossInfoFragment.setArguments(args);
+                                            requireActivity().getSupportFragmentManager().beginTransaction()
+                                                    .replace(R.id.fragment_container, bossInfoFragment).commit();
+                                        }
+                                    }).start();
+                                });
                             }
                         }
                     });

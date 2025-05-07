@@ -213,7 +213,6 @@
                 android:focusable="true"
                 android:padding="10dp" />
         </LinearLayout>
-
     </FrameLayout>
 
     <androidx.fragment.app.FragmentContainerView

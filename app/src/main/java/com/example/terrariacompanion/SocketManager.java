@@ -105,6 +105,13 @@ public class SocketManager {
                             return receiveMessage();
                         }
                     }
+                    else if ("BOSSINFO".equals(currentPage)) {
+                        if (jsonData.trim().startsWith("{")) {
+                            return new ServerResponse(processBossData(jsonData));
+                        } else {
+                            return receiveMessage();
+                        }
+                    }
                     else {
                         return null;
                     }
@@ -293,6 +300,48 @@ public class SocketManager {
         }
 
         return bossList;
+    }
+
+    private BossDataManager processBossData(String jsonData) {
+        try {
+            JSONObject bossData = new JSONObject(jsonData);
+            String name = bossData.getString("bossName");
+            String base64Image = bossData.getString("bossImage");
+            String spawnInfo = bossData.getString("spawnInfo");
+            boolean defeated = bossData.getBoolean("status");
+
+            JSONArray spawnItemsArray = bossData.getJSONArray("spawnItems");
+            List<ItemData> spawnItems = new ArrayList<>();
+            for (int i = 0; i < spawnItemsArray.length(); i++) {
+                JSONObject itemObj = spawnItemsArray.getJSONObject(i);
+                String itemName = itemObj.getString("name");
+                int itemId = itemObj.getInt("id");
+
+                String base64Image2 = itemObj.getString("image");
+                Bitmap bitmap2 = decodeBase64ToBitmap(base64Image2);
+
+                spawnItems.add(new ItemData(itemName, itemId, bitmap2));
+            }
+
+            JSONArray dropsArray = bossData.getJSONArray("drops");
+            List<DropItem> drops = new ArrayList<>();
+            for (int i = 0; i < dropsArray.length(); i++) {
+                JSONObject dropObj = dropsArray.getJSONObject(i);
+                String dropName = dropObj.getString("name");
+                int dropId = dropObj.getInt("id");
+                float dropRate = (float) dropObj.getDouble("dropRate");
+
+                String base64Image3 = dropObj.getString("image");
+
+                drops.add(new DropItem(dropId, dropName, base64Image3, dropRate));
+            }
+
+            return new BossDataManager(name, base64Image, spawnInfo, spawnItems, drops, defeated);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Bitmap decodeBase64ToBitmap(String base64Image) {

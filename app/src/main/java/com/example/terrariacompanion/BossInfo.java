@@ -49,7 +49,7 @@ public class BossInfo extends Fragment {
             return;
         }
 
-        TextView itemTitle = view.findViewById(R.id.boss_title);
+        TextView bossTitle = view.findViewById(R.id.boss_title);
         ImageView bossImage = view.findViewById(R.id.boss_image);
         LinearLayout drops_layout = view.findViewById(R.id.drops_layout);
 
@@ -72,13 +72,16 @@ public class BossInfo extends Fragment {
                 socketManager.sendMessage("BOSSINFO:" + _bossNum + ":" + "null");
                 final ServerResponse server_data = socketManager.receiveMessage();
                 if (server_data != null) {
-                    ItemDataManager data = server_data.getItemData();
+                    BossDataManager data = server_data.getBossData();
                     if (data != null) {
-                        final ItemDataManager finalData = data;
+                        final BossDataManager finalData = data;
                         if (isAdded()) {
                             requireActivity().runOnUiThread(() -> {
                                 if (getActivity() != null) {
-
+                                    bossTitle.setText(finalData.name);
+                                    byte[] decodedBytes = Base64.decode(finalData.base64Image, Base64.DEFAULT);
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                                    bossImage.setImageBitmap(bitmap);
                                 }
                             });
                         }

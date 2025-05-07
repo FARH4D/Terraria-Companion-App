@@ -168,41 +168,45 @@
             <ImageView
                 android:id="@+id/nav_home"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:scaleType="fitXY"
                 android:src="@drawable/home_navbar"
                 android:contentDescription="Home"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="10dp" />
+                android:padding="5dp" />
 
             <ImageView
                 android:id="@+id/nav_recipe"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:scaleType="fitXY"
                 android:src="@drawable/recipe_navbar"
                 android:contentDescription="Recipes"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="10dp" />
+                android:padding="15dp" />
 
             <ImageView
                 android:id="@+id/nav_checklist"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:scaleType="fitXY"
                 android:src="@drawable/checklist_navbar"
                 android:contentDescription="Boss Checklist"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="10dp" />
+                android:padding="15dp" />
 
             <ImageView
                 android:id="@+id/nav_beastiary"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:scaleType="fitXY"
                 android:src="@drawable/beastiary_navbar"
                 android:contentDescription="Beastiary"
                 android:clickable="true"

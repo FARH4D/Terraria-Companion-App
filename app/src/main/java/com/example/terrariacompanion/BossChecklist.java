@@ -91,9 +91,8 @@ public class BossChecklist extends Fragment {
 
         new Thread(() -> {
             try {
-                socketManager.sendMessage("CHECKLIST");
                 Thread.sleep(1000);
-                socketManager.sendMessage("CHECKLIST");
+                socketManager.sendMessage("CHECKLIST:1:null");
                 server_data = socketManager.receiveMessage();
 
                 requireActivity().runOnUiThread(() -> {
@@ -222,7 +221,7 @@ public class BossChecklist extends Fragment {
                                             args.putInt("bossNum", (int) bossView.getTag());
                                             bossInfoFragment.setArguments(args);
                                             requireActivity().getSupportFragmentManager().beginTransaction()
-                                                    .replace(R.id.fragment_container, bossInfoFragment).commit();
+                                                    .replace(R.id.fragment_container, bossInfoFragment).commit(); 
                                         }
                                     }).start();
                                 });

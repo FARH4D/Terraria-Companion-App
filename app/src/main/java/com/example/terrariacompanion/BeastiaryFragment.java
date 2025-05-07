@@ -90,7 +90,7 @@ public class BeastiaryFragment extends Fragment {
             isReceivingData = true;
             new Thread(() -> {
                 try {
-                    socketManager.sendMessage("BEASTIARY:" + currentNum + ":" + "null");
+                    socketManager.sendMessage("BEASTIARY:" + currentNum + ":null");
                     final ServerResponse server_data = socketManager.receiveMessage();
                     if (socketManager.getStatus().equals("MAX")) {
                         currentNum = currentNum - 30;

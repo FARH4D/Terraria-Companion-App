@@ -8,15 +8,15 @@ public class BossDataManager {
     public String base64Image;
     public String spawnInfo;
     public List<ItemData> spawnItems;
-    public List<DropItem> drops;
+    public List<DropItem> drop_list;
     public boolean defeated;
 
-    public BossDataManager(String name, String base64Image, String spawnInfo, List<ItemData> spawnItems, List<DropItem> drops, boolean defeated) {
+    public BossDataManager(String name, String base64Image, String spawnInfo, List<ItemData> spawnItems, List<DropItem> drop_list, boolean defeated) {
         this.name = name;
         this.base64Image = base64Image;
         this.spawnInfo = spawnInfo;
         this.spawnItems = spawnItems;
-        this.drops = drops;
+        this.drop_list = drop_list;
         this.defeated = defeated;
     }
 }

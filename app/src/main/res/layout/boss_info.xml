@@ -85,24 +85,31 @@
 
                 <FrameLayout
                     android:id="@+id/spawn_frame"
-                    android:layout_width="200dp"
-                    android:layout_height="150dp"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/home_frames"
                     app:layout_constraintTop_toBottomOf="@id/spawnTitle"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
-                    <TextView
-                        android:id="@+id/npc_hp"
+                    <LinearLayout
+                        android:id="@+id/spawn_container"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:fontFamily="@font/andy_bold"
-                        android:textAlignment="textEnd"
-                        android:layout_marginEnd="30dp"
-                        android:textColor="@color/white"
-                        android:textSize="30sp" />
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:padding="8dp">
 
+                        <TextView
+                            android:id="@+id/spawn_info"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/andy_bold"
+                            android:textAlignment="center"
+                            android:textColor="@color/white"
+                            android:textSize="30sp" />
+                    </LinearLayout>
                 </FrameLayout>
 
                 <TextView
@@ -146,7 +153,6 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
 
     <FrameLayout
         android:id="@+id/nav_bar"

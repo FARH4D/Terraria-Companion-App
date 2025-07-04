@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +22,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BossInfo extends Fragment {
 
@@ -50,6 +54,8 @@ public class BossInfo extends Fragment {
         }
 
         TextView bossTitle = view.findViewById(R.id.boss_title);
+        TextView spawnInfo = view.findViewById(R.id.spawn_info);
+        LinearLayout spawnContainer = view.findViewById(R.id.spawn_container);
         ImageView bossImage = view.findViewById(R.id.boss_image);
         LinearLayout drops_layout = view.findViewById(R.id.drops_layout);
 
@@ -64,6 +70,7 @@ public class BossInfo extends Fragment {
                 }
             }).start();
         });
+
         ///////////////////////////////////////////////////////////
 
         new Thread(() -> {
@@ -82,6 +89,41 @@ public class BossInfo extends Fragment {
                                     byte[] decodedBytes = Base64.decode(finalData.base64Image, Base64.DEFAULT);
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
                                     bossImage.setImageBitmap(bitmap);
+
+                                    String spawnInfoRaw = finalData.spawnInfo;
+                                    Pattern pattern = Pattern.compile(":([A-Za-z0-9+/=]+):");
+                                    Matcher matcher = pattern.matcher(spawnInfoRaw);
+
+                                    String base64Image = null;
+                                    if (matcher.find()) {
+                                        base64Image = matcher.group(1);
+                                    }
+
+                                    String cleanedText = spawnInfoRaw.replaceAll(":([A-Za-z0-9+/=]+):", "").trim();
+                                    spawnInfo.setText(cleanedText);
+
+                                    if (base64Image != null) {
+                                        try {
+                                            byte[] imageBytes = Base64.decode(base64Image, Base64.DEFAULT);
+                                            Bitmap imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+                                            if (imgBitmap != null) {
+                                                ImageView iconView = new ImageView(requireContext());
+                                                iconView.setImageBitmap(imgBitmap);
+                                                int size = (int) TypedValue.applyDimension(
+                                                        TypedValue.COMPLEX_UNIT_DIP, 32, requireContext().getResources().getDisplayMetrics());
+
+                                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+                                                params.setMargins(0, 8, 0, 0);
+                                                params.gravity = Gravity.CENTER_HORIZONTAL;
+
+                                                iconView.setLayoutParams(params);
+                                                spawnContainer.addView(iconView);
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
                                 }
                             });
                         }
@@ -93,6 +135,17 @@ public class BossInfo extends Fragment {
                 e.printStackTrace();
             }
         }).start();
+
+        view.findViewById(R.id.back_button).setOnClickListener(v -> {
+            new Thread(() -> {
+                socketManager.setCurrent_page("CHECKLIST");
+                if (isAdded()) {
+                    BossChecklist checklist = new BossChecklist();
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, checklist).commit();
+                }
+            }).start();
+        });
 
     }
 }

@@ -329,7 +329,7 @@ public class SocketManager {
                 JSONObject dropObj = dropsArray.getJSONObject(i);
                 String dropName = dropObj.getString("name");
                 int dropId = dropObj.getInt("id");
-                float dropRate = (float) dropObj.getDouble("dropRate");
+                float dropRate = (float) dropObj.getDouble("droprate");
 
                 String base64Image3 = dropObj.getString("image");
 

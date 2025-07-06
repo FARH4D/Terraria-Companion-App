@@ -219,22 +219,30 @@ public class HomeFragment extends Fragment {
                                     playerFrame.addView(avatarView);
 
                                     String[] layerKeys = new String[] {
-                                            "Hair", "HeadArmour", "BodyArmour", "LegArmour"
+                                            "Hair", "HeadArmour", "BodyArmourRightArm", "BodyArmourTorso", "BodyArmourLeftArm", "BodyArmourLeftShoulder", "BodyArmourRightShoulder", "LegArmour"
                                     };
 
                                     Map<String, Integer> targetHeightsDp = new HashMap<>();
                                     targetHeightsDp.put("Hair", 35);
                                     targetHeightsDp.put("HeadArmour", 470);
+                                    targetHeightsDp.put("BodyArmourRightArm", 100);
+                                    targetHeightsDp.put("BodyArmourTorso", 800);
+                                    targetHeightsDp.put("BodyArmourLeftArm", 100);
                                     targetHeightsDp.put("LegArmour", 800);
 
                                     Map<String, Integer> topOffsetsDp = new HashMap<>();
                                     topOffsetsDp.put("Hair", 40);
                                     topOffsetsDp.put("HeadArmour", -60);
+                                    topOffsetsDp.put("BodyArmourRightArm", 0);
+                                    topOffsetsDp.put("BodyArmourTorso", 0);
+                                    topOffsetsDp.put("BodyArmourLeftArm", 0);
                                     topOffsetsDp.put("LegArmour", 0);
 
                                     Map<String, Integer> leftOffsetsDp = new HashMap<>();
                                     leftOffsetsDp.put("Hair", 0);
                                     leftOffsetsDp.put("HeadArmour", -10);
+                                    leftOffsetsDp.put("BodyArmourRightArm", 0);
+                                    leftOffsetsDp.put("BodyArmourTorso", 0);
                                     leftOffsetsDp.put("LegArmour", 0);
 
                                     for (String key : layerKeys) {
@@ -264,7 +272,42 @@ public class HomeFragment extends Fragment {
 
                                                 params2.topMargin = dpToPx(-60);
                                                 params2.leftMargin = dpToPx(-18);
-                                            } else {
+                                            }
+                                            else if (key.equals("BodyArmourLeftArm")) {
+                                                int targetHeightDp = 300;
+                                                int targetHeightPx = dpToPx(targetHeightDp);
+                                                float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+
+                                                params2 = new FrameLayout.LayoutParams(
+                                                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                        FrameLayout.LayoutParams.WRAP_CONTENT
+                                                );
+
+                                                params2.gravity = Gravity.TOP | Gravity.START;
+
+                                                params2.topMargin = dpToPx(-15);
+                                                params2.leftMargin = dpToPx(50);
+                                            }
+                                            else if (key.equals("BodyArmourRightArm")) {
+                                                int targetHeightDp = 300;
+                                                int targetHeightPx = dpToPx(targetHeightDp);
+                                                float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+
+                                                params2 = new FrameLayout.LayoutParams(
+                                                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                        FrameLayout.LayoutParams.WRAP_CONTENT
+                                                );
+
+                                                params2.gravity = Gravity.TOP | Gravity.START;
+
+                                                params2.topMargin = dpToPx(-15);
+                                                params2.leftMargin = dpToPx(65);
+                                            }
+                                            else {
                                                 int targetHeightDp = targetHeightsDp.getOrDefault(key, 30);
                                                 int targetHeightPx = dpToPx(targetHeightDp);
                                                 float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();

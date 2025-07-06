@@ -38,6 +38,7 @@
             android:id="@+id/player_frame"
             android:layout_width="350dp"
             android:layout_height="300dp"
+            android:layout_marginTop="30dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:background="@android:color/transparent"/>

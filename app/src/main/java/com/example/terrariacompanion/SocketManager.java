@@ -176,7 +176,9 @@ public class SocketManager {
 
             JSONObject cosmeticsJson = playerData.getJSONObject("cosmetics");
 
-            return new HomeDataManager(currentHealth, maxHealth, currentMana, maxMana, player_names, cosmeticsJson);
+            String biome = playerData.getString("biome");
+
+            return new HomeDataManager(currentHealth, maxHealth, currentMana, maxMana, player_names, cosmeticsJson, biome);
 
         } catch (Exception e) {
             e.printStackTrace();

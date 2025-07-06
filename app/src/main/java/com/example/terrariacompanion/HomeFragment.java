@@ -8,6 +8,8 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -45,6 +48,7 @@ public class HomeFragment extends Fragment {
     private TextView mana_status;
     private LinearLayout player_names_view;
     private FrameLayout playerFrame;
+    private ImageView background;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +67,7 @@ public class HomeFragment extends Fragment {
         mana_status = view.findViewById(R.id.mana_status);
         player_names_view = view.findViewById(R.id.player_names_view);
         playerFrame = view.findViewById(R.id.player_frame);
+        background = view.findViewById(R.id.main_background);
 
         socketManager = SocketManagerSingleton.getInstance();
         if (socketManager == null || !socketManager.isConnected()) {
@@ -185,6 +190,7 @@ public class HomeFragment extends Fragment {
                                         player_names_view.addView(tv);
                                     }
 
+                                    setBiomeBackground(background, data.biome);
 
                                     if (playerFrame.getChildCount() > 0) {
                                         playerFrame.removeAllViews();
@@ -363,4 +369,67 @@ public class HomeFragment extends Fragment {
         return Math.round(dp * density);
     }
 
+    public void setBiomeBackground(View background, String biome) {
+        int resId;
+
+        switch (biome) {
+            case "underworld": resId = R.drawable.underworld; break;
+//            case "sky": resId = R.drawable.sky; break;
+
+            case "surface_jungle": resId = R.drawable.surface_jungle; break;
+            case "underground_jungle": resId = R.drawable.underground_jungle; break;
+            case "cavern_jungle": resId = R.drawable.cavern_jungle; break;
+
+            case "surface_corruption": resId = R.drawable.surface_corruption; break;
+            case "underground_corruption": resId = R.drawable.underground_corruption; break;
+            case "cavern_corruption": resId = R.drawable.cavern_corruption; break;
+
+            case "surface_crimson": resId = R.drawable.surface_crimson; break;
+            case "underground_crimson": resId = R.drawable.underground_crimson; break;
+            case "cavern_crimson": resId = R.drawable.cavern_crimson; break;
+
+            case "surface_hallow": resId = R.drawable.surface_hallow; break;
+            case "underground_hallow": resId = R.drawable.underground_hallow; break;
+            case "cavern_hallow": resId = R.drawable.cavern_hallow; break;
+
+            case "surface_snow": resId = R.drawable.surface_snow; break;
+            case "underground_snow": resId = R.drawable.underground_snow; break;
+            case "cavern_snow": resId = R.drawable.cavern_snow; break;
+
+            case "surface_desert": resId = R.drawable.surface_desert; break;
+            case "underground_desert": resId = R.drawable.underground_desert; break;
+            case "cavern_desert": resId = R.drawable.underground_desert; break;
+
+            case "surface_glowing_mushroom": resId = R.drawable.surface_glowing_mushroom; break;
+            case "underground_glowing_mushroom": resId = R.drawable.underground_glowing_mushroom; break;
+            case "cavern_glowing_mushroom": resId = R.drawable.cavern_glowing_mushroom; break;
+
+            case "underground": resId = R.drawable.underground; break;
+            case "cavern": resId = R.drawable.cavern; break;
+            case "ocean": resId = R.drawable.ocean; break;
+            case "granite": resId = R.drawable.granite; break;
+            case "marble": resId = R.drawable.marble; break;
+            case "bee_hive": resId = R.drawable.bee_hive; break;
+
+            case "nebula": resId = R.drawable.nebula; break;
+            case "solar": resId = R.drawable.solar; break;
+            case "vortex": resId = R.drawable.vortex; break;
+            case "stardust": resId = R.drawable.stardust; break;
+
+            case "dungeon": resId = R.drawable.dungeon; break;
+
+            default: resId = R.drawable.surface_forest; break;
+        }
+        Drawable newDrawable = ContextCompat.getDrawable(background.getContext(), resId);
+        Drawable currentDrawable = background.getBackground();
+
+        if (currentDrawable == null) {
+            background.setBackground(newDrawable);
+        } else {
+            Drawable[] layers = new Drawable[] { currentDrawable, newDrawable };
+            TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+            background.setBackground(transitionDrawable);
+            transitionDrawable.startTransition(500); // duration in ms
+        }
+    }
 }

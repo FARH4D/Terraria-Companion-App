@@ -11,13 +11,15 @@ public class HomeDataManager {
     public int maxMana;
     public List<String> playerNames;
     public JSONObject cosmetics;
+    public String biome;
 
-    public HomeDataManager(int currentHealth, int maxHealth, int currentMana, int maxMana, List<String> playerNames, JSONObject cosmetics) {
+    public HomeDataManager(int currentHealth, int maxHealth, int currentMana, int maxMana, List<String> playerNames, JSONObject cosmetics, String biome) {
         this.currentHealth = currentHealth;
         this.maxHealth = maxHealth;
         this.currentMana = currentMana;
         this.maxMana = maxMana;
         this.playerNames = playerNames;
         this.cosmetics = cosmetics;
+        this.biome = biome;
     }
 }

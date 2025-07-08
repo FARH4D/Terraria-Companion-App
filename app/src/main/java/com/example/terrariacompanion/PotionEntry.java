@@ -2,16 +2,19 @@ package com.example.terrariacompanion;
 
 public class PotionEntry {
     private String name;
-    private int itemId;
+    private String modName;
+    private String internalName;
     private String base64;
 
-    public PotionEntry(String name, int itemId, String base64) {
+    public PotionEntry(String name, String modName, String internalName, String base64) {
         this.name = name;
-        this.itemId = itemId;
+        this.modName = modName;
+        this.internalName = internalName;
         this.base64 = base64;
     }
 
     public String getName() { return name; }
-    public int getItemId() { return itemId; }
+    public String getModName() { return modName; }
+    public String getInternalName() { return internalName; }
     public String getBase64() { return base64; }
 }

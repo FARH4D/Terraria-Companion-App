@@ -14,7 +14,7 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="44dp"
-        android:text="Potion Loadouts"
+        android:text="Create Potion Loadout"
         android:textColor="#37BB07"
         android:fontFamily="@font/andy_bold"
         android:textSize="40sp"
@@ -26,7 +26,7 @@
     <FrameLayout
         android:id="@+id/overlay_container"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="400dp"
         android:layout_marginTop="150dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:contentDescription="Background"
-            app:srcCompat="@drawable/potion_background" />
+            app:srcCompat="@drawable/loadout_background" />
 
         <ScrollView
             android:id="@+id/scroll_container"
@@ -63,16 +63,16 @@
         app:layout_constraintTop_toBottomOf="@id/overlay_container"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
         android:paddingHorizontal="10dp">
 
         <Button
-            android:id="@+id/delete_button"
+            android:id="@+id/back_button"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="0.8"
-            android:textSize="20sp"
-            android:text="Delete"
+            android:textSize="30sp"
+            android:text="Back"
             android:fontFamily="@font/andy_bold"
             android:textColor="@color/white"
             android:backgroundTint="#185502"
@@ -80,29 +80,18 @@
             android:layout_marginEnd="15dp" />
 
         <Button
-            android:id="@+id/new_button"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:textSize="28sp"
-            android:text="New"
-            android:fontFamily="@font/andy_bold"
-            android:textColor="@color/white"
-            android:backgroundTint="#185502"
-            android:includeFontPadding="false" />
-
-        <Button
-            android:id="@+id/edit_button"
+            android:id="@+id/save_button"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="0.8"
-            android:textSize="20sp"
-            android:text="Edit"
+            android:textSize="30sp"
+            android:text="Save"
             android:fontFamily="@font/andy_bold"
             android:textColor="@color/white"
             android:backgroundTint="#185502"
             android:includeFontPadding="false"
-            android:layout_marginStart="15dp" />
+            android:layout_marginEnd="15dp" />
+
     </LinearLayout>
 
     <FrameLayout

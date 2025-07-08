@@ -10,6 +10,7 @@ public class ServerResponse {
     private ItemDataManager itemData;
     private List<ItemData> recipeData;
     private List<Pair<String, Boolean>> checklistData;
+    private List<PotionEntry> potions;
     private BossDataManager bossData;
     private String checklistError = "";
 
@@ -38,6 +39,12 @@ public class ServerResponse {
         return response;
     }
 
+    public static ServerResponse fromPotions(List<PotionEntry> potionList) {
+        ServerResponse response = new ServerResponse();
+        response.potions = potionList;
+        return response;
+    }
+
     public ServerResponse(BossDataManager bossData) {
         this.bossData = bossData;
     }
@@ -52,6 +59,8 @@ public class ServerResponse {
     public ItemDataManager getItemData() { return itemData; }
 
     public List<ItemData> getRecipeData() { return recipeData; }
+
+    public List<PotionEntry> getPotionList() { return potions; }
 
     public List<Pair<String, Boolean>> getChecklistData() { return checklistData; }
 

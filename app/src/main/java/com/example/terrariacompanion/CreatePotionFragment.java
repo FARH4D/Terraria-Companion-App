@@ -1,0 +1,135 @@
+package com.example.terrariacompanion;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.util.Base64;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
+
+import java.util.List;
+
+public class CreatePotionFragment extends Fragment {
+
+    private SocketManager socketManager;
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.create_potion, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        socketManager = SocketManagerSingleton.getInstance();
+
+        if (socketManager == null || !socketManager.isConnected()) {
+            Toast.makeText(requireActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        GridLayout loadoutGrid = view.findViewById(R.id.loadout_grid);
+
+        // NAVBAR CODE ////////////////////////////////////////////
+        view.findViewById(R.id.nav_home).setOnClickListener(v -> {
+            new Thread(() -> {
+                socketManager.setCurrent_page("HOME");
+                socketManager.sendMessage("HOME");
+                if (isAdded()) {
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new HomeFragment()).commit();
+                }
+            }).start();
+        });
+        ///////////////////////////////////////////////////////////
+
+        new Thread(() -> {
+            try {
+                socketManager.sendMessage("CREATEPOTION");
+                final ServerResponse server_data = socketManager.receiveMessage();
+                System.out.println(server_data);
+                if (server_data != null) {
+                    List<PotionEntry> potion_list = server_data.getPotionList();
+                    System.out.println(potion_list.size());
+                    if (potion_list != null && !potion_list.isEmpty()) {
+                        if (isAdded() && getActivity() != null) {
+                            requireActivity().runOnUiThread(() -> {
+
+                                for (PotionEntry potion : potion_list) {
+                                    FrameLayout potionFrame = new FrameLayout(requireContext());
+                                    GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                                    params.width = GridLayout.LayoutParams.WRAP_CONTENT;
+                                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                    params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED);
+                                    params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED);
+                                    params.setMargins(10, 10, 10, 10);
+                                    potionFrame.setLayoutParams(params);
+                                    potionFrame.setBackgroundResource(R.drawable.item_frame);
+
+                                    ImageView potionImage = new ImageView(requireContext());
+                                    int imageSize = (int) (200 * 0.5);
+                                    FrameLayout.LayoutParams imageParams = new FrameLayout.LayoutParams(
+                                            imageSize, imageSize
+                                    );
+                                    imageParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+                                    imageParams.topMargin = 16;
+                                    potionImage.setLayoutParams(imageParams);
+
+                                    String base64 = potion.getBase64();
+
+                                    if (base64 != null && !base64.isEmpty()) {
+                                        try {
+                                            byte[] decoded = Base64.decode(base64, Base64.DEFAULT);
+                                            Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                                            potionImage.setImageBitmap(bitmap);
+                                        } catch (Exception e) {
+                                            potionImage.setImageResource(R.drawable.no_item);
+                                        }
+                                    } else {
+                                        potionImage.setImageResource(R.drawable.no_item);
+                                    }
+
+                                    TextView nameText = new TextView(requireContext());
+                                    FrameLayout.LayoutParams textParams = new FrameLayout.LayoutParams(
+                                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                    );
+                                    textParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                                    textParams.bottomMargin = 16;
+                                    nameText.setLayoutParams(textParams);
+                                    nameText.setText(potion.getName());
+                                    nameText.setTextColor(Color.WHITE);
+                                    nameText.setTextSize(14);
+                                    nameText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+
+                                    potionFrame.addView(potionImage);
+                                    potionFrame.addView(nameText);
+
+                                    loadoutGrid.addView(potionFrame);
+                                }
+                            });
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+}

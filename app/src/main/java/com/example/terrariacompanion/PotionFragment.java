@@ -49,9 +49,7 @@ public class PotionFragment extends Fragment {
             return;
         }
 
-        TextView npcTitle = view.findViewById(R.id.npc_name);
         GridLayout loadoutGrid = view.findViewById(R.id.loadout_grid);
-
 
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
@@ -81,9 +79,6 @@ public class PotionFragment extends Fragment {
                 for (Map.Entry<String, List<PotionEntry>> entry : rawMap.entrySet()) {
                     loadoutMap.put(entry.getKey(), entry.getValue());
                 }
-
-
-                Log.d("LoadDebug", "Loaded keys: " + loadoutMap.getAll().keySet());
 
                 for (Map.Entry<String, List<PotionEntry>> entry : loadoutMap.getAll().entrySet()) {
                     String loadoutName = entry.getKey();
@@ -134,14 +129,28 @@ public class PotionFragment extends Fragment {
                     loadoutFrame.addView(nameText);
 
                     loadoutGrid.addView(loadoutFrame);
-
                 }
-            } else {
-                Log.e("LoadDebug", "Parsed map is null");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        view.findViewById(R.id.new_button).setOnClickListener(v -> {
+            new Thread(() -> {
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                socketManager.setCurrent_page("CREATEPOTION");
+                socketManager.flushSocket();
+                if (isAdded()) {
+                    CreatePotionFragment createPotionFragment = new CreatePotionFragment();
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, createPotionFragment).commit();
+                }
+            }).start();
+        });
     }
 }

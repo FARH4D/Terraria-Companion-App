@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -108,6 +109,13 @@ public class SocketManager {
                     else if ("BOSSINFO".equals(currentPage)) {
                         if (jsonData.trim().startsWith("{")) {
                             return new ServerResponse(processBossData(jsonData));
+                        } else {
+                            return receiveMessage();
+                        }
+                    }
+                    else if ("CREATEPOTION".equals(currentPage)) {
+                        if (jsonData.trim().startsWith("{")) {
+                            return ServerResponse.fromPotions(parsePotionDictionary(jsonData));
                         } else {
                             return receiveMessage();
                         }
@@ -220,7 +228,6 @@ public class SocketManager {
         }
         return null;
     }
-
 
     private List<ItemData> processItemsData(String jsonData) {
         List<ItemData> itemList = new ArrayList<>();
@@ -346,6 +353,32 @@ public class SocketManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private List<PotionEntry> parsePotionDictionary(String jsonData) {
+        List<PotionEntry> potions = new ArrayList<>();
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonData);
+            Iterator<String> keys = jsonObject.keys();
+
+            while (keys.hasNext()) {
+                String key = keys.next();
+                JSONObject potionObj = jsonObject.getJSONObject(key);
+
+                String displayName = potionObj.getString("displayName");
+                String modName = potionObj.getString("modName");
+                String internalName = potionObj.getString("internalName");
+                String base64 = potionObj.getString("base64");
+
+                potions.add(new PotionEntry(displayName, modName, internalName, base64));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return potions;
     }
 
     public Bitmap decodeBase64ToBitmap(String base64Image) {

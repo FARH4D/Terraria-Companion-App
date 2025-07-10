@@ -82,11 +82,12 @@ public class PotionFragment extends Fragment {
 
                 for (Map.Entry<String, List<PotionEntry>> entry : loadoutMap.getAll().entrySet()) {
                     String loadoutName = entry.getKey();
+                    System.out.println(loadoutMap.getAll().size());
                     List<PotionEntry> potions = entry.getValue();
 
                     FrameLayout loadoutFrame = new FrameLayout(requireContext());
                     GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                    params.width = GridLayout.LayoutParams.WRAP_CONTENT;
+                    params.width = 250;
                     params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED);
                     params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED);
@@ -117,9 +118,14 @@ public class PotionFragment extends Fragment {
                             FrameLayout.LayoutParams.WRAP_CONTENT,
                             FrameLayout.LayoutParams.WRAP_CONTENT
                     );
-                    textParams.gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
-                    textParams.rightMargin = 20;
+                    textParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                    textParams.bottomMargin = 16;
                     nameText.setLayoutParams(textParams);
+                    nameText.setMaxWidth(230);
+                    nameText.setEllipsize(null);
+                    nameText.setSingleLine(false);
+                    nameText.setMaxLines(3);
+                    nameText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                     nameText.setText(loadoutName);
                     nameText.setTextColor(Color.WHITE);
                     nameText.setTextSize(18);

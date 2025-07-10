@@ -23,6 +23,22 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <EditText
+        android:id="@+id/potionNameEntry"
+        android:layout_width="270dp"
+        android:layout_height="33dp"
+        android:hint="Loadout Name"
+        android:background="#C5C4C4"
+        android:ems="10"
+        android:inputType="text"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/overlay_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <FrameLayout
         android:id="@+id/overlay_container"
         android:layout_width="match_parent"
@@ -50,7 +66,7 @@
                 android:id="@+id/loadout_grid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="2"
+                android:columnCount="4"
                 android:orientation="horizontal"
                 android:padding="16dp"
                 android:layout_gravity="center" />

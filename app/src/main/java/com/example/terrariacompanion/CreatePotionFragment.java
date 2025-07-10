@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -21,11 +22,17 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CreatePotionFragment extends Fragment {
 
     private SocketManager socketManager;
+    private Set<PotionEntry> selectedPotions = new HashSet<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -58,22 +65,55 @@ public class CreatePotionFragment extends Fragment {
         });
         ///////////////////////////////////////////////////////////
 
+        PotionLoadoutDataManager loadoutMap = new PotionLoadoutDataManager();
+        Button saveButton = view.findViewById(R.id.save_button);
+        EditText potionNameEntry = view.findViewById(R.id.potionNameEntry);
+
+        saveButton.setOnClickListener(v -> {
+            String loadoutName = potionNameEntry.getText().toString().trim();
+
+            if (loadoutName.isEmpty()) {
+                Toast.makeText(requireContext(), "Please enter a loadout name.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<PotionEntry> loadoutList = new ArrayList<>(selectedPotions);
+            loadoutMap.put(loadoutName, loadoutList);
+            loadoutMap.saveToJson(requireContext());
+
+            new Thread(() -> {
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                socketManager.flushSocket();
+                socketManager.setCurrent_page("NULL");
+                socketManager.sendMessage("NULL");
+                socketManager.flushSocket();
+                if (isAdded()) {
+                    PotionFragment potionFragment = new PotionFragment();
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, potionFragment).commit();
+                }
+            }).start();
+
+        });
+
         new Thread(() -> {
             try {
                 socketManager.sendMessage("CREATEPOTION");
                 final ServerResponse server_data = socketManager.receiveMessage();
-                System.out.println(server_data);
                 if (server_data != null) {
                     List<PotionEntry> potion_list = server_data.getPotionList();
-                    System.out.println(potion_list.size());
                     if (potion_list != null && !potion_list.isEmpty()) {
                         if (isAdded() && getActivity() != null) {
                             requireActivity().runOnUiThread(() -> {
-
                                 for (PotionEntry potion : potion_list) {
                                     FrameLayout potionFrame = new FrameLayout(requireContext());
                                     GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                                    params.width = GridLayout.LayoutParams.WRAP_CONTENT;
+                                    params.width = 250;
                                     params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                                     params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED);
                                     params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED);
@@ -111,11 +151,26 @@ public class CreatePotionFragment extends Fragment {
                                     );
                                     textParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
                                     textParams.bottomMargin = 16;
+                                    nameText.setMaxWidth(230);
                                     nameText.setLayoutParams(textParams);
+                                    nameText.setEllipsize(null);
+                                    nameText.setSingleLine(false);
+                                    nameText.setMaxLines(3);
+                                    nameText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                     nameText.setText(potion.getName());
                                     nameText.setTextColor(Color.WHITE);
                                     nameText.setTextSize(14);
                                     nameText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+
+                                    potionFrame.setOnClickListener(v -> {
+                                        if (selectedPotions.contains(potion)) {
+                                            selectedPotions.remove(potion);
+                                            potionFrame.setBackgroundResource(R.drawable.item_frame);
+                                        } else {
+                                            selectedPotions.add(potion);
+                                            potionFrame.setBackgroundResource(R.drawable.item_frame_selected);
+                                        }
+                                    });
 
                                     potionFrame.addView(potionImage);
                                     potionFrame.addView(nameText);

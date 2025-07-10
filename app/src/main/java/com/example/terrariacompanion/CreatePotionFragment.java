@@ -63,6 +63,29 @@ public class CreatePotionFragment extends Fragment {
                 }
             }).start();
         });
+
+
+
+        view.findViewById(R.id.back_button).setOnClickListener(v -> {
+            new Thread(() -> {
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                socketManager.flushSocket();
+                socketManager.setCurrent_page("NULL");
+                socketManager.sendMessage("NULL");
+                socketManager.flushSocket();
+                if (isAdded()) {
+                    PotionFragment potionFragment = new PotionFragment();
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, potionFragment).commit();
+                }
+            }).start();
+        });
+
         ///////////////////////////////////////////////////////////
 
         PotionLoadoutDataManager loadoutMap = new PotionLoadoutDataManager();
@@ -78,6 +101,7 @@ public class CreatePotionFragment extends Fragment {
             }
 
             List<PotionEntry> loadoutList = new ArrayList<>(selectedPotions);
+            loadoutMap.loadFromJson(requireContext());
             loadoutMap.put(loadoutName, loadoutList);
             loadoutMap.saveToJson(requireContext());
 

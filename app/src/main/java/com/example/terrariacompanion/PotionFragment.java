@@ -1,5 +1,7 @@
 package com.example.terrariacompanion;
 
+import android.app.AlertDialog;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -10,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -33,6 +36,8 @@ import java.util.Map;
 public class PotionFragment extends Fragment {
 
     private SocketManager socketManager;
+    private boolean isDeleteMode = false;
+    private boolean isEditMode = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.potion_loadout, container, false);
@@ -82,7 +87,6 @@ public class PotionFragment extends Fragment {
 
                 for (Map.Entry<String, List<PotionEntry>> entry : loadoutMap.getAll().entrySet()) {
                     String loadoutName = entry.getKey();
-                    System.out.println(loadoutMap.getAll().size());
                     List<PotionEntry> potions = entry.getValue();
 
                     FrameLayout loadoutFrame = new FrameLayout(requireContext());
@@ -135,6 +139,25 @@ public class PotionFragment extends Fragment {
                     loadoutFrame.addView(potionImage);
                     loadoutFrame.addView(nameText);
 
+                    loadoutFrame.setOnClickListener(v -> {
+                        if (isDeleteMode) {
+                            new AlertDialog.Builder(requireContext()).setTitle("Delete Loadout").setMessage("Are you sure you want to delete \"" + loadoutName + "\"?")
+                                    .setPositiveButton("Delete", (dialog, which) -> {
+                                        loadoutMap.loadFromJson(requireContext());
+                                        loadoutMap.deleteLoadout(loadoutName);
+                                        loadoutMap.saveToJson(requireContext());
+
+                                        loadoutGrid.removeView(loadoutFrame);
+
+                                        Toast.makeText(requireContext(), "Deleted " + loadoutName, Toast.LENGTH_SHORT).show();
+                                        requireActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+                                    }).setNegativeButton("Cancel", null).show();
+                        } else if (isEditMode) {
+                            EditPotionFragment editFragment = new EditPotionFragment(loadoutName);
+                            requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, editFragment).addToBackStack(null).commit();
+                        }
+                    });
+
                     loadoutGrid.addView(loadoutFrame);
                 }
             }
@@ -158,6 +181,38 @@ public class PotionFragment extends Fragment {
                             .replace(R.id.fragment_container, createPotionFragment).commit();
                 }
             }).start();
+        });
+
+        Button deleteButton = view.findViewById(R.id.delete_button);
+        Button editButton = view.findViewById(R.id.edit_button);
+        deleteButton.setOnClickListener(v -> {
+            isDeleteMode = !isDeleteMode;
+
+            if (isDeleteMode) {
+                isEditMode = false; // Turn off edit mode
+                editButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185502")));
+                deleteButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#B00020")));
+            } else {
+                deleteButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185502")));
+            }
+
+            Toast.makeText(requireContext(),
+                    isDeleteMode ? "Tap a loadout to delete it" : "Delete mode off", Toast.LENGTH_SHORT).show();
+        });
+
+        editButton.setOnClickListener(v -> {
+            isEditMode = !isEditMode;
+
+            if (isEditMode) {
+                isDeleteMode = false; // Turn off delete mode
+                deleteButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185502")));
+                editButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#B00020")));
+            } else {
+                editButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185502")));
+            }
+
+            Toast.makeText(requireContext(),
+                    isEditMode ? "Tap a loadout to edit it" : "Edit mode off", Toast.LENGTH_SHORT).show();
         });
     }
 }

@@ -28,7 +28,8 @@
         android:layout_width="270dp"
         android:layout_height="33dp"
         android:hint="Loadout Name"
-        android:background="#C5C4C4"
+        android:textColorHint="@color/white"
+        android:background="#2F2F2F"
         android:ems="10"
         android:inputType="text"
         android:textStyle="bold"
@@ -62,14 +63,26 @@
             android:layout_height="match_parent"
             android:fillViewport="true">
 
-            <GridLayout
-                android:id="@+id/loadout_grid"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="4"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:layout_gravity="center" />
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:gravity="center_horizontal"
+                android:paddingBottom="32dp">
+
+                <GridLayout
+                    android:id="@+id/loadout_grid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:columnCount="3"
+                    android:orientation="horizontal"
+                    android:paddingTop="30dp"
+                    android:padding="16dp"
+                    android:layout_gravity="center"
+                    android:alignmentMode="alignMargins"
+                    android:useDefaultMargins="true" />
+            </LinearLayout>
         </ScrollView>
     </FrameLayout>
 

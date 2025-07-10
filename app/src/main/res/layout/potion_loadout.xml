@@ -47,14 +47,26 @@
             android:layout_marginTop="20dp"
             android:fillViewport="true">
 
-            <GridLayout
-                android:id="@+id/loadout_grid"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="3"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:layout_gravity="center" />
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:gravity="center_horizontal"
+                android:paddingBottom="32dp">
+
+                <GridLayout
+                    android:id="@+id/loadout_grid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:columnCount="3"
+                    android:orientation="horizontal"
+                    android:paddingTop="30dp"
+                    android:padding="16dp"
+                    android:alignmentMode="alignMargins"
+                    android:useDefaultMargins="true"/>
+            </LinearLayout>
         </ScrollView>
     </FrameLayout>
 

@@ -89,6 +89,7 @@ public class PotionFragment extends Fragment {
                     GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                     params.width = 250;
                     params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    params.setGravity(Gravity.CENTER_HORIZONTAL);
                     params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED);
                     params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED);
                     params.setMargins(10, 10, 10, 10);

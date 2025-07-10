@@ -1,9 +1,7 @@
 package com.example.terrariacompanion;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.Gravity;

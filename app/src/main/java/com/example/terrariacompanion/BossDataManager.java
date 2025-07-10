@@ -1,6 +1,5 @@
 package com.example.terrariacompanion;
 
-import android.graphics.Bitmap;
 import java.util.List;
 
 public class BossDataManager {

@@ -29,6 +29,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,8 @@ public class PotionFragment extends Fragment {
     private SocketManager socketManager;
     private boolean isDeleteMode = false;
     private boolean isEditMode = false;
+    private long lastClickTime = 0;
+    private static final long CLICK_COOLDOWN_MS = 1000;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.potion_loadout, container, false);
@@ -139,6 +143,10 @@ public class PotionFragment extends Fragment {
                     loadoutFrame.addView(nameText);
 
                     loadoutFrame.setOnClickListener(v -> {
+                        long currentTime = System.currentTimeMillis();
+                        if (currentTime - lastClickTime < CLICK_COOLDOWN_MS) return;
+                        lastClickTime = currentTime;
+
                         if (isDeleteMode) {
                             new AlertDialog.Builder(requireContext()).setTitle("Delete Loadout").setMessage("Are you sure you want to delete \"" + loadoutName + "\"?")
                                     .setPositiveButton("Delete", (dialog, which) -> {
@@ -154,9 +162,18 @@ public class PotionFragment extends Fragment {
                         } else if (isEditMode) {
                             EditPotionFragment editFragment = new EditPotionFragment(loadoutName);
                             requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, editFragment).addToBackStack(null).commit();
+                        } else {
+                            Map<String, List<PotionEntryData>> strippedLoadout = loadoutMap.getLoadoutsWithoutBase64();
+                            List<PotionEntryData> selectedStrippedLoadout = strippedLoadout.get(loadoutName);
+
+                            String json = gson.toJson(selectedStrippedLoadout);
+                            String encoded = Base64.encodeToString(json.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
+
+                            new Thread(() -> {
+                                socketManager.sendMessage("USELOADOUT_BASE64:" + encoded);
+                            }).start();
                         }
                     });
-
                     loadoutGrid.addView(loadoutFrame);
                 }
             }
@@ -188,7 +205,7 @@ public class PotionFragment extends Fragment {
             isDeleteMode = !isDeleteMode;
 
             if (isDeleteMode) {
-                isEditMode = false; // Turn off edit mode
+                isEditMode = false;
                 editButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185502")));
                 deleteButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#B00020")));
             } else {
@@ -203,7 +220,7 @@ public class PotionFragment extends Fragment {
             isEditMode = !isEditMode;
 
             if (isEditMode) {
-                isDeleteMode = false; // Turn off delete mode
+                isDeleteMode = false;
                 deleteButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185502")));
                 editButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#B00020")));
             } else {

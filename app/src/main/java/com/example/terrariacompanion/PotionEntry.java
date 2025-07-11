@@ -14,7 +14,7 @@ public class PotionEntry {
     }
 
     public String getName() { return name; }
-    public String getModName() { return modName; }
+    public String getMod() { return modName; }
     public String getInternalName() { return internalName; }
     public String getBase64() { return base64; }
 }

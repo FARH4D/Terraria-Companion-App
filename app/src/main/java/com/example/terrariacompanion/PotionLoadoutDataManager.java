@@ -73,4 +73,20 @@ public class PotionLoadoutDataManager {
         return new ArrayList<>(flatSet);
     }
 
+    public Map<String, List<PotionEntryData>> getLoadoutsWithoutBase64() {
+        Map<String, List<PotionEntryData>> strippedLoadouts = new HashMap<>();
+
+        for (Map.Entry<String, List<PotionEntry>> entry : loadouts.entrySet()) {
+            List<PotionEntryData> strippedList = new ArrayList<>();
+            for (PotionEntry potion : entry.getValue()) {
+                PotionEntryData data = new PotionEntryData();
+                data.setName(potion.getName());
+                data.setMod(potion.getMod());
+                data.setInternalName(potion.getInternalName());
+                strippedList.add(data);
+            }
+            strippedLoadouts.put(entry.getKey(), strippedList);
+        }
+        return strippedLoadouts;
+    }
 }

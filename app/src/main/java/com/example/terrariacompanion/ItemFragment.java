@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -26,8 +27,8 @@ public class ItemFragment extends Fragment {
 
     private SocketManager socketManager;
     private int currentNum;
-    private String category = "all";
-    private String search = "";
+    private String category;
+    private String search;
     private GridLayout gridLayout;
     private EditText searchBar;
     private boolean isReceivingData = false;
@@ -36,9 +37,13 @@ public class ItemFragment extends Fragment {
         View view = inflater.inflate(R.layout.item_list, container, false);
         setupCategoryClickListeners(view);
 
+        searchBar = view.findViewById(R.id.search_bar);
+
         if (getArguments() != null) {
             currentNum = getArguments().getInt("currentNum");
             category = getArguments().getString("category");
+            search = getArguments().getString("search");
+            searchBar.setText(search);
         }
         gridLayout = view.findViewById(R.id.recipe_grid);
         return view;
@@ -71,8 +76,6 @@ public class ItemFragment extends Fragment {
 
         getData();
 
-        searchBar = requireView().findViewById(R.id.search_bar);
-
         Button nextButton = requireView().findViewById(R.id.right_button);
         nextButton.setOnClickListener(v -> {
             if (!socketManager.getAgain()) {
@@ -98,6 +101,15 @@ public class ItemFragment extends Fragment {
             currentNum = 30;
             getData();
         });
+
+        ImageButton clearButton = requireView().findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(v -> {
+            searchBar.setText("");
+            search = "";
+            currentNum = 30;
+            getData();
+        });
+
     }
 
     private void setupCategoryClickListeners(View rootView) {
@@ -136,13 +148,17 @@ public class ItemFragment extends Fragment {
     private void getData() {
         if (!isReceivingData) {
             isReceivingData = true;
+            socketManager.setStatus("working");
+            socketManager.setAgain(false);
             new Thread(() -> {
                 try {
                     socketManager.sendMessage("RECIPES:" + currentNum + ":" + category + "," + search);
                     final ServerResponse server_data = socketManager.receiveMessage();
                     if (socketManager.getStatus().equals("MAX")) {
-                        currentNum = currentNum - 30;
+                        currentNum = Math.max(0, currentNum - 30);
                         socketManager.setAgain(true);
+                        isReceivingData = false;
+                        return;
                     }
 
                     if (server_data != null) {
@@ -201,6 +217,7 @@ public class ItemFragment extends Fragment {
                                                         args.putInt("itemId", itemID);
                                                         args.putString("category", category);
                                                         args.putInt("currentNum", currentNum);
+                                                        args.putString("search", search);
                                                         Bitmap bitmap = entry.getImage();
                                                         args.putByteArray("bitmap", bitmapToByteArray(bitmap));
                                                         itemInfoFragment.setArguments(args);

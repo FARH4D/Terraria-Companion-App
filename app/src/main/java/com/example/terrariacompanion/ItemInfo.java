@@ -31,6 +31,7 @@ public class ItemInfo extends Fragment {
     private int _itemId;
     private int _currentNum;
     private String _category;
+    private String _search;
     private Bitmap _bitmap;
 
 
@@ -40,6 +41,8 @@ public class ItemInfo extends Fragment {
             _itemId = getArguments().getInt("itemId");
             _currentNum = getArguments().getInt("currentNum");
             _category = getArguments().getString("category");
+            _search = getArguments().getString("search");
+
             byte[] byteArray = getArguments().getByteArray("bitmap");
             if (byteArray != null) {
                 _bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -246,6 +249,7 @@ public class ItemInfo extends Fragment {
                     Bundle args = new Bundle();
                     args.putInt("currentNum", _currentNum);
                     args.putString("category", _category);
+                    args.putString("search", _search);
                     itemFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, itemFragment).commit();

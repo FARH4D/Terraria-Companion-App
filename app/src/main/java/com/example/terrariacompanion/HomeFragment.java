@@ -89,6 +89,7 @@ public class HomeFragment extends Fragment {
                     Bundle args = new Bundle();
                     args.putInt("currentNum", 30);
                     args.putString("category", "all");
+                    args.putString("search", "");
                     itemFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, itemFragment).commit();

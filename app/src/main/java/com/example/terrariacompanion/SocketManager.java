@@ -69,10 +69,11 @@ public class SocketManager {
                     }
                     else if ("RECIPES".equals(currentPage)) {
                         if (jsonData.trim().startsWith("[")) {
+                            socketManager.setStatus("working");
                             return ServerResponse.fromRecipes(processItemsData(jsonData));
-                        } else if (jsonData.trim().equals("MAX")){
+                        } else if (cleanedData.trim().equals("MAX")){
                             socketManager.setStatus("MAX");
-                            return receiveMessage();
+                            return null;
                         }
                         else {
                             return receiveMessage();

@@ -137,6 +137,18 @@
         app:layout_constraintTop_toBottomOf="@+id/recipe_cats"
         app:layout_constraintBottom_toTopOf="@id/recipe_scroll"/>
 
+        <ImageButton
+            android:id="@+id/clear_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="25dp"
+            android:background="@color/green"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="Clear"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/search_bar"
+            app:layout_constraintBottom_toBottomOf="@id/search_bar" />
+
     <ScrollView
         android:id="@+id/recipe_scroll"
         android:layout_width="match_parent"

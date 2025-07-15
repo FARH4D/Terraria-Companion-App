@@ -2,7 +2,9 @@ package com.example.terrariacompanion;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.Gravity;
@@ -15,15 +17,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import java.io.ByteArrayOutputStream;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class ItemInfo extends Fragment {
 
@@ -33,7 +39,17 @@ public class ItemInfo extends Fragment {
     private String _category;
     private String _search;
     private Bitmap _bitmap;
+    private Set<Integer> clickedOnce = new HashSet<>();
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+            }
+        });
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.item_info, container, false);
@@ -218,7 +234,37 @@ public class ItemInfo extends Fragment {
                                                 ingredientLayout.addView(itemFrame);
 
                                                 itemFrame.setOnClickListener(v -> {
-                                                    Toast.makeText(requireContext(), "Recipe clicked " + itemName, Toast.LENGTH_SHORT).show();
+                                                    if (v.getBackground() == null || !(v.getBackground() instanceof ColorDrawable) ||
+                                                            ((ColorDrawable) v.getBackground()).getColor() != Color.parseColor("#185502")) {
+                                                        v.setBackgroundColor(Color.parseColor("#185502"));
+                                                    } else {
+                                                        Bundle currentArgs = getArguments();
+                                                        if (currentArgs != null) {
+                                                            Bundle savedState = new Bundle(currentArgs);
+                                                            ItemNavigationStack.itemStack.push(savedState);
+                                                        }
+
+                                                        new Thread(() -> {
+                                                            socketManager.setCurrent_page("ITEMINFO");
+                                                            if (isAdded()) {
+                                                                ItemInfo itemInfoFragment = new ItemInfo();
+                                                                Bundle args = new Bundle();
+                                                                args.putInt("itemId", (int) entry.get("id"));
+                                                                args.putString("category", _category);
+                                                                args.putInt("currentNum", _currentNum);
+                                                                args.putString("search", _search);
+                                                                String base64Image = (String) entry.get("image");
+                                                                Bitmap bitmap = base64ToBitmap(base64Image);
+                                                                args.putByteArray("bitmap", bitmapToByteArray(bitmap));
+                                                                itemInfoFragment.setArguments(args);
+
+                                                                requireActivity().runOnUiThread(() ->
+                                                                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                                                                .replace(R.id.fragment_container, itemInfoFragment).commit()
+                                                                );
+                                                            }
+                                                        }).start();
+                                                    }
                                                 });
                                             }
                                         }
@@ -243,19 +289,41 @@ public class ItemInfo extends Fragment {
 
         view.findViewById(R.id.back_button).setOnClickListener(v -> {
             new Thread(() -> {
-                socketManager.setCurrent_page("RECIPES");
-                if (isAdded()) {
+                if (!ItemNavigationStack.itemStack.isEmpty()) {
+                    Bundle previousArgs = ItemNavigationStack.itemStack.pop();
+
+                    socketManager.setCurrent_page("ITEMINFO");
+
+                    ItemInfo itemInfoFragment = new ItemInfo();
+                    itemInfoFragment.setArguments(previousArgs);
+
+                    requireActivity().runOnUiThread(() -> requireActivity().getSupportFragmentManager()
+                            .beginTransaction().replace(R.id.fragment_container, itemInfoFragment).commit());
+                } else {
+                    socketManager.setCurrent_page("RECIPES");
+
                     ItemFragment itemFragment = new ItemFragment();
                     Bundle args = new Bundle();
                     args.putInt("currentNum", _currentNum);
                     args.putString("category", _category);
                     args.putString("search", _search);
                     itemFragment.setArguments(args);
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, itemFragment).commit();
+
+                    requireActivity().runOnUiThread(() -> requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, itemFragment).commit());
                 }
             }).start();
         });
+    }
 
+    public static Bitmap base64ToBitmap(String base64Str) {
+        byte[] decodedBytes = Base64.decode(base64Str, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+    }
+
+    private byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
     }
 }

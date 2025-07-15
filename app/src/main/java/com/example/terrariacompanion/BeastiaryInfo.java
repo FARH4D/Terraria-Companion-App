@@ -28,6 +28,7 @@ public class BeastiaryInfo extends Fragment {
     private SocketManager socketManager;
     private int _npcId;
     private int _currentNum;
+    private String _search;
     private Bitmap _bitmap;
 
 
@@ -36,6 +37,7 @@ public class BeastiaryInfo extends Fragment {
         if (getArguments() != null) {
             _npcId = getArguments().getInt("npcId");
             _currentNum = getArguments().getInt("currentNum");
+            _search = getArguments().getString("search");
             byte[] byteArray = getArguments().getByteArray("bitmap");
             if (byteArray != null) {
                 _bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -178,12 +180,12 @@ public class BeastiaryInfo extends Fragment {
                     BeastiaryFragment beastiaryFragment = new BeastiaryFragment();
                     Bundle args = new Bundle();
                     args.putInt("currentNum", _currentNum);
+                    args.putString("search", _search);
                     beastiaryFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, beastiaryFragment).commit();
                 }
             }).start();
         });
-
     }
 }

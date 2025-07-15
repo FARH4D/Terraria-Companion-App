@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -23,14 +25,20 @@ public class BeastiaryFragment extends Fragment {
 
     private SocketManager socketManager;
     private int currentNum;
+    private String search;
     private GridLayout gridLayout;
+    private EditText searchBar;
     private boolean isReceivingData = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.beastiary, container, false);
 
+        searchBar = view.findViewById(R.id.search_bar);
+
         if (getArguments() != null) {
             currentNum = getArguments().getInt("currentNum");
+            search = getArguments().getString("search");
+            searchBar.setText(search);
         }
         gridLayout = view.findViewById(R.id.beastiary_grid);
         return view;
@@ -79,18 +87,38 @@ public class BeastiaryFragment extends Fragment {
                 getData();
             }
         });
+
+        Button searchButton = requireView().findViewById(R.id.center_button);
+        searchButton.setOnClickListener(v -> {
+            search = searchBar.getText().toString().trim();
+            socketManager.setAgain(false);
+            currentNum = 30;
+            getData();
+        });
+
+        ImageButton clearButton = requireView().findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(v -> {
+            searchBar.setText("");
+            search = "";
+            currentNum = 30;
+            getData();
+        });
     }
 
     private void getData() {
         if (!isReceivingData) {
             isReceivingData = true;
+            socketManager.setStatus("working");
+            socketManager.setAgain(false);
             new Thread(() -> {
                 try {
-                    socketManager.sendMessage("BEASTIARY:" + currentNum + ":null");
+                    socketManager.sendMessage("BEASTIARY:" + currentNum + ":null," + search);
                     final ServerResponse server_data = socketManager.receiveMessage();
                     if (socketManager.getStatus().equals("MAX")) {
-                        currentNum = currentNum - 30;
+                        currentNum = Math.max(0, currentNum - 30);
                         socketManager.setAgain(true);
+                        isReceivingData = false;
+                        return;
                     }
 
                     if (server_data != null) {
@@ -148,6 +176,7 @@ public class BeastiaryFragment extends Fragment {
                                                         Bundle args = new Bundle();
                                                         args.putInt("npcId", npcID);
                                                         args.putInt("currentNum", currentNum);
+                                                        args.putString("search", search);
                                                         Bitmap bitmap = entry.getImage();
                                                         args.putByteArray("bitmap", bitmapToByteArray(bitmap));
                                                         beastiaryInfoFragment.setArguments(args);

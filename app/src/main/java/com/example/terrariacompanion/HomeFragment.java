@@ -112,6 +112,7 @@ public class HomeFragment extends Fragment {
                     BeastiaryFragment beastiaryFragment = new BeastiaryFragment();
                     Bundle args = new Bundle();
                     args.putInt("currentNum", 30);
+                    args.putString("search", "");
                     beastiaryFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, beastiaryFragment).commit();

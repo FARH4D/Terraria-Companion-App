@@ -2,11 +2,14 @@ package com.example.terrariacompanion;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -24,7 +27,9 @@ public class ItemFragment extends Fragment {
     private SocketManager socketManager;
     private int currentNum;
     private String category = "all";
+    private String search = "";
     private GridLayout gridLayout;
+    private EditText searchBar;
     private boolean isReceivingData = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -64,13 +69,15 @@ public class ItemFragment extends Fragment {
         ///////////////////////////////////////////////////////////
         socketManager.setAgain(false);
 
-        getData(category);
+        getData();
+
+        searchBar = requireView().findViewById(R.id.search_bar);
 
         Button nextButton = requireView().findViewById(R.id.right_button);
         nextButton.setOnClickListener(v -> {
             if (!socketManager.getAgain()) {
                 currentNum = currentNum + 30;
-                getData(category);
+                getData();
             }
         });
 
@@ -80,8 +87,16 @@ public class ItemFragment extends Fragment {
             else {
                 socketManager.setAgain(false);
                 currentNum = currentNum - 30;
-                getData(category);
+                getData();
             }
+        });
+
+        Button searchButton = requireView().findViewById(R.id.center_button);
+        searchButton.setOnClickListener(v -> {
+            search = searchBar.getText().toString().trim();
+            socketManager.setAgain(false);
+            currentNum = 30;
+            getData();
         });
     }
 
@@ -103,12 +118,14 @@ public class ItemFragment extends Fragment {
 
                             if (category.equals(tempCategory) ) {
                                 category = "all";
+                                search = searchBar.getText().toString().trim();
                                 currentNum = 30;
                             } else {
                                 category = tempCategory;
+                                search = searchBar.getText().toString().trim();
                                 currentNum = 30;
                             }
-                            getData(category);
+                            getData();
                         });
                     }
                 }
@@ -116,12 +133,12 @@ public class ItemFragment extends Fragment {
         }
     }
 
-    private void getData(String category) {
+    private void getData() {
         if (!isReceivingData) {
             isReceivingData = true;
             new Thread(() -> {
                 try {
-                    socketManager.sendMessage("RECIPES:" + currentNum + ":" + category);
+                    socketManager.sendMessage("RECIPES:" + currentNum + ":" + category + "," + search);
                     final ServerResponse server_data = socketManager.receiveMessage();
                     if (socketManager.getStatus().equals("MAX")) {
                         currentNum = currentNum - 30;
@@ -198,6 +215,17 @@ public class ItemFragment extends Fragment {
                                     }
                                 });
                             }
+                        } else {
+                            if (isAdded() && getActivity() != null) {
+                                requireActivity().runOnUiThread(() -> {
+                                    gridLayout.removeAllViews();
+                                    gridLayout.invalidate();
+                                    gridLayout.requestLayout();
+
+                                    Toast.makeText(requireActivity(), "No items found.", Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                            isReceivingData = false;
                         }
                     }
                     else {

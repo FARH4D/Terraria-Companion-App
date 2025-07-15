@@ -140,7 +140,7 @@
                     android:textAlignment="center"
                     android:textSize="30sp"
                     android:fontFamily="@font/andy_bold"
-                    android:text="Buffs"
+                    android:text=""
                     android:textColor="#37BB07"
                     />
 

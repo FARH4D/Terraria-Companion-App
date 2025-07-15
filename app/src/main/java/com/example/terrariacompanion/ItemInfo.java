@@ -30,6 +30,7 @@ public class ItemInfo extends Fragment {
     private SocketManager socketManager;
     private int _itemId;
     private int _currentNum;
+    private String _category;
     private Bitmap _bitmap;
 
 
@@ -38,6 +39,7 @@ public class ItemInfo extends Fragment {
         if (getArguments() != null) {
             _itemId = getArguments().getInt("itemId");
             _currentNum = getArguments().getInt("currentNum");
+            _category = getArguments().getString("category");
             byte[] byteArray = getArguments().getByteArray("bitmap");
             if (byteArray != null) {
                 _bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -243,6 +245,7 @@ public class ItemInfo extends Fragment {
                     ItemFragment itemFragment = new ItemFragment();
                     Bundle args = new Bundle();
                     args.putInt("currentNum", _currentNum);
+                    args.putString("category", _category);
                     itemFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, itemFragment).commit();

@@ -88,6 +88,7 @@ public class HomeFragment extends Fragment {
                     ItemFragment itemFragment = new ItemFragment();
                     Bundle args = new Bundle();
                     args.putInt("currentNum", 30);
+                    args.putString("category", "all");
                     itemFragment.setArguments(args);
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, itemFragment).commit();

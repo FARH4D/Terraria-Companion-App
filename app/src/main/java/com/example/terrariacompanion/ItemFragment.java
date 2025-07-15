@@ -33,6 +33,7 @@ public class ItemFragment extends Fragment {
 
         if (getArguments() != null) {
             currentNum = getArguments().getInt("currentNum");
+            category = getArguments().getString("category");
         }
         gridLayout = view.findViewById(R.id.recipe_grid);
         return view;
@@ -181,6 +182,7 @@ public class ItemFragment extends Fragment {
                                                         ItemInfo itemInfoFragment = new ItemInfo();
                                                         Bundle args = new Bundle();
                                                         args.putInt("itemId", itemID);
+                                                        args.putString("category", category);
                                                         args.putInt("currentNum", currentNum);
                                                         Bitmap bitmap = entry.getImage();
                                                         args.putByteArray("bitmap", bitmapToByteArray(bitmap));

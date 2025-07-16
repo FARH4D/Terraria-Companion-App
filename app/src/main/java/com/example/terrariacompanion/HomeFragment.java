@@ -11,6 +11,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +33,15 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Base64;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -66,10 +78,172 @@ public class HomeFragment extends Fragment {
         playerFrame = view.findViewById(R.id.player_frame);
         background = view.findViewById(R.id.main_background);
 
+        LinearLayout potionContainer = view.findViewById(R.id.potion_loadout_container);
+        final String[] selectedLoadout = {null};
+        final long[] lastClickTime = {0};
+        final boolean[] isOnCooldown = {false};
+
+        final Handler handler = new Handler(Looper.getMainLooper());
+        final Runnable[] resetRunnable = new Runnable[1];
+
         socketManager = SocketManagerSingleton.getInstance();
         if (socketManager == null || !socketManager.isConnected()) {
             Toast.makeText(getActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        try {
+            FileInputStream fis = requireContext().openFileInput("potion_loadouts.json");
+            InputStreamReader reader = new InputStreamReader(fis);
+            Gson gson = new Gson();
+
+            Type type = new TypeToken<Map<String, List<PotionEntry>>>() {
+            }.getType();
+            Map<String, List<PotionEntry>> rawMap = gson.fromJson(reader, type);
+            reader.close();
+
+            if (rawMap != null && !rawMap.isEmpty()) {
+                PotionLoadoutDataManager loadoutMap = new PotionLoadoutDataManager();
+                for (Map.Entry<String, List<PotionEntry>> entry : rawMap.entrySet()) {
+                    loadoutMap.put(entry.getKey(), entry.getValue());
+                }
+
+                for (Map.Entry<String, List<PotionEntry>> entry : rawMap.entrySet()) {
+                    String loadoutName = entry.getKey();
+                    final String nameForUse = loadoutName;
+                    List<PotionEntry> potions = entry.getValue();
+
+                    FrameLayout loadoutFrame = new FrameLayout(requireContext());
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    params.setMargins(10, 10, 10, 10);
+                    loadoutFrame.setLayoutParams(params);
+                    loadoutFrame.setBackgroundResource(R.drawable.item_frame);
+                    loadoutFrame.setTag(loadoutName);
+
+                    ImageView potionImage = new ImageView(requireContext());
+                    int imageSize = (int) TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP, 48, requireContext().getResources().getDisplayMetrics());
+                    FrameLayout.LayoutParams imageParams = new FrameLayout.LayoutParams(imageSize, imageSize);
+                    imageParams.gravity = Gravity.CENTER;
+                    potionImage.setLayoutParams(imageParams);
+
+                    if (!potions.isEmpty()) {
+                        String base64 = potions.get(0).getBase64();
+                        byte[] decoded = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                        potionImage.setImageBitmap(bitmap);
+                    } else {
+                        potionImage.setImageResource(R.drawable.no_item);
+                    }
+
+                    TextView nameText = new TextView(requireContext());
+                    FrameLayout.LayoutParams textParams = new FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    textParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                    textParams.bottomMargin = 8;
+                    nameText.setLayoutParams(textParams);
+                    nameText.setMaxWidth(150);
+                    nameText.setEllipsize(null);
+                    nameText.setSingleLine(false);
+                    nameText.setMaxLines(2);
+                    nameText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    nameText.setText(loadoutName);
+                    nameText.setTextColor(Color.WHITE);
+                    nameText.setTextSize(14);
+                    nameText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+
+                    loadoutFrame.addView(potionImage);
+                    loadoutFrame.addView(nameText);
+
+                    loadoutFrame.setOnClickListener(v -> {
+                        long currentTime = System.currentTimeMillis();
+
+                        if (isOnCooldown[0]) return;
+
+                        if (selectedLoadout[0] != null && !nameForUse.equals(selectedLoadout[0])) {
+                            for (int i = 0; i < potionContainer.getChildCount(); i++) {
+                                View child = potionContainer.getChildAt(i);
+                                if (child instanceof FrameLayout) {
+                                    child.setBackgroundResource(R.drawable.item_frame);
+                                }
+                            }
+                        }
+
+                        if (!nameForUse.equals(selectedLoadout[0])) {
+                            selectedLoadout[0] = nameForUse;
+                            v.setBackgroundResource(R.drawable.item_frame_selected);
+
+                            if (resetRunnable[0] != null) {
+                                handler.removeCallbacks(resetRunnable[0]);
+                            }
+
+                            resetRunnable[0] = () -> {
+                                v.setBackgroundResource(R.drawable.item_frame);
+                                selectedLoadout[0] = null;
+                            };
+                            handler.postDelayed(resetRunnable[0], 2000);
+                        } else {
+                            isOnCooldown[0] = true;
+                            Map<String, List<PotionEntryData>> strippedLoadout = loadoutMap.getLoadoutsWithoutBase64();
+                            List<PotionEntryData> selectedStrippedLoadout = strippedLoadout.get(loadoutName);
+
+                            String json = gson.toJson(selectedStrippedLoadout);
+                            String encoded = Base64.encodeToString(json.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
+
+                            new Thread(() -> {
+                                socketManager.sendMessage("USELOADOUT_BASE64:" + encoded);
+
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                socketManager.sendMessage("HOME");
+                            }).start();
+
+                            if (resetRunnable[0] != null) {
+                                handler.removeCallbacks(resetRunnable[0]);
+                            }
+
+                            resetRunnable[0] = () -> {
+                                try {
+                                    if (isAdded()) {
+                                        v.setBackgroundResource(R.drawable.item_frame);
+                                        selectedLoadout[0] = null;
+                                        isOnCooldown[0] = false;
+                                    }
+                                } catch (Exception e) {
+                                    Log.e("PotionReset", "Error resetting frame: " + e.getMessage());
+                                }
+                            };
+                            handler.postDelayed(resetRunnable[0], 2000);
+                        }
+                        lastClickTime[0] = currentTime;
+                    });
+                    potionContainer.addView(loadoutFrame);
+                }
+            }
+            else {
+                TextView emptyText = new TextView(requireContext());
+                LinearLayout.LayoutParams emptyParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                );
+                emptyText.setLayoutParams(emptyParams);
+                emptyText.setGravity(Gravity.CENTER);
+                emptyText.setText("No Potion Loadouts");
+                emptyText.setTextColor(Color.WHITE);
+                emptyText.setTextSize(26);
+                emptyText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                emptyText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+
+                potionContainer.addView(emptyText);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
         }
 
         // NAVBAR CODE ////////////////////////////////////////////

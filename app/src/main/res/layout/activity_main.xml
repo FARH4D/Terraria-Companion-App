@@ -239,9 +239,24 @@
                 android:background="@drawable/home_frames"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/loadout_frame"/>
+                app:layout_constraintTop_toBottomOf="@id/loadout_frame">
 
+                <HorizontalScrollView
+                    android:id="@+id/potion_scroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="none"
+                    android:fillViewport="true">
 
+                    <LinearLayout
+                        android:id="@+id/potion_loadout_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical" />
+                </HorizontalScrollView>
+            </FrameLayout>
+            
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

@@ -1,5 +1,7 @@
 package com.example.terrariacompanion;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -91,6 +93,44 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // ITEM TRACKING ////////////////////////////////////////////
+        SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
+        String itemName = prefs.getString("tracked_item_name", null);
+        int ingredientCount = prefs.getInt("ingredient_count", 0);
+
+        LinearLayout ingredientContainer = view.findViewById(R.id.ingredient_container);
+        ingredientContainer.removeAllViews();
+
+        if (itemName != null && ingredientCount > 0) {
+            TextView itemTitle = new TextView(requireContext());
+            itemTitle.setText(itemName);
+            itemTitle.setTextSize(23f);
+            itemTitle.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+            itemTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            itemTitle.setGravity(Gravity.CENTER);
+            LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            titleParams.setMargins(0, 0, 0, 16);
+            itemTitle.setLayoutParams(titleParams);
+            ingredientContainer.addView(itemTitle);
+
+            for (int i = 0; i < ingredientCount; i++) {
+                String ingredientName = prefs.getString("ingredient_" + i + "_name", "Unknown");
+                int quantity = prefs.getInt("ingredient_" + i + "_qty", 0);
+
+                TextView ingredientText = new TextView(requireContext());
+                ingredientText.setText("• " + ingredientName + " x" + quantity);
+                ingredientText.setTextSize(20f);
+                ingredientText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+                ingredientText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+                ingredientText.setPadding(10, 8, 10, 8);
+                ingredientContainer.addView(ingredientText);
+            }
+        }
+        /////////////////////////////////////////////////////////
 
         try {
             FileInputStream fis = requireContext().openFileInput("potion_loadouts.json");

@@ -123,7 +123,7 @@
             android:layout_height="wrap_content">
 
             <FrameLayout
-                android:id="@+id/buffs_frame"
+                android:id="@+id/track_frame"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_marginStart="10dp"
@@ -134,18 +134,30 @@
                 app:layout_constraintEnd_toStartOf="@id/players_frame">
 
                 <TextView
-                    android:id="@+id/buffTitle"
+                    android:id="@+id/trackTitle"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:textAlignment="center"
+                    android:layout_gravity="top|center_horizontal"
+                    android:gravity="center"
                     android:textSize="30sp"
                     android:fontFamily="@font/andy_bold"
-                    android:text=""
                     android:textColor="#37BB07"
-                    />
+                    android:text="Tracking" />
 
+                <ScrollView
+                    android:id="@+id/ingredient_scroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="30dp">
+
+                    <LinearLayout
+                        android:id="@+id/ingredient_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="8dp"/>
+                </ScrollView>
             </FrameLayout>
-
 
             <FrameLayout
                 android:id="@+id/players_frame"
@@ -156,7 +168,7 @@
                 android:background="@drawable/home_frames"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/buffs_frame">
+                app:layout_constraintStart_toEndOf="@id/track_frame">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -184,15 +196,11 @@
                             android:id="@+id/player_names_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:orientation="vertical"/>
 
-
-
-                        </LinearLayout>
                     </androidx.core.widget.NestedScrollView>
 
                 </LinearLayout>
-
 
             </FrameLayout>
 
@@ -206,7 +214,7 @@
                 android:background="@drawable/home_frames"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buffs_frame">
+                app:layout_constraintTop_toBottomOf="@id/track_frame">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -256,7 +264,7 @@
                         android:gravity="center_vertical" />
                 </HorizontalScrollView>
             </FrameLayout>
-            
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

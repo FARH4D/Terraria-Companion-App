@@ -1,5 +1,7 @@
 package com.example.terrariacompanion;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -11,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +42,8 @@ public class ItemInfo extends Fragment {
     private boolean _bossChecklist;
     private int _bossNum;
     private Bitmap _bitmap;
+    private List<Map<String, Object>> firstRecipe;
+    private String trackedItemName;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,8 +116,10 @@ public class ItemInfo extends Fragment {
                                     itemTitle.setText(finalData.name);
                                     itemImage.setImageBitmap(_bitmap);
 
+                                    firstRecipe = finalData.recipes.get(0);
+                                    trackedItemName = finalData.name;
+
                                     for (List<Map<String, Object>> entryList : finalData.recipes) {
-                                        int i = 0;
                                         LinearLayout dropFrame = new LinearLayout(requireContext());
                                         dropFrame.setOrientation(LinearLayout.VERTICAL);
                                         LinearLayout.LayoutParams frameParams = new LinearLayout.LayoutParams(
@@ -287,6 +294,33 @@ public class ItemInfo extends Fragment {
                 e.printStackTrace();
             }
         }).start();
+
+        view.findViewById(R.id.track_button).setOnClickListener(btnView -> {
+            SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+
+            editor.putString("tracked_item_name", trackedItemName);
+
+            int index = 0;
+            for (Map<String, Object> ingredient : firstRecipe) {
+                if (ingredient.containsKey("quantity") && ingredient.containsKey("name")) {
+                    int qty = (ingredient.get("quantity") instanceof Integer) ? (Integer) ingredient.get("quantity") : 0;
+
+                    if (qty == 0) continue; // Future note: this ensures crafting stations are skipped
+
+                    String name = (String) ingredient.get("name");
+
+                    editor.putString("ingredient_" + index + "_name", name);
+                    editor.putInt("ingredient_" + index + "_qty", qty);
+                    index++;
+                }
+            }
+
+            editor.putInt("ingredient_count", index);
+            editor.apply();
+
+            Toast.makeText(requireContext(), "Tracking: " + trackedItemName, Toast.LENGTH_SHORT).show();
+        });
 
         view.findViewById(R.id.back_button).setOnClickListener(v -> {
             new Thread(() -> {

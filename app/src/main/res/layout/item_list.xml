@@ -77,18 +77,18 @@
                     android:id="@+id/cats_summoner"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/item_cat_summon"
+                    android:src="@drawable/item_cat_summoner"
                     android:contentDescription="Summoning Weapons"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="10dp" />
 
                 <ImageView
-                    android:id="@+id/cats_bosssummon"
+                    android:id="@+id/cats_throwing"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/item_cat_boss"
-                    android:contentDescription="Boss Summoning Items"
+                    android:src="@drawable/item_cat_throwing"
+                    android:contentDescription="Throwing"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="10dp" />
@@ -104,11 +104,91 @@
                     android:padding="10dp" />
 
                 <ImageView
+                    android:id="@+id/cats_axes"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/item_cat_axe"
+                    android:contentDescription="Axes"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:id="@+id/cats_hammers"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/item_cat_hammer"
+                    android:contentDescription="Hammers"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:id="@+id/cats_helmets"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/item_cat_helmets"
+                    android:contentDescription="Helmets"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp" />
+
+                <ImageView
                     android:id="@+id/cats_body"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/item_cat_bodyarmour"
+                    android:src="@drawable/item_cat_body"
                     android:contentDescription="Chest Armour"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:id="@+id/cats_legs"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/item_cat_legs"
+                    android:contentDescription="Leggings"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:id="@+id/cats_accessories"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/item_cat_accessories"
+                    android:contentDescription="Accessories"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:id="@+id/cats_ammo"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/item_cat_ammo"
+                    android:contentDescription="Ammo"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:id="@+id/cats_blocks"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/item_cat_blocks"
+                    android:contentDescription="Blocks"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:id="@+id/cats_misc"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/item_cat_misc"
+                    android:contentDescription="Miscellaneous"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="10dp" />

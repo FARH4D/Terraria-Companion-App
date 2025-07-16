@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -105,17 +106,58 @@ public class BossInfo extends Fragment {
                                             Bitmap imgBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
                                             if (imgBitmap != null) {
+                                                FrameLayout itemFrame = new FrameLayout(requireContext());
+                                                LinearLayout.LayoutParams frameParams = new LinearLayout.LayoutParams(
+                                                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                        ViewGroup.LayoutParams.WRAP_CONTENT
+                                                );
+                                                frameParams.gravity = Gravity.CENTER_HORIZONTAL;
+                                                frameParams.topMargin = 16;
+                                                itemFrame.setLayoutParams(frameParams);
+                                                itemFrame.setBackgroundResource(R.drawable.item_frame_selected);
+
                                                 ImageView iconView = new ImageView(requireContext());
-                                                iconView.setImageBitmap(imgBitmap);
                                                 int size = (int) TypedValue.applyDimension(
-                                                        TypedValue.COMPLEX_UNIT_DIP, 32, requireContext().getResources().getDisplayMetrics());
+                                                        TypedValue.COMPLEX_UNIT_DIP, 64, requireContext().getResources().getDisplayMetrics());
 
-                                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
-                                                params.setMargins(0, 8, 0, 0);
-                                                params.gravity = Gravity.CENTER_HORIZONTAL;
+                                                FrameLayout.LayoutParams imageParams = new FrameLayout.LayoutParams(size, size);
+                                                imageParams.gravity = Gravity.CENTER;
+                                                iconView.setLayoutParams(imageParams);
 
-                                                iconView.setLayoutParams(params);
-                                                spawnContainer.addView(iconView);
+                                                iconView.setImageBitmap(imgBitmap);
+                                                iconView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                                iconView.setAdjustViewBounds(true);
+
+                                                itemFrame.addView(iconView);
+                                                spawnContainer.addView(itemFrame);
+
+                                                if (finalData.spawnItems != null && !finalData.spawnItems.isEmpty()) {
+                                                    ItemData spawnItem = finalData.spawnItems.get(0);
+                                                    int itemID = spawnItem.getId();
+
+                                                    itemFrame.setOnClickListener(v -> {
+                                                        new Thread(() -> {
+                                                            socketManager.setCurrent_page("ITEMINFO");
+                                                            if (isAdded()) {
+                                                                ItemInfo itemInfoFragment = new ItemInfo();
+                                                                Bundle args = new Bundle();
+                                                                args.putInt("itemId", itemID);
+                                                                args.putString("category", "all");
+                                                                args.putInt("currentNum", 30);
+                                                                args.putString("search", "");
+                                                                args.putBoolean("bossChecklist", true);
+                                                                args.putInt("bossNum", _bossNum);
+                                                                Bitmap bitmap2 = spawnItem.getImage();
+                                                                args.putByteArray("bitmap", bitmapToByteArray(bitmap2));
+                                                                itemInfoFragment.setArguments(args);
+                                                                requireActivity().runOnUiThread(() ->
+                                                                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                                                                .replace(R.id.fragment_container, itemInfoFragment).commit()
+                                                                );
+                                                            }
+                                                        }).start();
+                                                    });
+                                                }
                                             }
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -186,7 +228,6 @@ public class BossInfo extends Fragment {
                                             Toast.makeText(requireContext(), entry.name, Toast.LENGTH_SHORT).show();
                                         });
                                     }
-
                                 }
                             });
                         }
@@ -209,6 +250,11 @@ public class BossInfo extends Fragment {
                 }
             }).start();
         });
+    }
 
+    private byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
     }
 }

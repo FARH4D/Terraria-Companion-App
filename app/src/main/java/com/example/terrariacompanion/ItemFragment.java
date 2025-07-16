@@ -218,6 +218,7 @@ public class ItemFragment extends Fragment {
                                                         args.putString("category", category);
                                                         args.putInt("currentNum", currentNum);
                                                         args.putString("search", search);
+                                                        args.putBoolean("bossChecklist", false);
                                                         Bitmap bitmap = entry.getImage();
                                                         args.putByteArray("bitmap", bitmapToByteArray(bitmap));
                                                         itemInfoFragment.setArguments(args);
@@ -227,7 +228,6 @@ public class ItemFragment extends Fragment {
                                                 }).start();
                                             });
                                             isReceivingData = false;
-
                                         }
                                     }
                                 });

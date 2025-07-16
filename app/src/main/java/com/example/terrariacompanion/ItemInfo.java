@@ -25,11 +25,9 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public class ItemInfo extends Fragment {
 
@@ -38,8 +36,9 @@ public class ItemInfo extends Fragment {
     private int _currentNum;
     private String _category;
     private String _search;
+    private boolean _bossChecklist;
+    private int _bossNum;
     private Bitmap _bitmap;
-    private Set<Integer> clickedOnce = new HashSet<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +57,8 @@ public class ItemInfo extends Fragment {
             _currentNum = getArguments().getInt("currentNum");
             _category = getArguments().getString("category");
             _search = getArguments().getString("search");
+            _bossChecklist = getArguments().getBoolean("bossChecklist");
+            _bossNum = getArguments().getInt("bossNum");
 
             byte[] byteArray = getArguments().getByteArray("bitmap");
             if (byteArray != null) {
@@ -253,6 +254,7 @@ public class ItemInfo extends Fragment {
                                                                 args.putString("category", _category);
                                                                 args.putInt("currentNum", _currentNum);
                                                                 args.putString("search", _search);
+                                                                args.putBoolean("bossChecklist", false);
                                                                 String base64Image = (String) entry.get("image");
                                                                 Bitmap bitmap = base64ToBitmap(base64Image);
                                                                 args.putByteArray("bitmap", bitmapToByteArray(bitmap));
@@ -268,7 +270,6 @@ public class ItemInfo extends Fragment {
                                                 });
                                             }
                                         }
-
                                         dropFrame.addView(craftingStationLayout);
 
                                         dropFrame.addView(ingredientLayout);
@@ -300,17 +301,30 @@ public class ItemInfo extends Fragment {
                     requireActivity().runOnUiThread(() -> requireActivity().getSupportFragmentManager()
                             .beginTransaction().replace(R.id.fragment_container, itemInfoFragment).commit());
                 } else {
-                    socketManager.setCurrent_page("RECIPES");
+                    if (_bossChecklist) {
+                        socketManager.setCurrent_page("BOSSINFO");
 
-                    ItemFragment itemFragment = new ItemFragment();
-                    Bundle args = new Bundle();
-                    args.putInt("currentNum", _currentNum);
-                    args.putString("category", _category);
-                    args.putString("search", _search);
-                    itemFragment.setArguments(args);
+                        BossInfo bossInfoFragment = new BossInfo();
+                        Bundle args = new Bundle();
+                        args.putInt("bossNum", _bossNum);
+                        bossInfoFragment.setArguments(args);
 
-                    requireActivity().runOnUiThread(() -> requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, itemFragment).commit());
+                        requireActivity().runOnUiThread(() -> requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, bossInfoFragment).commit());
+                    }
+                    else {
+                        socketManager.setCurrent_page("RECIPES");
+
+                        ItemFragment itemFragment = new ItemFragment();
+                        Bundle args = new Bundle();
+                        args.putInt("currentNum", _currentNum);
+                        args.putString("category", _category);
+                        args.putString("search", _search);
+                        itemFragment.setArguments(args);
+
+                        requireActivity().runOnUiThread(() -> requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, itemFragment).commit());
+                    }
                 }
             }).start();
         });

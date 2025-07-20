@@ -44,6 +44,7 @@ public class ItemInfo extends Fragment {
     private Bitmap _bitmap;
     private List<Map<String, Object>> firstRecipe;
     private String trackedItemName;
+    private int trackedItemInt;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,8 +92,11 @@ public class ItemInfo extends Fragment {
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
             new Thread(() -> {
+                SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
+                trackedItemInt = prefs.getInt("tracked_item_id", 1);
+
                 socketManager.setCurrent_page("HOME");
-                socketManager.sendMessage("HOME");
+                socketManager.sendMessage("HOME:" + trackedItemInt + ":null");
                 if (isAdded()) {
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new HomeFragment()).commit();
@@ -118,6 +122,7 @@ public class ItemInfo extends Fragment {
 
                                     firstRecipe = finalData.recipes.get(0);
                                     trackedItemName = finalData.name;
+                                    trackedItemInt = finalData.id;
 
                                     for (List<Map<String, Object>> entryList : finalData.recipes) {
                                         LinearLayout dropFrame = new LinearLayout(requireContext());
@@ -300,6 +305,7 @@ public class ItemInfo extends Fragment {
             SharedPreferences.Editor editor = prefs.edit();
 
             editor.putString("tracked_item_name", trackedItemName);
+            editor.putInt("tracked_item_id", trackedItemInt);
 
             int index = 0;
             for (Map<String, Object> ingredient : firstRecipe) {

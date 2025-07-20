@@ -1,5 +1,7 @@
 package com.example.terrariacompanion;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -28,6 +30,7 @@ public class BeastiaryFragment extends Fragment {
     private String search;
     private GridLayout gridLayout;
     private EditText searchBar;
+    private int trackedItemInt;
     private boolean isReceivingData = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -58,8 +61,11 @@ public class BeastiaryFragment extends Fragment {
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
             new Thread(() -> {
+                SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
+                trackedItemInt = prefs.getInt("tracked_item_id", 1);
+
                 socketManager.setCurrent_page("HOME");
-                socketManager.sendMessage("HOME");
+                socketManager.sendMessage("HOME:" + trackedItemInt + ":null");
                 if (isAdded()) {
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new HomeFragment()).commit();

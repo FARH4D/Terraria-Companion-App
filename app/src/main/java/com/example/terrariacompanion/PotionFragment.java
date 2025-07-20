@@ -1,6 +1,8 @@
 package com.example.terrariacompanion;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,6 +43,7 @@ public class PotionFragment extends Fragment {
     private boolean isEditMode = false;
     private long lastClickTime = 0;
     private static final long CLICK_COOLDOWN_MS = 1000;
+    private int trackedItemInt;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.potion_loadout, container, false);
@@ -62,8 +65,11 @@ public class PotionFragment extends Fragment {
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
             new Thread(() -> {
+                SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
+                trackedItemInt = prefs.getInt("tracked_item_id", 1);
+
                 socketManager.setCurrent_page("HOME");
-                socketManager.sendMessage("HOME");
+                socketManager.sendMessage("HOME:" + trackedItemInt + ":null");
                 if (isAdded()) {
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new HomeFragment()).commit();

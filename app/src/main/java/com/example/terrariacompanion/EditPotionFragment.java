@@ -1,5 +1,7 @@
 package com.example.terrariacompanion;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -32,6 +34,7 @@ public class EditPotionFragment extends Fragment {
     private SocketManager socketManager;
     private Set<PotionEntry> selectedPotions = new HashSet<>();
     private String loadoutToEditName;
+    private int trackedItemInt;
 
     public EditPotionFragment(String loadoutName) {
         this.loadoutToEditName = loadoutName;
@@ -58,8 +61,11 @@ public class EditPotionFragment extends Fragment {
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
             new Thread(() -> {
+                SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
+                trackedItemInt = prefs.getInt("tracked_item_id", 1);
+
                 socketManager.setCurrent_page("HOME");
-                socketManager.sendMessage("HOME");
+                socketManager.sendMessage("HOME:" + trackedItemInt + ":null");
                 if (isAdded()) {
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new HomeFragment()).commit();

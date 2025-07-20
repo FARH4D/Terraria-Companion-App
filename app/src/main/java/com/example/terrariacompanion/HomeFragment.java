@@ -62,9 +62,7 @@ public class HomeFragment extends Fragment {
     private ImageView background;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.activity_main, container, false);  // Just inflate the layout here, don't do UI interactions yet
     }
 
@@ -130,8 +128,9 @@ public class HomeFragment extends Fragment {
                 ingredientContainer.addView(ingredientText);
             }
         }
-        /////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
+        ////POTION LOADOUT USAGE FRAME//////////////////////////////////////////////////////
         try {
             FileInputStream fis = requireContext().openFileInput("potion_loadouts.json");
             InputStreamReader reader = new InputStreamReader(fis);
@@ -285,6 +284,8 @@ public class HomeFragment extends Fragment {
         } catch (IOException e){
             e.printStackTrace();
         }
+
+        ////////////////////////////////////////////////////////////
 
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_recipe).setOnClickListener(v -> {

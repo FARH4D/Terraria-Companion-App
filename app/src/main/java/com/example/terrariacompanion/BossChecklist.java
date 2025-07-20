@@ -1,5 +1,7 @@
 package com.example.terrariacompanion;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -29,6 +31,7 @@ public class BossChecklist extends Fragment {
     private LinearLayout pre_hardmode_container;
     private LinearLayout hardmode_container;
     private ServerResponse server_data;
+    private int trackedItemInt;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.boss_checklist, container, false);
@@ -55,8 +58,11 @@ public class BossChecklist extends Fragment {
                     throw new RuntimeException(e);
                 }
                 new Thread(() -> {
+                    SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
+                    trackedItemInt = prefs.getInt("tracked_item_id", 1);
+
                     socketManager.setCurrent_page("HOME");
-                    socketManager.sendMessage("HOME");
+                    socketManager.sendMessage("HOME:" + trackedItemInt + ":null");
                     if (isAdded()) {
                         requireActivity().getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container, new HomeFragment()).commit();

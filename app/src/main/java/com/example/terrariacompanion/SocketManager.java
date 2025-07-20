@@ -259,6 +259,7 @@ public class SocketManager {
             JSONObject itemData = new JSONObject(jsonData);
 
             String name = itemData.getString("name");
+            int id = itemData.getInt("id");
             JSONArray recipeArray = itemData.getJSONArray("recipes");
             List<List<Map<String, Object>>> recipeList = new ArrayList<>();
 
@@ -287,7 +288,7 @@ public class SocketManager {
                 }
             }
 
-            return new ItemDataManager(name, recipeList);
+            return new ItemDataManager(name, id, recipeList);
 
         } catch (Exception e) {
             e.printStackTrace();

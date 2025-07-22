@@ -15,6 +15,9 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -60,6 +63,10 @@ public class HomeFragment extends Fragment {
     private LinearLayout player_names_view;
     private FrameLayout playerFrame;
     private ImageView background;
+    private LinearLayout ingredientContainer;
+    private SharedPreferences prefs;
+    private String itemName;
+    private int ingredientCount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +84,11 @@ public class HomeFragment extends Fragment {
         player_names_view = view.findViewById(R.id.player_names_view);
         playerFrame = view.findViewById(R.id.player_frame);
         background = view.findViewById(R.id.main_background);
+        ingredientContainer = view.findViewById(R.id.ingredient_container);
+
+        prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
+        itemName = prefs.getString("tracked_item_name", null);
+        ingredientCount = prefs.getInt("ingredient_count", 0);
 
         LinearLayout potionContainer = view.findViewById(R.id.potion_loadout_container);
         final String[] selectedLoadout = {null};
@@ -91,44 +103,6 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // ITEM TRACKING ////////////////////////////////////////////
-        SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
-        String itemName = prefs.getString("tracked_item_name", null);
-        int ingredientCount = prefs.getInt("ingredient_count", 0);
-
-        LinearLayout ingredientContainer = view.findViewById(R.id.ingredient_container);
-        ingredientContainer.removeAllViews();
-
-        if (itemName != null && ingredientCount > 0) {
-            TextView itemTitle = new TextView(requireContext());
-            itemTitle.setText(itemName);
-            itemTitle.setTextSize(23f);
-            itemTitle.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
-            itemTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-            itemTitle.setGravity(Gravity.CENTER);
-            LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            titleParams.setMargins(0, 0, 0, 16);
-            itemTitle.setLayoutParams(titleParams);
-            ingredientContainer.addView(itemTitle);
-
-            for (int i = 0; i < ingredientCount; i++) {
-                String ingredientName = prefs.getString("ingredient_" + i + "_name", "Unknown");
-                int quantity = prefs.getInt("ingredient_" + i + "_qty", 0);
-
-                TextView ingredientText = new TextView(requireContext());
-                ingredientText.setText("• " + ingredientName + " x" + quantity);
-                ingredientText.setTextSize(20f);
-                ingredientText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
-                ingredientText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-                ingredientText.setPadding(10, 8, 10, 8);
-                ingredientContainer.addView(ingredientText);
-            }
-        }
-        /////////////////////////////////////////////////////////////////////////////////////
 
         ////POTION LOADOUT USAGE FRAME//////////////////////////////////////////////////////
         try {
@@ -425,6 +399,51 @@ public class HomeFragment extends Fragment {
                                         player_names_view.addView(tv);
                                     }
 
+                                    // ITEM TRACKING ////////////////////////////////////////////
+                                    ingredientContainer.removeAllViews();
+
+                                    if (itemName != null && ingredientCount > 0 && data.trackedItems != null) {
+                                        TextView itemTitle = new TextView(requireContext());
+                                        itemTitle.setText(itemName);
+                                        itemTitle.setTextSize(23f);
+                                        itemTitle.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+                                        itemTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+                                        itemTitle.setGravity(Gravity.CENTER);
+
+                                        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                                LinearLayout.LayoutParams.WRAP_CONTENT
+                                        );
+                                        titleParams.setMargins(0, 0, 0, 16);
+                                        itemTitle.setLayoutParams(titleParams);
+                                        ingredientContainer.addView(itemTitle);
+
+                                        for (int i = 0; i < ingredientCount; i++) {
+                                            String ingredientName = prefs.getString("ingredient_" + i + "_name", "Unknown");
+                                            int quantity = prefs.getInt("ingredient_" + i + "_qty", 0);
+                                            int userHas = (i < data.trackedItems.size()) ? data.trackedItems.get(i) : 0;
+
+                                            String text = "• " + ingredientName + ": ";
+
+                                            SpannableString spannable = new SpannableString(text + userHas + "/" + quantity);
+                                            int start = text.length();
+                                            int end = spannable.length();
+
+                                            if (userHas >= quantity) {
+                                                spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.greenText)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                            }
+
+                                            TextView ingredientText = new TextView(requireContext());
+                                            ingredientText.setText(spannable);
+                                            ingredientText.setTextSize(20f);
+                                            ingredientText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+                                            ingredientText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+                                            ingredientText.setPadding(10, 8, 10, 8);
+
+                                            ingredientContainer.addView(ingredientText);
+                                        }
+                                    }
+                                    /////////////////////////////////////////////////////////////////////////////////////
                                     setBiomeBackground(background, data.biome);
 
                                     if (playerFrame.getChildCount() > 0) {

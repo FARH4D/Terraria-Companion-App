@@ -187,7 +187,13 @@ public class SocketManager {
 
             String biome = playerData.getString("biome");
 
-            return new HomeDataManager(currentHealth, maxHealth, currentMana, maxMana, player_names, cosmeticsJson, biome);
+            JSONArray trackedItemsArray = playerData.getJSONArray("_trackedItems");
+            List<Integer> trackedItems = new ArrayList<>();
+            for (int i = 0; i < trackedItemsArray.length(); i++) {
+                trackedItems.add(trackedItemsArray.getInt(i));
+            }
+
+            return new HomeDataManager(currentHealth, maxHealth, currentMana, maxMana, player_names, cosmeticsJson, biome, trackedItems);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -450,6 +450,7 @@ public class HomeFragment extends Fragment {
                                         playerFrame.removeAllViews();
                                     }
 
+                                    //////////////PLAYER SKIN TONE////////////////////////////////////////////////////////
                                     ImageView avatarView = new ImageView(getContext());
                                     avatarView.setImageResource(R.drawable.avatar_male);
 
@@ -477,33 +478,28 @@ public class HomeFragment extends Fragment {
                                     );
                                     avatarView.setLayoutParams(params);
                                     playerFrame.addView(avatarView);
-
+                                /////////////////////////////////////////////////////////////////////////////////////////////////////
+                                ///////////////PLAYER ARMOUR RENDERING //////////////////////////////////////////////////////////////
                                     String[] layerKeys = new String[] {
-                                            "Hair", "HeadArmour", "BodyArmourRightArm", "BodyArmourTorso", "BodyArmourLeftArm", "BodyArmourLeftShoulder", "BodyArmourRightShoulder", "LegArmour"
+                                            "Eyes1", "Eyes2", "Hair", "BodyArmourTorso", "HeadArmour", "BodyArmourRightArm", "BodyArmourLeftArm", "BodyArmourLeftShoulder", "LegArmour"
                                     };
 
                                     Map<String, Integer> targetHeightsDp = new HashMap<>();
-                                    targetHeightsDp.put("Hair", 35);
+                                    targetHeightsDp.put("Hair", 600);
+                                    targetHeightsDp.put("Eyes1", 700);
+                                    targetHeightsDp.put("Eyes2", 700);
+                                    targetHeightsDp.put("BodyArmourTorso", 800);
                                     targetHeightsDp.put("HeadArmour", 470);
                                     targetHeightsDp.put("BodyArmourRightArm", 100);
-                                    targetHeightsDp.put("BodyArmourTorso", 800);
                                     targetHeightsDp.put("BodyArmourLeftArm", 100);
+                                    targetHeightsDp.put("BodyArmourLeftShoulder", 100);
                                     targetHeightsDp.put("LegArmour", 800);
 
                                     Map<String, Integer> topOffsetsDp = new HashMap<>();
-                                    topOffsetsDp.put("Hair", 40);
                                     topOffsetsDp.put("HeadArmour", -60);
-                                    topOffsetsDp.put("BodyArmourRightArm", 0);
-                                    topOffsetsDp.put("BodyArmourTorso", 0);
-                                    topOffsetsDp.put("BodyArmourLeftArm", 0);
-                                    topOffsetsDp.put("LegArmour", 0);
 
                                     Map<String, Integer> leftOffsetsDp = new HashMap<>();
-                                    leftOffsetsDp.put("Hair", 0);
                                     leftOffsetsDp.put("HeadArmour", -10);
-                                    leftOffsetsDp.put("BodyArmourRightArm", 0);
-                                    leftOffsetsDp.put("BodyArmourTorso", 0);
-                                    leftOffsetsDp.put("LegArmour", 0);
 
                                     for (String key : layerKeys) {
                                         String base64 = data.cosmetics.optString(key, null);
@@ -516,84 +512,166 @@ public class HomeFragment extends Fragment {
                                             Bitmap scaledBitmap;
                                             FrameLayout.LayoutParams params2;
 
-                                            if (key.equals("LegArmour")) {
-                                                int targetHeightDp = 800;
-                                                int targetHeightPx = dpToPx(targetHeightDp);
-                                                float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+                                            switch (key) {
+                                                case "Eyes1":
+                                                case "Eyes2": {
+                                                    int targetHeightDp = 600;
+                                                    int targetHeightPx = dpToPx(targetHeightDp);
+                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
 
-                                                params2 = new FrameLayout.LayoutParams(
-                                                        FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                        FrameLayout.LayoutParams.WRAP_CONTENT
-                                                );
+                                                    params2 = new FrameLayout.LayoutParams(
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                                    );
 
-                                                params2.gravity = Gravity.TOP | Gravity.START;
+                                                    params2.gravity = Gravity.TOP | Gravity.START;
 
-                                                params2.topMargin = dpToPx(-60);
-                                                params2.leftMargin = dpToPx(-18);
-                                            }
-                                            else if (key.equals("BodyArmourLeftArm")) {
-                                                int targetHeightDp = 300;
-                                                int targetHeightPx = dpToPx(targetHeightDp);
-                                                float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+                                                    params2.topMargin = dpToPx(-53);
+                                                    params2.leftMargin = dpToPx(-22);
+                                                    break;
+                                                }
+                                                case "LegArmour": {
+                                                    int targetHeightDp = 800;
+                                                    int targetHeightPx = dpToPx(targetHeightDp);
+                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
 
-                                                params2 = new FrameLayout.LayoutParams(
-                                                        FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                        FrameLayout.LayoutParams.WRAP_CONTENT
-                                                );
+                                                    params2 = new FrameLayout.LayoutParams(
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                                    );
 
-                                                params2.gravity = Gravity.TOP | Gravity.START;
+                                                    params2.gravity = Gravity.TOP | Gravity.START;
 
-                                                params2.topMargin = dpToPx(-15);
-                                                params2.leftMargin = dpToPx(50);
-                                            }
-                                            else if (key.equals("BodyArmourRightArm")) {
-                                                int targetHeightDp = 300;
-                                                int targetHeightPx = dpToPx(targetHeightDp);
-                                                float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+                                                    params2.topMargin = dpToPx(-60);
+                                                    params2.leftMargin = dpToPx(-18);
+                                                    break;
+                                                }
+                                                case "BodyArmourTorso": {
+                                                    int targetHeightDp = 1000;
+                                                    int targetHeightPx = dpToPx(targetHeightDp);
+                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
 
-                                                params2 = new FrameLayout.LayoutParams(
-                                                        FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                        FrameLayout.LayoutParams.WRAP_CONTENT
-                                                );
+                                                    params2 = new FrameLayout.LayoutParams(
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                                    );
 
-                                                params2.gravity = Gravity.TOP | Gravity.START;
+                                                    params2.gravity = Gravity.TOP | Gravity.START;
 
-                                                params2.topMargin = dpToPx(-15);
-                                                params2.leftMargin = dpToPx(65);
-                                            }
-                                            else {
-                                                int targetHeightDp = targetHeightsDp.getOrDefault(key, 30);
-                                                int targetHeightPx = dpToPx(targetHeightDp);
-                                                float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+                                                    params2.topMargin = dpToPx(-60);
+                                                    params2.leftMargin = dpToPx(-20);
+                                                    break;
+                                                }
+                                                case "BodyArmourLeftArm":
+                                                case "BodyArmourLeftShoulder": {
+                                                    int targetHeightDp = 300;
+                                                    int targetHeightPx = dpToPx(targetHeightDp);
+                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
 
-                                                params2 = new FrameLayout.LayoutParams(
-                                                        FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                        FrameLayout.LayoutParams.WRAP_CONTENT
-                                                );
-                                                params2.gravity = Gravity.TOP | Gravity.START;
-                                                params2.topMargin = dpToPx(topOffsetsDp.getOrDefault(key, 0));
-                                                params2.leftMargin = dpToPx(leftOffsetsDp.getOrDefault(key, 0));
+                                                    params2 = new FrameLayout.LayoutParams(
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                                    );
+
+                                                    params2.gravity = Gravity.TOP | Gravity.START;
+
+                                                    params2.topMargin = dpToPx(-15);
+                                                    params2.leftMargin = dpToPx(50);
+                                                    break;
+                                                }
+                                                case "BodyArmourRightArm": {
+                                                    int targetHeightDp = 300;
+                                                    int targetHeightPx = dpToPx(targetHeightDp);
+                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+
+                                                    params2 = new FrameLayout.LayoutParams(
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                                    );
+
+                                                    params2.gravity = Gravity.TOP | Gravity.START;
+
+                                                    params2.topMargin = dpToPx(-20);
+                                                    params2.leftMargin = dpToPx(65);
+                                                    break;
+                                                }
+                                                case "Hair": {
+                                                    int targetHeightDp = 300;
+                                                    int targetHeightPx = dpToPx(targetHeightDp);
+                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+
+                                                    params2 = new FrameLayout.LayoutParams(
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                                    );
+
+                                                    params2.gravity = Gravity.TOP | Gravity.START;
+
+                                                    params2.topMargin = dpToPx(-40);
+                                                    params2.leftMargin = dpToPx(60);
+                                                    break;
+                                                }
+                                                default: {
+                                                    int targetHeightDp = targetHeightsDp.getOrDefault(key, 30);
+                                                    int targetHeightPx = dpToPx(targetHeightDp);
+                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+
+                                                    params2 = new FrameLayout.LayoutParams(
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                            FrameLayout.LayoutParams.WRAP_CONTENT
+                                                    );
+                                                    params2.gravity = Gravity.TOP | Gravity.START;
+                                                    params2.topMargin = dpToPx(topOffsetsDp.getOrDefault(key, 0));
+                                                    params2.leftMargin = dpToPx(leftOffsetsDp.getOrDefault(key, 0));
+                                                    break;
+                                                }
                                             }
 
                                             ImageView layer = new ImageView(getContext());
                                             layer.setImageBitmap(scaledBitmap);
 
-                                            if (key.equals("Hair")) {
-                                                String hairColorHex = data.cosmetics.optString("HairColor", "#FFFFFF");
+                                            if (key.equals("Eyes2")) {
+                                                String hairColorHex = data.cosmetics.optString("EyeColor", "#FFFFFF");
                                                 int hairTint = Color.parseColor(hairColorHex);
                                                 layer.setColorFilter(new PorterDuffColorFilter(hairTint, PorterDuff.Mode.SRC_ATOP));
                                             }
 
+                                            if (key.equals("Hair")) {
+                                                String hairColorHex = data.cosmetics.optString("HairColor", "#FFFFFF");
+                                                int tintColorHair = Color.parseColor(hairColorHex);
+
+                                                float rHair = Color.red(tintColorHair) / 255f;
+                                                float gHair = Color.green(tintColorHair) / 255f;
+                                                float bHair = Color.blue(tintColorHair) / 255f;
+
+                                                ColorMatrix hairMatrix = new ColorMatrix(new float[]{
+                                                        rHair, 0, 0, 0, 0,
+                                                        0, gHair, 0, 0, 0,
+                                                        0, 0, bHair, 0, 0,
+                                                        0, 0, 0, 1, 0
+                                                });
+
+                                                ColorMatrixColorFilter hairFilter = new ColorMatrixColorFilter(hairMatrix);
+                                                layer.setColorFilter(hairFilter);
+                                            }
+
                                             layer.setLayoutParams(params2);
                                             playerFrame.addView(layer);
+                                            /////////////////////////////////////////////////////////////////////////////////////
                                         }
                                     }
                                 }

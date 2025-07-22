@@ -92,7 +92,6 @@ public class HomeFragment extends Fragment {
 
         LinearLayout potionContainer = view.findViewById(R.id.potion_loadout_container);
         final String[] selectedLoadout = {null};
-        final long[] lastClickTime = {0};
         final boolean[] isOnCooldown = {false};
 
         final Handler handler = new Handler(Looper.getMainLooper());
@@ -234,7 +233,6 @@ public class HomeFragment extends Fragment {
                             };
                             handler.postDelayed(resetRunnable[0], 2000);
                         }
-                        lastClickTime[0] = currentTime;
                     });
                     potionContainer.addView(loadoutFrame);
                 }
@@ -501,178 +499,72 @@ public class HomeFragment extends Fragment {
                                     Map<String, Integer> leftOffsetsDp = new HashMap<>();
                                     leftOffsetsDp.put("HeadArmour", -10);
 
+                                    Map<String, LayerConfig> layerConfigs = new HashMap<>();
+
+                                    layerConfigs.put("Eyes1", new LayerConfig(600, -53, -22));
+                                    layerConfigs.put("Eyes2", new LayerConfig(600, -53, -22));
+                                    layerConfigs.put("LegArmour", new LayerConfig(800, -60, -18));
+                                    layerConfigs.put("BodyArmourTorso", new LayerConfig(1000, -60, -20));
+                                    layerConfigs.put("BodyArmourLeftArm", new LayerConfig(300, -15, 50));
+                                    layerConfigs.put("BodyArmourLeftShoulder", new LayerConfig(300, -15, 50));
+                                    layerConfigs.put("BodyArmourRightArm", new LayerConfig(300, -20, 65));
+                                    layerConfigs.put("Hair", new LayerConfig(300, -40, 60));
+
                                     for (String key : layerKeys) {
                                         String base64 = data.cosmetics.optString(key, null);
                                         if (base64 == null) continue;
 
                                         byte[] decoded = Base64.decode(base64, Base64.DEFAULT);
                                         Bitmap originalBitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                                        if (originalBitmap == null) continue;
 
-                                        if (originalBitmap != null) {
-                                            Bitmap scaledBitmap;
-                                            FrameLayout.LayoutParams params2;
+                                        LayerConfig config = layerConfigs.getOrDefault(key,
+                                                new LayerConfig(targetHeightsDp.getOrDefault(key, 30), topOffsetsDp.getOrDefault(key, 0), leftOffsetsDp.getOrDefault(key, 0)));
 
-                                            switch (key) {
-                                                case "Eyes1":
-                                                case "Eyes2": {
-                                                    int targetHeightDp = 600;
-                                                    int targetHeightPx = dpToPx(targetHeightDp);
-                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
+                                        int targetHeightPx = dpToPx(config.targetHeightDp);
+                                        float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
+                                        int targetWidthPx = (int) (targetHeightPx * aspectRatio);
+                                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
 
-                                                    params2 = new FrameLayout.LayoutParams(
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT
-                                                    );
+                                        FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(
+                                                FrameLayout.LayoutParams.WRAP_CONTENT,
+                                                FrameLayout.LayoutParams.WRAP_CONTENT
+                                        );
+                                        params2.gravity = Gravity.TOP | Gravity.START;
+                                        params2.topMargin = dpToPx(config.topMarginDp);
+                                        params2.leftMargin = dpToPx(config.leftMarginDp);
 
-                                                    params2.gravity = Gravity.TOP | Gravity.START;
+                                        ImageView layer = new ImageView(getContext());
+                                        layer.setImageBitmap(scaledBitmap);
 
-                                                    params2.topMargin = dpToPx(-53);
-                                                    params2.leftMargin = dpToPx(-22);
-                                                    break;
-                                                }
-                                                case "LegArmour": {
-                                                    int targetHeightDp = 800;
-                                                    int targetHeightPx = dpToPx(targetHeightDp);
-                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
-
-                                                    params2 = new FrameLayout.LayoutParams(
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT
-                                                    );
-
-                                                    params2.gravity = Gravity.TOP | Gravity.START;
-
-                                                    params2.topMargin = dpToPx(-60);
-                                                    params2.leftMargin = dpToPx(-18);
-                                                    break;
-                                                }
-                                                case "BodyArmourTorso": {
-                                                    int targetHeightDp = 1000;
-                                                    int targetHeightPx = dpToPx(targetHeightDp);
-                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
-
-                                                    params2 = new FrameLayout.LayoutParams(
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT
-                                                    );
-
-                                                    params2.gravity = Gravity.TOP | Gravity.START;
-
-                                                    params2.topMargin = dpToPx(-60);
-                                                    params2.leftMargin = dpToPx(-20);
-                                                    break;
-                                                }
-                                                case "BodyArmourLeftArm":
-                                                case "BodyArmourLeftShoulder": {
-                                                    int targetHeightDp = 300;
-                                                    int targetHeightPx = dpToPx(targetHeightDp);
-                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
-
-                                                    params2 = new FrameLayout.LayoutParams(
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT
-                                                    );
-
-                                                    params2.gravity = Gravity.TOP | Gravity.START;
-
-                                                    params2.topMargin = dpToPx(-15);
-                                                    params2.leftMargin = dpToPx(50);
-                                                    break;
-                                                }
-                                                case "BodyArmourRightArm": {
-                                                    int targetHeightDp = 300;
-                                                    int targetHeightPx = dpToPx(targetHeightDp);
-                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
-
-                                                    params2 = new FrameLayout.LayoutParams(
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT
-                                                    );
-
-                                                    params2.gravity = Gravity.TOP | Gravity.START;
-
-                                                    params2.topMargin = dpToPx(-20);
-                                                    params2.leftMargin = dpToPx(65);
-                                                    break;
-                                                }
-                                                case "Hair": {
-                                                    int targetHeightDp = 300;
-                                                    int targetHeightPx = dpToPx(targetHeightDp);
-                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
-
-                                                    params2 = new FrameLayout.LayoutParams(
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT
-                                                    );
-
-                                                    params2.gravity = Gravity.TOP | Gravity.START;
-
-                                                    params2.topMargin = dpToPx(-40);
-                                                    params2.leftMargin = dpToPx(60);
-                                                    break;
-                                                }
-                                                default: {
-                                                    int targetHeightDp = targetHeightsDp.getOrDefault(key, 30);
-                                                    int targetHeightPx = dpToPx(targetHeightDp);
-                                                    float aspectRatio = (float) originalBitmap.getWidth() / originalBitmap.getHeight();
-                                                    int targetWidthPx = (int) (targetHeightPx * aspectRatio);
-                                                    scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidthPx, targetHeightPx, false);
-
-                                                    params2 = new FrameLayout.LayoutParams(
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                                                            FrameLayout.LayoutParams.WRAP_CONTENT
-                                                    );
-                                                    params2.gravity = Gravity.TOP | Gravity.START;
-                                                    params2.topMargin = dpToPx(topOffsetsDp.getOrDefault(key, 0));
-                                                    params2.leftMargin = dpToPx(leftOffsetsDp.getOrDefault(key, 0));
-                                                    break;
-                                                }
-                                            }
-
-                                            ImageView layer = new ImageView(getContext());
-                                            layer.setImageBitmap(scaledBitmap);
-
-                                            if (key.equals("Eyes2")) {
-                                                String hairColorHex = data.cosmetics.optString("EyeColor", "#FFFFFF");
-                                                int hairTint = Color.parseColor(hairColorHex);
-                                                layer.setColorFilter(new PorterDuffColorFilter(hairTint, PorterDuff.Mode.SRC_ATOP));
-                                            }
-
-                                            if (key.equals("Hair")) {
-                                                String hairColorHex = data.cosmetics.optString("HairColor", "#FFFFFF");
-                                                int tintColorHair = Color.parseColor(hairColorHex);
-
-                                                float rHair = Color.red(tintColorHair) / 255f;
-                                                float gHair = Color.green(tintColorHair) / 255f;
-                                                float bHair = Color.blue(tintColorHair) / 255f;
-
-                                                ColorMatrix hairMatrix = new ColorMatrix(new float[]{
-                                                        rHair, 0, 0, 0, 0,
-                                                        0, gHair, 0, 0, 0,
-                                                        0, 0, bHair, 0, 0,
-                                                        0, 0, 0, 1, 0
-                                                });
-
-                                                ColorMatrixColorFilter hairFilter = new ColorMatrixColorFilter(hairMatrix);
-                                                layer.setColorFilter(hairFilter);
-                                            }
-
-                                            layer.setLayoutParams(params2);
-                                            playerFrame.addView(layer);
-                                            /////////////////////////////////////////////////////////////////////////////////////
+                                        if (key.equals("Eyes2")) {
+                                            String hairColorHex = data.cosmetics.optString("EyeColor", "#FFFFFF");
+                                            int hairTint = Color.parseColor(hairColorHex);
+                                            layer.setColorFilter(new PorterDuffColorFilter(hairTint, PorterDuff.Mode.SRC_ATOP));
                                         }
+
+                                        if (key.equals("Hair")) {
+                                            String hairColorHex = data.cosmetics.optString("HairColor", "#FFFFFF");
+                                            int tintColorHair = Color.parseColor(hairColorHex);
+
+                                            float rHair = Color.red(tintColorHair) / 255f;
+                                            float gHair = Color.green(tintColorHair) / 255f;
+                                            float bHair = Color.blue(tintColorHair) / 255f;
+
+                                            ColorMatrix hairMatrix = new ColorMatrix(new float[]{
+                                                    rHair, 0, 0, 0, 0,
+                                                    0, gHair, 0, 0, 0,
+                                                    0, 0, bHair, 0, 0,
+                                                    0, 0, 0, 1, 0
+                                            });
+
+                                            ColorMatrixColorFilter hairFilter = new ColorMatrixColorFilter(hairMatrix);
+                                            layer.setColorFilter(hairFilter);
+                                        }
+
+                                        layer.setLayoutParams(params2);
+                                        playerFrame.addView(layer);
+                                        /////////////////////////////////////////////////////////////////////////////////////
                                     }
                                 }
                             });
@@ -763,5 +655,17 @@ public class HomeFragment extends Fragment {
             background.setBackground(transitionDrawable);
             transitionDrawable.startTransition(500);
         }
+    }
+}
+
+class LayerConfig {
+    int targetHeightDp;
+    int topMarginDp;
+    int leftMarginDp;
+
+    LayerConfig(int height, int top, int left) {
+        this.targetHeightDp = height;
+        this.topMarginDp = top;
+        this.leftMarginDp = left;
     }
 }

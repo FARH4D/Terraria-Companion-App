@@ -26,6 +26,7 @@ import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.server.ServerResponse;
 import com.farh4d.terrariacompanion.server.SocketManager;
@@ -67,6 +68,7 @@ public class ItemFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+        SoundManager.init(getContext());
 
         socketManager = SocketManagerSingleton.getInstance();
 
@@ -83,6 +85,7 @@ public class ItemFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                 trackedItemInt = prefs.getInt("tracked_item_id", 1);
 
@@ -102,7 +105,7 @@ public class ItemFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
-                isReceivingData = false;
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -131,7 +134,7 @@ public class ItemFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
-                isReceivingData = false;
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -157,6 +160,7 @@ public class ItemFragment extends Fragment {
         Button nextButton = requireView().findViewById(R.id.right_button);
         nextButton.setOnClickListener(v -> {
             if (!socketManager.getAgain()) {
+                SoundManager.playClick();
                 currentNum = currentNum + 30;
                 getData();
             }
@@ -166,6 +170,7 @@ public class ItemFragment extends Fragment {
         backButton.setOnClickListener(v -> {
             if (currentNum - 30 < 30) currentNum = 30;
             else {
+                SoundManager.playClick();
                 socketManager.setAgain(false);
                 currentNum = currentNum - 30;
                 getData();
@@ -174,6 +179,7 @@ public class ItemFragment extends Fragment {
 
         Button searchButton = requireView().findViewById(R.id.center_button);
         searchButton.setOnClickListener(v -> {
+            SoundManager.playClick();
             search = searchBar.getText().toString().trim();
             socketManager.setAgain(false);
             currentNum = 30;
@@ -182,6 +188,7 @@ public class ItemFragment extends Fragment {
 
         ImageButton clearButton = requireView().findViewById(R.id.clear_button);
         clearButton.setOnClickListener(v -> {
+            SoundManager.playClick();
             searchBar.setText("");
             search = "";
             currentNum = 30;
@@ -203,6 +210,7 @@ public class ItemFragment extends Fragment {
                     View view = linearLayout.getChildAt(i);
                     if (view instanceof ImageView) {
                         view.setOnClickListener(v -> {
+                            SoundManager.playClick();
                             String resourceName = getResources().getResourceEntryName(v.getId());
                             String tempCategory = resourceName.replace("cats_", "");
 
@@ -288,6 +296,7 @@ public class ItemFragment extends Fragment {
 
                                             itemFrame.setOnClickListener(v -> {
                                                 new Thread(() -> {
+                                                    SoundManager.playClick();
                                                     socketManager.setCurrent_page("ITEMINFO");
                                                     if (isAdded()) {
                                                         ItemInfo itemInfoFragment = new ItemInfo();

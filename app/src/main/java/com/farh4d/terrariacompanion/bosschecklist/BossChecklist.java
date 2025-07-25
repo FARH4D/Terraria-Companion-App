@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.server.ServerResponse;
@@ -55,6 +56,7 @@ public class BossChecklist extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+        SoundManager.init(getContext());
 
         socketManager = SocketManagerSingleton.getInstance();
 
@@ -71,6 +73,7 @@ public class BossChecklist extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                 trackedItemInt = prefs.getInt("tracked_item_id", 1);
 
@@ -90,6 +93,7 @@ public class BossChecklist extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -119,6 +123,7 @@ public class BossChecklist extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -139,31 +144,6 @@ public class BossChecklist extends Fragment {
                 }
             }).start();
         });
-
-        view.findViewById(R.id.nav_checklist).setOnClickListener(v -> {
-            if (!canNavigate || buttonCooldown) return;
-
-            buttonCooldown = true;
-            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
-
-            new Thread(() -> {
-                socketManager.flushSocket();
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                if (SessionData.hasBossChecklist()) {
-                    socketManager.setCurrent_page("CHECKLIST");
-                    socketManager.flushSocket();
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new BossChecklist()).commit();
-                } else {
-                    return;
-                }
-            }).start();
-        });
         ///////////////////////////////////////////////////////////
 
         pre_hardmode_container = view.findViewById(R.id.pre_hardmode_container);
@@ -171,6 +151,7 @@ public class BossChecklist extends Fragment {
         ImageView progression_button = view.findViewById(R.id.progression_button);
 
         progression_button.setOnClickListener(v -> {
+            SoundManager.playClick();
             if (progressionMode) {
                 progressionMode = false;
                 progression_button.setImageResource(R.drawable.grey_button);
@@ -245,6 +226,7 @@ public class BossChecklist extends Fragment {
 
                                 bossView.setOnClickListener(v -> {
                                     new Thread(() -> {
+                                        SoundManager.playClick();
                                         socketManager.setCurrent_page("BOSSINFO");
                                         if (isAdded()) {
                                             BossInfo bossInfoFragment = new BossInfo();
@@ -322,6 +304,7 @@ public class BossChecklist extends Fragment {
 
                                 bossView.setOnClickListener(v -> {
                                     new Thread(() -> {
+                                        SoundManager.playClick();
                                         socketManager.setCurrent_page("BOSSINFO");
                                         if (isAdded()) {
                                             BossInfo bossInfoFragment = new BossInfo();

@@ -26,6 +26,7 @@ import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.server.SocketManager;
@@ -65,6 +66,7 @@ public class PotionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+        SoundManager.init(getContext());
 
         socketManager = SocketManagerSingleton.getInstance();
 
@@ -83,6 +85,7 @@ public class PotionFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                 trackedItemInt = prefs.getInt("tracked_item_id", 1);
 
@@ -102,6 +105,7 @@ public class PotionFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -131,6 +135,7 @@ public class PotionFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -159,6 +164,7 @@ public class PotionFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -249,6 +255,7 @@ public class PotionFragment extends Fragment {
                     loadoutFrame.addView(nameText);
 
                     loadoutFrame.setOnClickListener(v -> {
+                        SoundManager.playDrink();
                         long currentTime = System.currentTimeMillis();
                         if (currentTime - lastClickTime < CLICK_COOLDOWN_MS) return;
                         lastClickTime = currentTime;
@@ -289,6 +296,7 @@ public class PotionFragment extends Fragment {
 
         view.findViewById(R.id.new_button).setOnClickListener(v -> {
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -309,6 +317,7 @@ public class PotionFragment extends Fragment {
         Button editButton = view.findViewById(R.id.edit_button);
         deleteButton.setOnClickListener(v -> {
             isDeleteMode = !isDeleteMode;
+            SoundManager.playClick();
 
             if (isDeleteMode) {
                 isEditMode = false;
@@ -324,6 +333,7 @@ public class PotionFragment extends Fragment {
 
         editButton.setOnClickListener(v -> {
             isEditMode = !isEditMode;
+            SoundManager.playClick();
 
             if (isEditMode) {
                 isDeleteMode = false;

@@ -30,6 +30,7 @@ import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.server.SocketManager;
@@ -63,6 +64,7 @@ public class EditPotionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+        SoundManager.init(getContext());
 
         socketManager = SocketManagerSingleton.getInstance();
 

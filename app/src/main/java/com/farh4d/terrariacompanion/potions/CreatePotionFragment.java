@@ -5,9 +5,12 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +33,7 @@ import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.server.ServerResponse;
@@ -48,6 +52,7 @@ public class CreatePotionFragment extends Fragment {
     private boolean buttonCooldown = false;
     private Set<PotionEntry> selectedPotions = new HashSet<>();
     private int trackedItemInt;
+    private Vibrator vibrator;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -58,6 +63,7 @@ public class CreatePotionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+        SoundManager.init(getContext());
 
         socketManager = SocketManagerSingleton.getInstance();
 
@@ -65,6 +71,8 @@ public class CreatePotionFragment extends Fragment {
             Toast.makeText(requireActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        vibrator = (Vibrator) requireContext().getSystemService(Context.VIBRATOR_SERVICE);
 
         GridLayout loadoutGrid = view.findViewById(R.id.loadout_grid);
 
@@ -75,6 +83,7 @@ public class CreatePotionFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                 trackedItemInt = prefs.getInt("tracked_item_id", 1);
 
@@ -94,6 +103,7 @@ public class CreatePotionFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -123,6 +133,7 @@ public class CreatePotionFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -151,6 +162,7 @@ public class CreatePotionFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -170,10 +182,9 @@ public class CreatePotionFragment extends Fragment {
         });
         ////////////////////////////////////////////////////////////////////////////////////////
 
-
-
         view.findViewById(R.id.back_button).setOnClickListener(v -> {
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -199,6 +210,7 @@ public class CreatePotionFragment extends Fragment {
         EditText potionNameEntry = view.findViewById(R.id.potionNameEntry);
 
         saveButton.setOnClickListener(v -> {
+            SoundManager.playClick();
             String loadoutName = potionNameEntry.getText().toString().trim();
 
             if (loadoutName.isEmpty()) {
@@ -294,7 +306,18 @@ public class CreatePotionFragment extends Fragment {
                                     nameText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
 
                                     potionFrame.setOnClickListener(v -> {
-                                        if (selectedPotions.contains(potion)) {
+                                        boolean isRemoving = selectedPotions.contains(potion);
+
+                                        if (vibrator != null && vibrator.hasVibrator()) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                VibrationEffect effect = VibrationEffect.createOneShot(40, VibrationEffect.DEFAULT_AMPLITUDE);
+                                                vibrator.vibrate(effect);
+                                            } else {
+                                                vibrator.vibrate(40);
+                                            }
+                                        }
+
+                                        if (isRemoving) {
                                             selectedPotions.remove(potion);
                                             potionFrame.setBackgroundResource(R.drawable.item_frame);
                                         } else {

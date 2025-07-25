@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.server.SocketManager;
 import com.farh4d.terrariacompanion.server.SocketManagerSingleton;
 
@@ -37,6 +38,7 @@ public class ConnectFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        SoundManager.init(getContext());
 
         Window window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -54,20 +56,17 @@ public class ConnectFragment extends Fragment {
             buttonCooldown = true;
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
+            SoundManager.playClick();
             String input_text = ip_form.getText().toString().trim();
-
             if (input_text.contains(":")) {
                 String[] parts = input_text.split(":");
-
                 if (parts.length == 2) {
                     String ip = parts[0];
-
                     try {
                         int port = Integer.parseInt(parts[1]);
 
                         new Thread(() -> {
                             SocketManager socketManager = SocketManagerSingleton.getInstance();
-
                             try {
                                 if (socketManager.connect(ip, port)) {
                                     SocketManagerSingleton.setInstance(socketManager);
@@ -82,8 +81,7 @@ public class ConnectFragment extends Fragment {
                                         Toast.makeText(requireContext(), "Connected!", Toast.LENGTH_SHORT).show();
 
                                         requireActivity().getSupportFragmentManager().beginTransaction()
-                                                .replace(R.id.fragment_container, new HomeFragment())
-                                                .commit();
+                                                .replace(R.id.fragment_container, new HomeFragment()).commit();
                                     });
                                 } else {
                                     requireActivity().runOnUiThread(() ->

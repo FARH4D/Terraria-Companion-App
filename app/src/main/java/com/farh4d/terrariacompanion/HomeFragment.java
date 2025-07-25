@@ -12,6 +12,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -41,6 +42,7 @@ import android.util.Base64;
 
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.homeData.HomeDataManager;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
@@ -91,6 +93,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+        SoundManager.init(getContext());
 
         health_bar = view.findViewById(R.id.health_bar);
         mana_bar = view.findViewById(R.id.mana_bar);
@@ -201,6 +204,7 @@ public class HomeFragment extends Fragment {
                         if (!nameForUse.equals(selectedLoadout[0])) {
                             selectedLoadout[0] = nameForUse;
                             v.setBackgroundResource(R.drawable.item_frame_selected);
+                            SoundManager.playClick();
 
                             if (resetRunnable[0] != null) {
                                 handler.removeCallbacks(resetRunnable[0]);
@@ -220,8 +224,8 @@ public class HomeFragment extends Fragment {
                             String encoded = Base64.encodeToString(json.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
 
                             new Thread(() -> {
+                                SoundManager.playDrink();
                                 socketManager.sendMessage("USELOADOUT_BASE64:" + encoded);
-
                                 try {
                                     Thread.sleep(1000);
                                 } catch (InterruptedException e) {
@@ -282,6 +286,7 @@ public class HomeFragment extends Fragment {
 
             new Thread(() -> {
                 isReceivingData = false;
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -312,6 +317,7 @@ public class HomeFragment extends Fragment {
 
             new Thread(() -> {
                 isReceivingData = false;
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -338,9 +344,9 @@ public class HomeFragment extends Fragment {
 
             buttonCooldown = true;
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
-
             new Thread(() -> {
                 isReceivingData = false;
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -368,6 +374,7 @@ public class HomeFragment extends Fragment {
 
             new Thread(() -> {
                 isReceivingData = false;
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);

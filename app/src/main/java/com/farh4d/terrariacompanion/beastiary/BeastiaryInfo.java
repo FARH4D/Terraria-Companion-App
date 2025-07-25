@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.server.ServerResponse;
@@ -65,6 +66,7 @@ public class BeastiaryInfo extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+        SoundManager.init(getContext());
 
         socketManager = SocketManagerSingleton.getInstance();
 
@@ -89,6 +91,7 @@ public class BeastiaryInfo extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                 trackedItemInt = prefs.getInt("tracked_item_id", 1);
 
@@ -108,6 +111,7 @@ public class BeastiaryInfo extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -137,6 +141,7 @@ public class BeastiaryInfo extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -165,6 +170,7 @@ public class BeastiaryInfo extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -281,6 +287,7 @@ public class BeastiaryInfo extends Fragment {
 
         view.findViewById(R.id.back_button).setOnClickListener(v -> {
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.setCurrent_page("BEASTIARY");
                 if (isAdded()) {
                     BeastiaryFragment beastiaryFragment = new BeastiaryFragment();

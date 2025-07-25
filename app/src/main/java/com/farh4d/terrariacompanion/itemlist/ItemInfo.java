@@ -32,6 +32,7 @@ import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.client.SoundManager;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.server.ServerResponse;
 import com.farh4d.terrariacompanion.server.SocketManager;
@@ -72,6 +73,7 @@ public class ItemInfo extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+        SoundManager.init(getContext());
 
         View view = inflater.inflate(R.layout.item_info, container, false);
         if (getArguments() != null) {
@@ -112,6 +114,7 @@ public class ItemInfo extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                 trackedItemInt = prefs.getInt("tracked_item_id", 1);
 
@@ -131,6 +134,7 @@ public class ItemInfo extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -160,6 +164,7 @@ public class ItemInfo extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -188,6 +193,7 @@ public class ItemInfo extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
 
             new Thread(() -> {
+                SoundManager.playClick();
                 socketManager.flushSocket();
                 try {
                     Thread.sleep(500);
@@ -352,8 +358,7 @@ public class ItemInfo extends Fragment {
                                                 ingredientLayout.addView(itemFrame);
 
                                                 itemFrame.setOnClickListener(v -> {
-                                                    if (v.getBackground() == null || !(v.getBackground() instanceof ColorDrawable) ||
-                                                            ((ColorDrawable) v.getBackground()).getColor() != Color.parseColor("#185502")) {
+                                                    if (v.getBackground() == null || !(v.getBackground() instanceof ColorDrawable) || ((ColorDrawable) v.getBackground()).getColor() != Color.parseColor("#185502")) {
                                                         v.setBackgroundColor(Color.parseColor("#185502"));
                                                     } else {
                                                         Bundle currentArgs = getArguments();
@@ -363,6 +368,7 @@ public class ItemInfo extends Fragment {
                                                         }
 
                                                         new Thread(() -> {
+                                                            SoundManager.playClick();
                                                             socketManager.setCurrent_page("ITEMINFO");
                                                             if (isAdded()) {
                                                                 ItemInfo itemInfoFragment = new ItemInfo();
@@ -406,6 +412,7 @@ public class ItemInfo extends Fragment {
         }).start();
 
         view.findViewById(R.id.track_button).setOnClickListener(btnView -> {
+            SoundManager.playClick();
             SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
 
@@ -435,6 +442,7 @@ public class ItemInfo extends Fragment {
 
         view.findViewById(R.id.back_button).setOnClickListener(v -> {
             new Thread(() -> {
+                SoundManager.playClick();
                 if (!ItemNavigationStack.itemStack.isEmpty()) {
                     Bundle previousArgs = ItemNavigationStack.itemStack.pop();
 

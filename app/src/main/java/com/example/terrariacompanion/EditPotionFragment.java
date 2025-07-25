@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class EditPotionFragment extends Fragment {
@@ -123,7 +124,13 @@ public class EditPotionFragment extends Fragment {
             }
         });
 
+        Set<String> seenPotions = new HashSet<>();
         for (PotionEntry potion : loadoutMap.getAllPotionsFlatList()) {
+            String uniqueKey = potion.getMod() + ":" + potion.getInternalName();
+            if (!seenPotions.add(uniqueKey)) {
+                continue;   // This is to skip duplicates so you can't add more than 1 of the same potion to a loadout when editing
+            }
+
             FrameLayout potionFrame = new FrameLayout(requireContext());
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.width = 250;
@@ -134,7 +141,10 @@ public class EditPotionFragment extends Fragment {
             params.setMargins(10, 10, 10, 10);
             potionFrame.setLayoutParams(params);
 
-            boolean isSelected = selectedPotions.contains(potion);
+            String potionKey = potion.getMod() + ":" + potion.getInternalName();
+            boolean isSelected = selectedPotions.stream().anyMatch(p -> (p.getMod() + ":" + p.getInternalName()).equals(potionKey));
+            // ^ basically turns the user's loadout potions into a stream so they can be iterated, then anyMatch returns true if they match the condition above, program won't be confused between
+            // potions in other loadouts and potions in this loadout because it will have a unique identity.
             potionFrame.setBackgroundResource(isSelected ? R.drawable.item_frame_selected : R.drawable.item_frame);
 
             ImageView potionImage = new ImageView(requireContext());
@@ -179,8 +189,10 @@ public class EditPotionFragment extends Fragment {
             nameText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
 
             potionFrame.setOnClickListener(v -> {
-                if (selectedPotions.contains(potion)) {
-                    selectedPotions.remove(potion);
+                Optional<PotionEntry> match = selectedPotions.stream().filter(p -> (p.getMod() + ":" + p.getInternalName()).equals(potionKey)).findFirst();
+
+                if (match.isPresent()) {
+                    selectedPotions.remove(match.get());
                     potionFrame.setBackgroundResource(R.drawable.item_frame);
                 } else {
                     selectedPotions.add(potion);

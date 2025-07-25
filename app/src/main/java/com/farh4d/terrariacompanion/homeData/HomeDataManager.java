@@ -1,4 +1,4 @@
-package com.farh4d.terrariacompanion;
+package com.farh4d.terrariacompanion.homeData;
 
 import org.json.JSONObject;
 
@@ -13,8 +13,9 @@ public class HomeDataManager {
     public JSONObject cosmetics;
     public String biome;
     public List<Integer> trackedItems;
+    public boolean bossChecklist;
 
-    public HomeDataManager(int currentHealth, int maxHealth, int currentMana, int maxMana, List<String> playerNames, JSONObject cosmetics, String biome, List<Integer> trackedItems) {
+    public HomeDataManager(int currentHealth, int maxHealth, int currentMana, int maxMana, List<String> playerNames, JSONObject cosmetics, String biome, List<Integer> trackedItems, boolean bossChecklist) {
         this.currentHealth = currentHealth;
         this.maxHealth = maxHealth;
         this.currentMana = currentMana;
@@ -23,5 +24,6 @@ public class HomeDataManager {
         this.cosmetics = cosmetics;
         this.biome = biome;
         this.trackedItems = trackedItems;
+        this.bossChecklist = bossChecklist;
     }
 }

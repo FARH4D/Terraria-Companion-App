@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Pair;
 
-import com.farh4d.terrariacompanion.HomeDataManager;
+import com.farh4d.terrariacompanion.homeData.HomeDataManager;
 import com.farh4d.terrariacompanion.beastiary.DropItem;
 import com.farh4d.terrariacompanion.beastiary.NpcDataManager;
 import com.farh4d.terrariacompanion.bosschecklist.BossDataManager;
@@ -201,7 +201,9 @@ public class SocketManager {
                 trackedItems.add(trackedItemsArray.getInt(i));
             }
 
-            return new HomeDataManager(currentHealth, maxHealth, currentMana, maxMana, player_names, cosmeticsJson, biome, trackedItems);
+            boolean bossChecklist = playerData.getBoolean("bossChecklist");
+
+            return new HomeDataManager(currentHealth, maxHealth, currentMana, maxMana, player_names, cosmeticsJson, biome, trackedItems, bossChecklist);
 
         } catch (Exception e) {
             e.printStackTrace();

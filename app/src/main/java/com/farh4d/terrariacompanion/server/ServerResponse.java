@@ -2,7 +2,7 @@ package com.farh4d.terrariacompanion.server;
 
 import android.util.Pair;
 
-import com.farh4d.terrariacompanion.HomeDataManager;
+import com.farh4d.terrariacompanion.homeData.HomeDataManager;
 import com.farh4d.terrariacompanion.beastiary.NpcDataManager;
 import com.farh4d.terrariacompanion.bosschecklist.BossDataManager;
 import com.farh4d.terrariacompanion.itemlist.ItemData;

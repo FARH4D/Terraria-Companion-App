@@ -41,6 +41,8 @@ import android.util.Base64;
 
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.homeData.HomeDataManager;
+import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.potions.PotionEntry;
 import com.farh4d.terrariacompanion.potions.PotionEntryData;
@@ -66,6 +68,8 @@ public class HomeFragment extends Fragment {
 
     private SocketManager socketManager;
     private boolean isReceivingData = false;
+    private boolean canNavigate = false;
+    private boolean buttonCooldown = false;
     private ProgressBar health_bar;
     private ProgressBar mana_bar;
     private TextView health_status;
@@ -86,6 +90,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
 
         health_bar = view.findViewById(R.id.health_bar);
         mana_bar = view.findViewById(R.id.mana_bar);
@@ -181,7 +186,6 @@ public class HomeFragment extends Fragment {
                     loadoutFrame.addView(nameText);
 
                     loadoutFrame.setOnClickListener(v -> {
-                        long currentTime = System.currentTimeMillis();
 
                         if (isOnCooldown[0]) return;
 
@@ -271,6 +275,11 @@ public class HomeFragment extends Fragment {
 
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_recipe).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
             new Thread(() -> {
                 isReceivingData = false;
                 socketManager.flushSocket();
@@ -281,6 +290,7 @@ public class HomeFragment extends Fragment {
                 }
                 socketManager.setCurrent_page("RECIPES");
                 socketManager.flushSocket();
+
                 if (isAdded()) {
                     ItemFragment itemFragment = new ItemFragment();
                     Bundle args = new Bundle();
@@ -295,6 +305,11 @@ public class HomeFragment extends Fragment {
         });
 
         view.findViewById(R.id.nav_beastiary).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
             new Thread(() -> {
                 isReceivingData = false;
                 socketManager.flushSocket();
@@ -305,6 +320,7 @@ public class HomeFragment extends Fragment {
                 }
                 socketManager.setCurrent_page("BEASTIARY");
                 socketManager.flushSocket();
+
                 if (isAdded()) {
                     BeastiaryFragment beastiaryFragment = new BeastiaryFragment();
                     Bundle args = new Bundle();
@@ -318,6 +334,11 @@ public class HomeFragment extends Fragment {
         });
 
         view.findViewById(R.id.nav_checklist).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
             new Thread(() -> {
                 isReceivingData = false;
                 socketManager.flushSocket();
@@ -326,23 +347,25 @@ public class HomeFragment extends Fragment {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                socketManager.flushSocket();
-                socketManager.setCurrent_page("CHECKLIST");
-                socketManager.sendMessage("CHECKLIST");
-                final ServerResponse server_data = socketManager.receiveMessage();
-                if (server_data != null && "No BossChecklist".equals(server_data.getChecklistError())) {
-                    socketManager.setCurrent_page("HOME");
-                    socketManager.sendMessage("HOME");
-                    isReceivingData = true;
-                    getData();
-                } else {
+
+                if (SessionData.hasBossChecklist()) {
+                    socketManager.setCurrent_page("CHECKLIST");
+                    socketManager.flushSocket();
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new BossChecklist()).commit();
+                } else {
+                    isReceivingData = true;
+                    getData();
                 }
             }).start();
         });
 
         view.findViewById(R.id.loadout_frame).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
             new Thread(() -> {
                 isReceivingData = false;
                 socketManager.flushSocket();
@@ -355,6 +378,7 @@ public class HomeFragment extends Fragment {
                 socketManager.setCurrent_page("NULL");
                 socketManager.sendMessage("NULL");
                 socketManager.flushSocket();
+
                 if (isAdded()) {
                     PotionFragment potionFragment = new PotionFragment();
                     requireActivity().getSupportFragmentManager().beginTransaction()
@@ -384,6 +408,9 @@ public class HomeFragment extends Fragment {
                                     mana_bar.setMax(data.maxMana);
                                     health_status.setText(String.format(Locale.UK, "%d/%d", data.currentHealth, data.maxHealth));
                                     mana_status.setText(String.format(Locale.UK, "%d/%d", data.currentMana, data.maxMana));
+
+                                    boolean hasBossChecklist = data.bossChecklist;
+                                    SessionData.setHasBossChecklist(hasBossChecklist);
 
                                     player_names_view.removeAllViews();
                                     List<String> player_names = data.playerNames;
@@ -469,7 +496,7 @@ public class HomeFragment extends Fragment {
                                     float g = Color.green(tintColor) / 255f;
                                     float b = Color.blue(tintColor) / 255f;
 
-                                    ColorMatrix matrix = new ColorMatrix(new float[]{
+                                    ColorMatrix matrix = new ColorMatrix(new float[]{ // Using this matrix so only the white/grey part of the avatar is tinted, instead of colouring the outline too
                                             r, 0, 0, 0, 0,
                                             0, g, 0, 0, 0,
                                             0, 0, b, 0, 0,
@@ -492,16 +519,7 @@ public class HomeFragment extends Fragment {
                                             "Eyes1", "Eyes2", "Hair", "BodyArmourTorso", "HeadArmour", "BodyArmourRightArm", "BodyArmourLeftArm", "BodyArmourLeftShoulder", "LegArmour"
                                     };
 
-                                    Map<String, Integer> targetHeightsDp = new HashMap<>();
-                                    targetHeightsDp.put("Hair", 600);
-                                    targetHeightsDp.put("Eyes1", 700);
-                                    targetHeightsDp.put("Eyes2", 700);
-                                    targetHeightsDp.put("BodyArmourTorso", 800);
-                                    targetHeightsDp.put("HeadArmour", 470);
-                                    targetHeightsDp.put("BodyArmourRightArm", 100);
-                                    targetHeightsDp.put("BodyArmourLeftArm", 100);
-                                    targetHeightsDp.put("BodyArmourLeftShoulder", 100);
-                                    targetHeightsDp.put("LegArmour", 800);
+                                    Map<String, Integer> targetHeightsDp = getStringIntegerMap();
 
                                     Map<String, Integer> topOffsetsDp = new HashMap<>();
                                     topOffsetsDp.put("HeadArmour", -60);
@@ -596,6 +614,21 @@ public class HomeFragment extends Fragment {
                 }
             }
         }).start();
+    }
+
+    @NonNull
+    private static Map<String, Integer> getStringIntegerMap() {
+        Map<String, Integer> targetHeightsDp = new HashMap<>();
+        targetHeightsDp.put("Hair", 600);
+        targetHeightsDp.put("Eyes1", 700);
+        targetHeightsDp.put("Eyes2", 700);
+        targetHeightsDp.put("BodyArmourTorso", 800);
+        targetHeightsDp.put("HeadArmour", 470);
+        targetHeightsDp.put("BodyArmourRightArm", 100);
+        targetHeightsDp.put("BodyArmourLeftArm", 100);
+        targetHeightsDp.put("BodyArmourLeftShoulder", 100);
+        targetHeightsDp.put("LegArmour", 800);
+        return targetHeightsDp;
     }
 
     private int dpToPx(int dp) {

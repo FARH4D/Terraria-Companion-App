@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,7 @@ import com.farh4d.terrariacompanion.server.SocketManagerSingleton;
 public class ConnectFragment extends Fragment {
 
     private int trackedItemInt;
+    private boolean buttonCooldown = false;
 
     @Nullable
     @Override
@@ -46,6 +49,11 @@ public class ConnectFragment extends Fragment {
         EditText ip_form = view.findViewById(R.id.ip_form);
 
         connect_button.setOnClickListener(v -> {
+            if (buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
             String input_text = ip_form.getText().toString().trim();
 
             if (input_text.contains(":")) {

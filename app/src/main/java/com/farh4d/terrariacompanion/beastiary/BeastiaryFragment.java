@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,9 @@ import androidx.fragment.app.Fragment;
 
 import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
+import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.homeData.SessionData;
+import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.server.ServerResponse;
 import com.farh4d.terrariacompanion.server.SocketManager;
 import com.farh4d.terrariacompanion.server.SocketManagerSingleton;
@@ -33,6 +38,8 @@ import java.util.List;
 public class BeastiaryFragment extends Fragment {
 
     private SocketManager socketManager;
+    private boolean canNavigate = false;
+    private boolean buttonCooldown = false;
     private int currentNum;
     private String search;
     private GridLayout gridLayout;
@@ -57,6 +64,7 @@ public class BeastiaryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
 
         socketManager = SocketManagerSingleton.getInstance();
 
@@ -67,6 +75,11 @@ public class BeastiaryFragment extends Fragment {
 
         // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
             new Thread(() -> {
                 SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                 trackedItemInt = prefs.getInt("tracked_item_id", 1);
@@ -76,6 +89,63 @@ public class BeastiaryFragment extends Fragment {
                 if (isAdded()) {
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new HomeFragment()).commit();
+                }
+            }).start();
+        });
+
+        view.findViewById(R.id.nav_recipe).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
+            new Thread(() -> {
+                isReceivingData = false;
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                socketManager.setCurrent_page("RECIPES");
+                socketManager.flushSocket();
+
+                if (isAdded()) {
+                    ItemFragment itemFragment = new ItemFragment();
+                    Bundle args = new Bundle();
+                    args.putInt("currentNum", 30);
+                    args.putString("category", "all");
+                    args.putString("search", "");
+                    itemFragment.setArguments(args);
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, itemFragment).commit();
+                }
+            }).start();
+        });
+
+        view.findViewById(R.id.nav_checklist).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
+            new Thread(() -> {
+                isReceivingData = false;
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (SessionData.hasBossChecklist()) {
+                    socketManager.setCurrent_page("CHECKLIST");
+                    socketManager.flushSocket();
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new BossChecklist()).commit();
+                } else {
+                    isReceivingData = true;
+                    getData();
                 }
             }).start();
         });

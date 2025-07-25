@@ -162,7 +162,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:scaleType="fitXY"
+                android:scaleType="centerInside"
                 android:src="@drawable/home_navbar"
                 android:contentDescription="Home"
                 android:clickable="true"
@@ -174,38 +174,37 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:scaleType="fitXY"
+                android:scaleType="centerInside"
                 android:src="@drawable/recipe_navbar"
                 android:contentDescription="Recipes"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="15dp" />
-
-            <ImageView
-                android:id="@+id/nav_checklist"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:scaleType="fitXY"
-                android:src="@drawable/checklist_navbar"
-                android:contentDescription="Boss Checklist"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="15dp" />
+                android:padding="5dp" />
 
             <ImageView
                 android:id="@+id/nav_beastiary"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:scaleType="fitXY"
+                android:scaleType="centerInside"
                 android:src="@drawable/beastiary_navbar"
                 android:contentDescription="Beastiary"
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="10dp" />
-        </LinearLayout>
 
+            <ImageView
+                android:id="@+id/nav_checklist"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/checklist_navbar"
+                android:contentDescription="Boss Checklist"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="5dp" />
+        </LinearLayout>
     </FrameLayout>
 
     <androidx.fragment.app.FragmentContainerView

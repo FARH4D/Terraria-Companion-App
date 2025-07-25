@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -28,6 +30,9 @@ import androidx.fragment.app.Fragment;
 
 import com.farh4d.terrariacompanion.HomeFragment;
 import com.farh4d.terrariacompanion.R;
+import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
+import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
+import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.server.ServerResponse;
 import com.farh4d.terrariacompanion.server.SocketManager;
 import com.farh4d.terrariacompanion.server.SocketManagerSingleton;
@@ -42,6 +47,8 @@ import java.util.Map;
 public class ItemInfo extends Fragment {
 
     private SocketManager socketManager;
+    private boolean canNavigate = false;
+    private boolean buttonCooldown = false;
     private int _itemId;
     private int _currentNum;
     private String _category;
@@ -64,6 +71,8 @@ public class ItemInfo extends Fragment {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
+
         View view = inflater.inflate(R.layout.item_info, container, false);
         if (getArguments() != null) {
             _itemId = getArguments().getInt("itemId");
@@ -96,8 +105,12 @@ public class ItemInfo extends Fragment {
         ImageView itemImage = view.findViewById(R.id.item_image);
         LinearLayout drops_layout = view.findViewById(R.id.drops_layout);
 
-        // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
             new Thread(() -> {
                 SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                 trackedItemInt = prefs.getInt("tracked_item_id", 1);
@@ -110,7 +123,88 @@ public class ItemInfo extends Fragment {
                 }
             }).start();
         });
-        ///////////////////////////////////////////////////////////
+
+        view.findViewById(R.id.nav_recipe).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
+            new Thread(() -> {
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                socketManager.setCurrent_page("RECIPES");
+                socketManager.flushSocket();
+
+                if (isAdded()) {
+                    ItemFragment itemFragment = new ItemFragment();
+                    Bundle args = new Bundle();
+                    args.putInt("currentNum", 30);
+                    args.putString("category", "all");
+                    args.putString("search", "");
+                    itemFragment.setArguments(args);
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, itemFragment).commit();
+                }
+            }).start();
+        });
+
+        view.findViewById(R.id.nav_beastiary).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
+            new Thread(() -> {
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                socketManager.setCurrent_page("BEASTIARY");
+                socketManager.flushSocket();
+
+                if (isAdded()) {
+                    BeastiaryFragment beastiaryFragment = new BeastiaryFragment();
+                    Bundle args = new Bundle();
+                    args.putInt("currentNum", 30);
+                    args.putString("search", "");
+                    beastiaryFragment.setArguments(args);
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, beastiaryFragment).commit();
+                }
+            }).start();
+        });
+
+        view.findViewById(R.id.nav_checklist).setOnClickListener(v -> {
+            if (!canNavigate || buttonCooldown) return;
+
+            buttonCooldown = true;
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+
+            new Thread(() -> {
+                socketManager.flushSocket();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (SessionData.hasBossChecklist()) {
+                    socketManager.setCurrent_page("CHECKLIST");
+                    socketManager.flushSocket();
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new BossChecklist()).commit();
+                } else {
+                    return;
+                }
+            }).start();
+        });
 
         new Thread(() -> {
             try {

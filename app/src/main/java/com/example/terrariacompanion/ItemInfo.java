@@ -28,6 +28,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -120,7 +121,11 @@ public class ItemInfo extends Fragment {
                                     itemTitle.setText(finalData.name);
                                     itemImage.setImageBitmap(_bitmap);
 
-                                    firstRecipe = finalData.recipes.get(0);
+                                    if (finalData.recipes != null && !finalData.recipes.isEmpty()) {
+                                        firstRecipe = finalData.recipes.get(0);
+                                    } else {
+                                        firstRecipe = new ArrayList<>(); // Becomes null if there are no recipes so it doesn't crash
+                                    }
                                     trackedItemName = finalData.name;
                                     trackedItemInt = finalData.id;
 

@@ -294,6 +294,25 @@ public class SocketManager {
                 }
             }
 
+//            JSONArray npcDropArray = itemData.optJSONArray("npcdrops");
+//            List<Map<String, Object>> npcDropList = new ArrayList<>();
+
+//            if (npcDropArray != null && npcDropArray.length() > 0) {
+//                for (int i = 0; i < npcDropArray.length(); i++) {
+//                    JSONObject drop = npcDropArray.getJSONObject(i);
+//                    Map<String, Object> npcData = new HashMap<>();
+//
+//                    if (drop.has("id") && drop.has("name") && drop.has("image") && drop.has("droprate")) {
+//                        npcData.put("id", drop.getInt("id"));
+//                        npcData.put("name", drop.getString("name"));
+//                        npcData.put("image", drop.getString("image"));
+//                        npcData.put("droprate", drop.getDouble("droprate"));
+//
+//                        npcDropList.add(npcData);
+//                    }
+//                }
+//            }
+
             return new ItemDataManager(name, id, recipeList);
 
         } catch (Exception e) {

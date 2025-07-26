@@ -255,7 +255,6 @@ public class PotionFragment extends Fragment {
                     loadoutFrame.addView(nameText);
 
                     loadoutFrame.setOnClickListener(v -> {
-                        SoundManager.playDrink();
                         long currentTime = System.currentTimeMillis();
                         if (currentTime - lastClickTime < CLICK_COOLDOWN_MS) return;
                         lastClickTime = currentTime;
@@ -276,6 +275,7 @@ public class PotionFragment extends Fragment {
                             EditPotionFragment editFragment = new EditPotionFragment(loadoutName);
                             requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, editFragment).addToBackStack(null).commit();
                         } else {
+                            SoundManager.playDrink();
                             Map<String, List<PotionEntryData>> strippedLoadout = loadoutMap.getLoadoutsWithoutBase64();
                             List<PotionEntryData> selectedStrippedLoadout = strippedLoadout.get(loadoutName);
 

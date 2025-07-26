@@ -1,132 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#1C0340">
+    android:layout_height="match_parent">
 
-
-    <ImageView
-        android:id="@+id/connect_background"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginTop="73dp"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/launch_background_1" />
+        android:layout_height="match_parent"
+        android:background="#1C0340"
+        android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/logo_1"
-        android:layout_width="349dp"
-        android:layout_height="109dp"
-        android:layout_marginTop="68dp"
-        android:scaleType="fitXY"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/terraria_logo_1"
-        tools:layout_editor_absoluteX="28dp" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/sublogo_1"
-        android:layout_width="304dp"
-        android:layout_height="81dp"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.752"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo_1"
-        app:srcCompat="@drawable/terraria_sublogo_1" />
+            <ImageView
+                android:id="@+id/connect_background"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_marginTop="73dp"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/launch_background_1" />
 
-    <TextView
-        android:id="@+id/connect_intro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="@dimen/connect_intro_top_margin"
-        android:layout_marginEnd="44dp"
-        android:text="@string/intro_text"
-        android:textColor="#37BB07"
-        android:fontFamily="@font/andy_bold"
-        android:textSize="25sp"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/connect_background" />
+            <ImageView
+                android:id="@+id/logo_1"
+                android:layout_width="349dp"
+                android:layout_height="109dp"
+                android:layout_marginTop="68dp"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/terraria_logo_1" />
 
-    <TextView
-        android:id="@+id/ip_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="153dp"
-        android:layout_marginTop="@dimen/ip_header_top_margin"
-        android:layout_marginEnd="153dp"
-        android:fontFamily="@font/andy_bold"
-        android:text="IP and Port"
-        android:textColor="#37BB07"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/connect_intro" />
+            <ImageView
+                android:id="@+id/sublogo_1"
+                android:layout_width="304dp"
+                android:layout_height="81dp"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.752"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/logo_1"
+                app:srcCompat="@drawable/terraria_sublogo_1" />
 
-    <TextView
-        android:id="@+id/ip_subheader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="153dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="153dp"
-        android:fontFamily="@font/andy_bold"
-        android:text="@string/ip_example"
-        android:textColor="#37BB07"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ip_header" />
+            <TextView
+                android:id="@+id/connect_intro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="44dp"
+                android:layout_marginTop="@dimen/connect_intro_top_margin"
+                android:layout_marginEnd="44dp"
+                android:fontFamily="@font/andy_bold"
+                android:text="@string/intro_text"
+                android:textAlignment="center"
+                android:textColor="#37BB07"
+                android:textSize="25sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/connect_background" />
 
-    <EditText
-        android:id="@+id/ip_form"
-        android:layout_width="270dp"
-        android:layout_height="33dp"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="70dp"
-        android:background="#C5C4C4"
-        android:ems="10"
-        android:inputType="text"
-        android:text="192.168.1.178:12345"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ip_subheader" />
+            <TextView
+                android:id="@+id/ip_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="153dp"
+                android:layout_marginTop="@dimen/ip_header_top_margin"
+                android:layout_marginEnd="153dp"
+                android:fontFamily="@font/andy_bold"
+                android:text="IP and Port"
+                android:textColor="#37BB07"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/connect_intro" />
 
-    <Button
-        android:id="@+id/connect_button"
-        android:layout_width="160dp"
-        android:layout_height="71dp"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="116dp"
-        android:layout_marginBottom="30dp"
-        android:backgroundTint="#185502"
-        android:fontFamily="@font/andy_bold"
-        android:text="Connect"
-        android:textColor="#FFFFFF"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ip_form" />
+            <TextView
+                android:id="@+id/ip_subheader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="153dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="153dp"
+                android:fontFamily="@font/andy_bold"
+                android:text="@string/ip_example"
+                android:textColor="#37BB07"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ip_header" />
 
+            <EditText
+                android:id="@+id/ip_form"
+                android:layout_width="270dp"
+                android:layout_height="33dp"
+                android:layout_marginStart="70dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="70dp"
+                android:background="#C5C4C4"
+                android:ems="10"
+                android:inputType="text"
+                android:text="192.168.1.178:12345"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ip_subheader" />
+
+            <Button
+                android:id="@+id/connect_button"
+                android:layout_width="160dp"
+                android:layout_height="71dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="30dp"
+                android:backgroundTint="#185502"
+                android:fontFamily="@font/andy_bold"
+                android:text="Connect"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ip_form" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

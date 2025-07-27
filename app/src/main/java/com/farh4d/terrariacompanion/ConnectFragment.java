@@ -41,6 +41,9 @@ public class ConnectFragment extends Fragment {
         SoundManager.init(getContext());
         ImageButton helpButton = view.findViewById(R.id.help_button);
 
+        SharedPreferences connectionPrefs = requireActivity().getSharedPreferences("ConnectionPrefs", Context.MODE_PRIVATE);
+        String lastEntry = connectionPrefs.getString("last_ip_entry", "");
+
         Window window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -50,12 +53,13 @@ public class ConnectFragment extends Fragment {
 
         Button connect_button = view.findViewById(R.id.connect_button);
         EditText ip_form = view.findViewById(R.id.ip_form);
+        ip_form.setText(lastEntry);
 
         connect_button.setOnClickListener(v -> {
             if (buttonCooldown) return;
 
             buttonCooldown = true;
-            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 500); // 500ms cooldown for pressing buttons to prevent spamming
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { buttonCooldown = false; }, 2000); // 2 second cooldown for pressing buttons to prevent spamming
 
             SoundManager.playClick();
             String input_text = ip_form.getText().toString().trim();
@@ -74,6 +78,7 @@ public class ConnectFragment extends Fragment {
 
                                     SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
                                     trackedItemInt = prefs.getInt("tracked_item_id", 1);
+                                    connectionPrefs.edit().putString("last_ip_entry", input_text).apply();
 
                                     socketManager.setCurrent_page("HOME");
                                     socketManager.sendMessage("HOME:" + trackedItemInt + ":null");
@@ -86,8 +91,7 @@ public class ConnectFragment extends Fragment {
                                     });
                                 } else {
                                     requireActivity().runOnUiThread(() ->
-                                            Toast.makeText(requireContext(),
-                                                    "Failed to connect to server. Try double checking your IP and Port.", Toast.LENGTH_SHORT).show());
+                                            Toast.makeText(requireContext(), "Failed to connect to server. Try double checking your IP and Port.", Toast.LENGTH_SHORT).show());
                                 }
                             } catch (Exception e) {
                                 requireActivity().runOnUiThread(() ->

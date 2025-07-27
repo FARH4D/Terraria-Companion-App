@@ -14,7 +14,9 @@ import com.farh4d.terrariacompanion.itemlist.ItemDataManager;
 import com.farh4d.terrariacompanion.potions.PotionEntry;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,10 +37,14 @@ public class SocketManager {
     private volatile boolean again = true;
     public boolean connect(String ipAddress, int port) {
         try {
-            socket = new Socket(ipAddress, port);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(ipAddress, port), 2000); // 2 second timeout for connecting
             output = new PrintWriter(socket.getOutputStream(), true);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             return true;
+        } catch (SocketTimeoutException e) {
+            System.err.println("Connection timed out: " + e.getMessage());
+            return false;
         } catch (IOException e) {
             System.err.println("Error connecting to server: " + e.getMessage());
             return false;

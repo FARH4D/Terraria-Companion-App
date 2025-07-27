@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,8 +31,7 @@ public class ConnectFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.connect_screen, container, false);
     }
 
@@ -39,6 +39,7 @@ public class ConnectFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SoundManager.init(getContext());
+        ImageButton helpButton = view.findViewById(R.id.help_button);
 
         Window window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -103,6 +104,13 @@ public class ConnectFragment extends Fragment {
             } else {
                 Toast.makeText(requireContext(), "Invalid format, must use IP:Port", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        helpButton.setOnClickListener(v -> {
+            requireActivity().runOnUiThread(() -> {
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new HelpFragment()).commit();
+            });
         });
     }
 }

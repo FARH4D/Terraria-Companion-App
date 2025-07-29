@@ -105,6 +105,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((MainActivity) requireActivity()).setFullscreen(true);
+
         new Handler(Looper.getMainLooper()).postDelayed(() -> { canNavigate = true; }, 1300); // Make the user wait a second for everything to load before using navbar
         SoundManager.init(getContext());
 
@@ -269,23 +271,11 @@ public class HomeFragment extends Fragment {
                 }
             }
             else {
-                TextView emptyText = new TextView(requireContext());
-                LinearLayout.LayoutParams emptyParams = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                );
-                emptyText.setLayoutParams(emptyParams);
-                emptyText.setGravity(Gravity.CENTER);
-                emptyText.setText("No Potion Loadouts");
-                emptyText.setTextColor(Color.WHITE);
-                emptyText.setTextSize(26);
-                emptyText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                emptyText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
-
-                potionContainer.addView(emptyText);
+                showEmptyText(potionContainer);
             }
         } catch (IOException e){
             e.printStackTrace();
+            showEmptyText(potionContainer);
         }
 
         ////////////////////////////////////////////////////////////
@@ -716,6 +706,23 @@ public class HomeFragment extends Fragment {
             background.setBackground(transitionDrawable);
             transitionDrawable.startTransition(500);
         }
+    }
+
+    private void showEmptyText(LinearLayout potionContainer) {
+        TextView emptyText = new TextView(requireContext());
+        LinearLayout.LayoutParams emptyParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        );
+        emptyText.setLayoutParams(emptyParams);
+        emptyText.setGravity(Gravity.CENTER);
+        emptyText.setText("No Potion Loadouts");
+        emptyText.setTextColor(Color.WHITE);
+        emptyText.setTextSize(26);
+        emptyText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        emptyText.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.andy_bold));
+
+        potionContainer.addView(emptyText);
     }
 }
 

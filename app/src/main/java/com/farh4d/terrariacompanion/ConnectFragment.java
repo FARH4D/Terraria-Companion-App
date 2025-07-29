@@ -52,17 +52,13 @@ public class ConnectFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SoundManager.init(getContext());
+        requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         ImageButton helpButton = view.findViewById(R.id.help_button);
 
         SharedPreferences connectionPrefs = requireActivity().getSharedPreferences("ConnectionPrefs", Context.MODE_PRIVATE);
         String lastEntry = connectionPrefs.getString("last_ip_entry", "");
 
-        Window window = requireActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(Color.TRANSPARENT);
-        window.getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        ((MainActivity) requireActivity()).setFullscreen(false);
 
         Button connect_button = view.findViewById(R.id.connect_button);
         EditText ip_form = view.findViewById(R.id.ip_form);

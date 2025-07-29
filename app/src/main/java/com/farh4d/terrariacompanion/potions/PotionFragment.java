@@ -34,6 +34,7 @@ import com.farh4d.terrariacompanion.server.SocketManagerSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
@@ -57,6 +58,17 @@ public class PotionFragment extends Fragment {
     private long lastClickTime = 0;
     private static final long CLICK_COOLDOWN_MS = 1000;
     private int trackedItemInt;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+            }
+        });
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.potion_loadout, container, false);

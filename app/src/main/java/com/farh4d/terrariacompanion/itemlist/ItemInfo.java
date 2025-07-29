@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +34,7 @@ import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
 import com.farh4d.terrariacompanion.client.SoundManager;
+import com.farh4d.terrariacompanion.client.ToastUtility;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.server.ServerResponse;
 import com.farh4d.terrariacompanion.server.SocketManager;
@@ -60,6 +62,7 @@ public class ItemInfo extends Fragment {
     private List<Map<String, Object>> firstRecipe;
     private String trackedItemName;
     private int trackedItemInt;
+    private Button trackButton;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,14 +103,17 @@ public class ItemInfo extends Fragment {
         socketManager = SocketManagerSingleton.getInstance();
 
         if (socketManager == null || !socketManager.isConnected()) {
-            Toast.makeText(requireActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
+            ToastUtility.showToast(requireActivity(), "No active connection!", Toast.LENGTH_SHORT);
             return;
         }
 
         TextView itemTitle = view.findViewById(R.id.item_name);
         ImageView itemImage = view.findViewById(R.id.item_image);
         LinearLayout drops_layout = view.findViewById(R.id.drops_layout);
+        trackButton = view.findViewById(R.id.track_button);
+        trackButton.setEnabled(false); // Disable track button until the data is loaded to avoid crash
 
+        // NAVBAR CODE ////////////////////////////////////////////
         view.findViewById(R.id.nav_home).setOnClickListener(v -> {
             if (!canNavigate || buttonCooldown) return;
 
@@ -212,6 +218,7 @@ public class ItemInfo extends Fragment {
                 }
             }).start();
         });
+        /////////////////////////////////////////////////////////////////////////////////////////////
 
         new Thread(() -> {
             try {
@@ -235,6 +242,7 @@ public class ItemInfo extends Fragment {
                                     }
                                     trackedItemName = finalData.name;
                                     trackedItemInt = finalData.id;
+                                    trackButton.setEnabled(true); // Enable track button now that the data is loaded, prevents crash
 
                                     for (List<Map<String, Object>> entryList : finalData.recipes) {
                                         LinearLayout dropFrame = new LinearLayout(requireContext());
@@ -407,12 +415,12 @@ public class ItemInfo extends Fragment {
                 }
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireActivity(), "Connection error.", Toast.LENGTH_SHORT).show());
+                        ToastUtility.showToast(requireActivity(), "Connection error.", Toast.LENGTH_SHORT));
                 e.printStackTrace();
             }
         }).start();
 
-        view.findViewById(R.id.track_button).setOnClickListener(btnView -> {
+        trackButton.setOnClickListener(btnView -> {
             SoundManager.playClick();
             SharedPreferences prefs = requireActivity().getSharedPreferences("TrackedItemPrefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
@@ -438,7 +446,7 @@ public class ItemInfo extends Fragment {
             editor.putInt("ingredient_count", index);
             editor.apply();
 
-            Toast.makeText(requireContext(), "Tracking: " + trackedItemName, Toast.LENGTH_SHORT).show();
+            ToastUtility.showToast(requireContext(), "Tracking: " + trackedItemName, Toast.LENGTH_SHORT);
         });
 
         view.findViewById(R.id.back_button).setOnClickListener(v -> {

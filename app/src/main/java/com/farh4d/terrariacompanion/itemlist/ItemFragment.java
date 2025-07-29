@@ -28,6 +28,7 @@ import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
 import com.farh4d.terrariacompanion.client.SoundManager;
+import com.farh4d.terrariacompanion.client.ToastUtility;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.server.ServerResponse;
 import com.farh4d.terrariacompanion.server.SocketManager;
@@ -85,7 +86,7 @@ public class ItemFragment extends Fragment {
         socketManager = SocketManagerSingleton.getInstance();
 
         if (socketManager == null || !socketManager.isConnected()) {
-            Toast.makeText(requireActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
+            ToastUtility.showToast(requireActivity(), "No active connection!", Toast.LENGTH_SHORT);
             return;
         }
 
@@ -338,7 +339,7 @@ public class ItemFragment extends Fragment {
                                     gridLayout.invalidate();
                                     gridLayout.requestLayout();
 
-                                    Toast.makeText(requireActivity(), "No items found.", Toast.LENGTH_SHORT).show();
+                                    ToastUtility.showToast(requireContext(), "No items found.", Toast.LENGTH_SHORT);
                                 });
                             }
                             isReceivingData = false;
@@ -350,7 +351,7 @@ public class ItemFragment extends Fragment {
                 } catch (Exception e) {
                     isReceivingData = true;
                     requireActivity().runOnUiThread(() ->
-                            Toast.makeText(requireActivity(), "Connection error.", Toast.LENGTH_SHORT).show());
+                            ToastUtility.showToast(requireActivity(), "Connection error.", Toast.LENGTH_SHORT));
                     e.printStackTrace();
                 }
             }).start();

@@ -27,6 +27,7 @@ import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
 import com.farh4d.terrariacompanion.client.SoundManager;
+import com.farh4d.terrariacompanion.client.ToastUtility;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.server.SocketManager;
@@ -83,7 +84,7 @@ public class PotionFragment extends Fragment {
         socketManager = SocketManagerSingleton.getInstance();
 
         if (socketManager == null || !socketManager.isConnected()) {
-            Toast.makeText(requireActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
+            ToastUtility.showToast(requireActivity(), "No active connection!", Toast.LENGTH_SHORT);
             return;
         }
 
@@ -280,7 +281,7 @@ public class PotionFragment extends Fragment {
 
                                         loadoutGrid.removeView(loadoutFrame);
 
-                                        Toast.makeText(requireContext(), "Deleted " + loadoutName, Toast.LENGTH_SHORT).show();
+                                        ToastUtility.showToast(requireContext(), "Deleted " +loadoutName, Toast.LENGTH_SHORT);
                                         requireActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
                                     }).setNegativeButton("Cancel", null).show();
                         } else if (isEditMode) {
@@ -339,8 +340,7 @@ public class PotionFragment extends Fragment {
                 deleteButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185502")));
             }
 
-            Toast.makeText(requireContext(),
-                    isDeleteMode ? "Tap a loadout to delete it" : "Delete mode off", Toast.LENGTH_SHORT).show();
+            ToastUtility.showToast(requireContext(), isDeleteMode ? "Tap a loadout to delete it" : "Delete mode off", Toast.LENGTH_SHORT);
         });
 
         editButton.setOnClickListener(v -> {
@@ -355,8 +355,7 @@ public class PotionFragment extends Fragment {
                 editButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#185502")));
             }
 
-            Toast.makeText(requireContext(),
-                    isEditMode ? "Tap a loadout to edit it" : "Edit mode off", Toast.LENGTH_SHORT).show();
+            ToastUtility.showToast(requireContext(), isEditMode ? "Tap a loadout to edit it" : "Edit mode off", Toast.LENGTH_SHORT);
         });
     }
 }

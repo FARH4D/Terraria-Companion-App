@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.farh4d.terrariacompanion.client.SoundManager;
+import com.farh4d.terrariacompanion.client.ToastUtility;
 import com.farh4d.terrariacompanion.server.SocketManager;
 import com.farh4d.terrariacompanion.server.SocketManagerSingleton;
 
@@ -96,29 +97,29 @@ public class ConnectFragment extends Fragment {
                                     socketManager.sendMessage("HOME:" + trackedItemInt + ":null");
 
                                     requireActivity().runOnUiThread(() -> {
-                                        Toast.makeText(requireContext(), "Connected!", Toast.LENGTH_SHORT).show();
+                                        ToastUtility.showToast(requireContext(), "Connected!", Toast.LENGTH_SHORT);
 
                                         requireActivity().getSupportFragmentManager().beginTransaction()
                                                 .replace(R.id.fragment_container, new HomeFragment()).commit();
                                     });
                                 } else {
                                     requireActivity().runOnUiThread(() ->
-                                            Toast.makeText(requireContext(), "Failed to connect to server. Try double checking your IP and Port.", Toast.LENGTH_SHORT).show());
+                                            ToastUtility.showToast(requireContext(), "Failed to connect to server. Try double checking the IP and Port", Toast.LENGTH_SHORT));
                                 }
                             } catch (Exception e) {
                                 requireActivity().runOnUiThread(() ->
-                                        Toast.makeText(requireContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT).show());
+                                        ToastUtility.showToast(requireContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT));
                             }
                         }).start();
 
                     } catch (NumberFormatException e) {
-                        Toast.makeText(requireContext(), "Invalid Port Number.", Toast.LENGTH_SHORT).show();
+                        ToastUtility.showToast(requireContext(), "Invalid Port Number.", Toast.LENGTH_SHORT);
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Invalid format, must use IP:Port", Toast.LENGTH_SHORT).show();
+                    ToastUtility.showToast(requireContext(), "Invalid format, must use IP:Port", Toast.LENGTH_SHORT);
                 }
             } else {
-                Toast.makeText(requireContext(), "Invalid format, must use IP:Port", Toast.LENGTH_SHORT).show();
+                ToastUtility.showToast(requireContext(), "Invalid format, must use IP:Port", Toast.LENGTH_SHORT);
             }
         });
 

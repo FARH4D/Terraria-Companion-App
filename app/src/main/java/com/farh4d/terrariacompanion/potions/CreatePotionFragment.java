@@ -35,6 +35,7 @@ import com.farh4d.terrariacompanion.R;
 import com.farh4d.terrariacompanion.beastiary.BeastiaryFragment;
 import com.farh4d.terrariacompanion.bosschecklist.BossChecklist;
 import com.farh4d.terrariacompanion.client.SoundManager;
+import com.farh4d.terrariacompanion.client.ToastUtility;
 import com.farh4d.terrariacompanion.homeData.SessionData;
 import com.farh4d.terrariacompanion.itemlist.ItemFragment;
 import com.farh4d.terrariacompanion.server.ServerResponse;
@@ -80,7 +81,7 @@ public class CreatePotionFragment extends Fragment {
         socketManager = SocketManagerSingleton.getInstance();
 
         if (socketManager == null || !socketManager.isConnected()) {
-            Toast.makeText(requireActivity(), "No active connection!", Toast.LENGTH_SHORT).show();
+            ToastUtility.showToast(requireActivity(), "No active connection!", Toast.LENGTH_SHORT);
             return;
         }
 
@@ -226,7 +227,7 @@ public class CreatePotionFragment extends Fragment {
             String loadoutName = potionNameEntry.getText().toString().trim();
 
             if (loadoutName.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a loadout name.", Toast.LENGTH_SHORT).show();
+                ToastUtility.showToast(requireContext(), "Please enter a loadout name.", Toast.LENGTH_SHORT);
                 return;
             }
 

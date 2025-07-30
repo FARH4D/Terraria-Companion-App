@@ -45,7 +45,7 @@ public class HelpFragment extends Fragment {
         backButton.setOnClickListener(v -> {
             requireActivity().runOnUiThread(() -> {
                 requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new HomeFragment()).commit();
+                        .replace(R.id.fragment_container, new ConnectFragment()).commit();
             });
         });
 

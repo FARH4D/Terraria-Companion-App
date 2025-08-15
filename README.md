@@ -9,10 +9,10 @@ This mod features many tools, such as an Item page and Recipe Browsing, Item Tra
 [![Watch the showcase video!](https://img.youtube.com/vi/IFwg-NQ2cZE/0.jpg)](https://www.youtube.com/watch?v=IFwg-NQ2cZE)
 
 The youtube video above shows all the features in more depth, however screenshots and a showcase of a few of the features of the app can be found below:
-![Companion App Home Page](https://github.com/FARH4D/TerrariaCompanionMod/Showcase/README.md)
+![Companion App Home Page](https://github.com/FARH4D/TerrariaCompanionMod/blob/main/Showcase/README.md)
 
 ## Instructions
-1) Go to the TModLoader Workshop on Steam and install the Terraria Companion Mod, or manually install the latest release from https://github.com/FARH4D/Terraria-Companion-App
+1) Go to the TModLoader Workshop on Steam and install the Terraria Companion Mod, or manually install the latest release from https://github.com/FARH4D/TerrariaCompanionMod
 2) Install the Terraria Companion App from Google Play Store or download the latest release on this repo. 
 3) a) Launch Terraria and enable the Companion Mod, if you enter a world and go into the mod settings for the companion mod, you'll be able to see your PC's ip and the port to use on the app.
 
